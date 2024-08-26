@@ -1,14 +1,20 @@
-import { Outlet } from "react-router-dom"
 import { Header } from "./Header"
 import { Footer } from "./Footer"
+import styled from "styled-components";
 
-export const DefaultLayout = () => {
+
+const Main = styled.div`
+    min-height: 100vh;
+`;
+
+const DefaultLayout = ({children}) => {
     return (
         <>
             <Header />
-            <Outlet />
+            <Main>{children}</Main>
             <Footer />
-
         </>
     )
 }
+
+export default DefaultLayout;

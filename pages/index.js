@@ -7,16 +7,7 @@ export default function HomePage() {
     <>
       <Header />
       <Footer />
-      <Footer /><Footer />
-      <Footer />
-      <Footer />
-      <Footer />
-      <Footer />
-      <Footer />
-      <Footer />
-      <Footer />
 
-      {/* Các thành phần khác */}
-    </>
+    </> 
   );
 }
