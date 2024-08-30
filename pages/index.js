@@ -1,13 +1,17 @@
 import React from 'react';
-import { Header } from '../layout/Header';
-import { Footer } from '../layout/Footer';
+
+import DefaultLayout from '@/layout/DefaultLayout';
+import styled from 'styled-components';
+
 
 export default function HomePage() {
   return (
     <>
-      <Header />
-      <Footer />
+      <DefaultLayout>
+        HomePage
 
-    </> 
+      </DefaultLayout>
+
+    </>
   );
 }
