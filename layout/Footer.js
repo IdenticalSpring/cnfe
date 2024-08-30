@@ -1,13 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 
-// Định nghĩa các styled components sử dụng các giá trị từ theme
 export const FooterContainer = styled.footer`
   background-color: ${({ theme }) => theme.colors.background};
   padding: ${({ theme }) => theme.spacing.medium};
   border-top: 1px solid ${({ theme }) => theme.colors.grey};
   text-align: center;
   color: ${({ theme }) => theme.colors.textSecondary};
+  z-index: ${({ theme }) => theme.zIndex.high}; /* Đảm bảo giá trị z-index cao */
 `;
 
 export const FooterContent = styled.div`
@@ -42,19 +42,19 @@ export const Copyright = styled.div`
 `;
 
 export const Footer = () => {
-    return (
-        <FooterContainer>
-            <FooterContent>
-                <Logo src="https://openui.fly.dev/openui/24x24.svg?text=🧩" alt="Logo" />
-                <Links>
-                    <a href="#">Privacy</a>
-                    <a href="#">Terms</a>
-                    <a href="#">Help</a>
-                </Links>
-                <Copyright>
-                    &copy; {new Date().getFullYear()} LeetCode. All rights reserved.
-                </Copyright>
-            </FooterContent>
-        </FooterContainer>
-    );
+  return (
+    <FooterContainer>
+      <FooterContent>
+        <Logo src="https://openui.fly.dev/openui/24x24.svg?text=🧩" alt="Logo" />
+        <Links>
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Help</a>
+        </Links>
+        <Copyright>
+          &copy; {new Date().getFullYear()} LeetCode. All rights reserved.
+        </Copyright>
+      </FooterContent>
+    </FooterContainer>
+  );
 };
