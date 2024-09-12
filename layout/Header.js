@@ -2,30 +2,27 @@ import Link from 'next/link';
 import React from "react";
 import styled from "styled-components";
 
-
 export const Container = styled.div`
   padding: ${({ theme }) => theme.spacing.small};
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   position: sticky; 
-  top: 0 ;
-  width: calc(100vw+ 10vw);
+  top: 0;
+  width: 100%; 
   box-sizing: border-box;
-  z-index: 1000; 
-  background-color: ${({ theme }) => theme.colors.background}; /* Thêm màu nền để header không bị mờ */
+  z-index: 1000;
+  background-color: var(--background-color); 
 `;
-
 
 export const Nav = styled.nav`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: calc(5px + 1vw) calc(20px + 2vw); /* Padding thay đổi theo kích thước màn hình */
-
-  padding: 5px 20px;
+  padding: calc(10px + 1vw) calc(20px + 2vw); 
   width: 100%;
-  box-sizing: border-box; 
+  height: 20px;
+  max-height: 30px;
+  box-sizing: border-box;
   z-index: 1000;
-
   @media (max-width: 749px) {
     padding: calc(5px + 0.5vw) calc(10px + 1vw);
   }
@@ -34,66 +31,63 @@ export const Nav = styled.nav`
 export const LogoWrapper = styled.div`
   display: flex;
   align-items: center;
-
+  height: 40px;
 `;
 
 export const Logo = styled.img`
- height: calc(1vw + 16px); /* Thay đổi kích thước theo kích thước màn hình */
-  width: auto; /* Giữ tỷ lệ khung hình */
+  height: auto;
+  width: 100%;
+  max-height: 30px;
+    cursor: pointer;
+ 
 `;
 
 export const Title = styled.span`
   font-family: cursive;
-  font-size: calc(1rem + 0.5vw); /* Kích thước chữ thay đổi theo kích thước màn hình */
+  font-size: calc(1rem + 0.5vw);
   font-weight: ${({ theme }) => theme.typography.h1.fontWeight};
-  color: ${({ theme }) => theme.colors.textSecondary};
-  margin-left: ${({ theme }) => theme.spacing.small};
+  color: var(--text-secondary-color);
   cursor: pointer;
-
 `;
-
-
 
 export const LinkWrapper = styled.div`
   display: flex;
-  gap: ${({ theme }) => theme.spacing.large};
-  box-sizing: border-box; /* Ensure padding doesn't cause overflow */
+  gap: ${({ theme }) => theme.spacing.medium};
+  align-items: center;
+  box-sizing: border-box;
   cursor: pointer;
 
-  text-decoration:none;
 `;
 
 const StyledLink = styled.a`
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary-color);
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
-  padding: 5px 10px;
-  border-radius: 4px;
-  transition: color 0.3s, background-color 0.3s;
+  padding: 10px 15px;
+  border-radius: 100px;
+  transition: color 1s, background-color 0.3s;
 
   &:hover {
-    color: ${({ theme }) => theme.colors.primary};
+    color: var(--text-primary-color);
     background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 100px;
   }
 
   &:active {
     transform: translateY(1px);
   }
 `;
+
 export const Header = () => {
   return (
     <Container>
       <Nav>
         <Link href="/" passHref legacyBehavior>
           <LogoWrapper>
-            <Logo
-              src="https://openui.fly.dev/openui/24x24.svg?text=🧩"
-              alt="Logo"
-            />
-            <Title>MinhTu</Title>
+            <Logo src="/assets/img/iconLogo.png" alt="Logo" />
+            <Title>MasterCoding</Title>
           </LogoWrapper>
-
         </Link>
         <LinkWrapper>
           <Link href="/" passHref legacyBehavior>
