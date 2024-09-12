@@ -4,13 +4,14 @@ import styled from 'styled-components';
 import { IconButton, InputAdornment, TextField } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import DefaultLayout from '@/layout/DefaultLayout';
 
 const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f0f2f5;
+  background-color: var(--gray-color);
 `;
 
 const FormWrapper = styled.div`
@@ -20,9 +21,24 @@ const FormWrapper = styled.div`
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   width: 100%;
   height: 100%;
-  max-height: 500px;
+  max-height: 650px;
   max-width: 400px;
   position: relative;
+`;
+
+export const LogoWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  height: 100px;
+  margin-bottom: 25px;
+`;
+
+export const Logo = styled.img`
+  height: auto;
+  width: auto;
+  max-height: 200px;
+  max-width: 200px;
+  cursor: pointer;
 `;
 
 const Title = styled.h1`
@@ -32,7 +48,7 @@ const Title = styled.h1`
 `;
 
 const StyledTextField = styled(TextField)`
-  margin-bottom: 20px;
+  margin-bottom: 20px !important;
   width: 100%;
 `;
 
@@ -53,9 +69,19 @@ const ButtonGroup = styled.div`
   display: flex;
   justify-content: space-between;
   margin-top: 30px;
+
+  a {
+    text-decoration: none;
+    color: #1890ff;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--background-hover-color);
+    }
+  }
 `;
 
-export const Login = () => {
+const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
 
@@ -68,41 +94,49 @@ export const Login = () => {
   };
 
   return (
-    <Container>
-      <FormWrapper>
-        <Title>Login</Title>
-        <StyledTextField
-          label="Email"
-          variant="outlined"
-          type="email"
-          required
-        />
-        <StyledTextField
-          label="Password"
-          variant="outlined"
-          type={showPassword ? 'text' : 'password'}
-          value={password}
-          onChange={handlePasswordChange}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={handleClickShowPassword}
-                  edge="end"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          required
-        />
-        <LoginButton type="submit">Login</LoginButton>
-        <ButtonGroup>
-          <a href='#' style={{cursor: 'pointer'}}>Forgot Password?</a>
-          <a href='#' style={{cursor: 'pointer'}}>Sign Up</a>
-        </ButtonGroup>
-      </FormWrapper>
-    </Container>
+    <DefaultLayout>
+      <Container>
+        <FormWrapper>
+          <LogoWrapper>
+            <Logo src="/assets/img/iconlogo.png" alt="Logo" />
+          </LogoWrapper>
+
+          <Title>Login</Title>
+          <StyledTextField
+            label="Email"
+            variant="outlined"
+            type="email"
+            required
+          />
+          <StyledTextField
+            label="Password"
+            variant="outlined"
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={handlePasswordChange}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={handleClickShowPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            required
+          />
+          <LoginButton type="submit">Login</LoginButton>
+          <ButtonGroup>
+            <a href='#' style={{ cursor: 'pointer' }}>Forgot Password?</a>
+            <a href='#' style={{ cursor: 'pointer' }}>Sign Up</a>
+          </ButtonGroup>
+        </FormWrapper>
+      </Container>
+    </DefaultLayout>
   );
 };
+
+export default Login;

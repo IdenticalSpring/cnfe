@@ -1,17 +1,11 @@
-import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "next/font/google";
-import {Login} from './Login/login.js';
-import {Signup} from './Login/signup.js';
 import React from 'react';
 import DefaultLayout from '@/layout/DefaultLayout';
 import styled from 'styled-components';
 import Link from 'next/link';
-
 // Styled components
 const Section = styled.section`
-  background-color: ${({ theme }) => theme.colors.background};
-  color: ${({ theme }) => theme.colors.textPrimary};
+  background-color: var(--background-color);
+  color: var(--text-primary-color);
   padding: 32px 0;
 `;
 
@@ -32,8 +26,8 @@ const FlexContainer = styled.div`
 
 const Card = styled.div`
   display: flex;
-  flex-direction: column; /* Chuyển hướng các phần tử con thành cột */
-  background-color: ${({ theme }) => theme.colors.card};
+  flex-direction: column;
+  background-color: var(--background-color);
   padding: 24px;
   border-radius: 8px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
@@ -63,7 +57,7 @@ const Title = styled.h3`
 const Text = styled.p`
   font-size: 16px;
   margin-top: 5px;
-  color: ${({ theme }) => theme.colors.grey};
+  color: var(--grey-color);
   margin-bottom: 16px;
   flex-grow: 1;
 `;
@@ -81,6 +75,7 @@ const StyledLink = styled.a`
   color: #66CCFF;
   font-weight: 500;
   text-decoration: none;
+  
   &:hover{
       text-decoration: underline;
   }
@@ -92,7 +87,7 @@ const features = [
     icon: '🔧',
     title: 'A New Way to Learn',
     description: 'MasterCoding is the best platform to help you enhance your skills, expand your knowledge and prepare for technical interviews.',
-    link: '/signin',
+    link: '/Login/signup',
     linkText: 'Sign Up >>>'
   },
   {

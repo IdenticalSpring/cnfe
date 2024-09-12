@@ -3,13 +3,13 @@ import styled from 'styled-components';
 import { IconButton, InputAdornment, TextField } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import DefaultLayout from '@/layout/DefaultLayout';
 
 const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f0f2f5;
 `;
 
 const FormWrapper = styled.div`
@@ -20,6 +20,21 @@ const FormWrapper = styled.div`
   width: 100%;
   max-width: 400px;
   position: relative;
+`;
+
+export const LogoWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  height: 100px;
+  margin-bottom: 25px;
+`;
+
+export const Logo = styled.img`
+  height: auto;
+  width: auto;
+  max-height: 200px;
+  max-width: 200px;
+  cursor: pointer;
 `;
 
 const Title = styled.h1`
@@ -53,9 +68,16 @@ const ButtonGroup = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 10px;
+
+  a {
+    color: blue;
+    padding-left: 8px;
+    cursor: pointer;
+  }
+
 `;
 
-export const Signup = () => {
+const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [password, setPassword] = useState('');
@@ -78,60 +100,71 @@ export const Signup = () => {
   };
 
   return (
-    <Container>
-      <FormWrapper>
-        <Title>Sign Up</Title>
-        <StyledTextField
-          label="Email"
-          variant="outlined"
-          type="email"
-          required
-        />
-        <StyledTextField
-          label="Password"
-          variant="outlined"
-          type={showPassword ? 'text' : 'password'}
-          value={password}
-          onChange={handlePasswordChange}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={handleClickShowPassword}
-                  edge="end"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          required
-        />
-        <StyledTextField
-          label="Confirm Password"
-          variant="outlined"
-          type={showConfirmPassword ? 'text' : 'password'}
-          value={confirmPassword}
-          onChange={handleConfirmPasswordChange}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={handleClickShowConfirmPassword}
-                  edge="end"
-                >
-                  {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          required
-        />
-        <SignupButton type="submit">Sign Up</SignupButton>
-        <ButtonGroup>
-          Have an account? <a style={{ color: 'blue' }}>Login</a>
-        </ButtonGroup>
-      </FormWrapper>
-    </Container>
+    <DefaultLayout>
+
+      <Container>
+        <FormWrapper>
+          <LogoWrapper>
+            <Logo src="/assets/img/iconlogo.png" alt="Logo" />
+          </LogoWrapper>
+
+          <Title>Sign Up</Title>
+          <StyledTextField
+            label="Email"
+            variant="outlined"
+            type="email"
+            required
+          />
+          <StyledTextField
+            label="Password"
+            variant="outlined"
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={handlePasswordChange}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={handleClickShowPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            required
+          />
+          <StyledTextField
+            label="Confirm Password"
+            variant="outlined"
+            type={showConfirmPassword ? 'text' : 'password'}
+            value={confirmPassword}
+            onChange={handleConfirmPasswordChange}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={handleClickShowConfirmPassword}
+                    edge="end"
+                  >
+                    {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            required
+          />
+          <SignupButton type="submit">Sign Up</SignupButton>
+          <ButtonGroup>
+            <span>Have an account? </span>
+            <span><a style={{ color: 'blue' }}>Login</a></span>
+             
+          </ButtonGroup>
+        </FormWrapper>
+      </Container>
+    </DefaultLayout>
   );
 };
+
+export default Signup;

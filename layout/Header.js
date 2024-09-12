@@ -10,7 +10,7 @@ export const Container = styled.div`
   width: 100%; 
   box-sizing: border-box;
   z-index: 1000;
-  background-color: ${({ theme }) => theme.colors.background}; 
+  background-color: var(--background-color); 
 `;
 
 export const Nav = styled.nav`
@@ -46,31 +46,32 @@ export const Title = styled.span`
   font-family: cursive;
   font-size: calc(1rem + 0.5vw);
   font-weight: ${({ theme }) => theme.typography.h1.fontWeight};
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary-color);
   cursor: pointer;
 `;
 
 export const LinkWrapper = styled.div`
   display: flex;
-  gap: ${({ theme }) => theme.spacing.medium}; /* Giảm khoảng cách để gọn gàng hơn */
-  align-items: center; /* Căn giữa các liên kết */
+  gap: ${({ theme }) => theme.spacing.medium};
+  align-items: center;
   box-sizing: border-box;
   cursor: pointer;
 
 `;
 
 const StyledLink = styled.a`
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary-color);
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
-  padding: 10px 15px; /* Cung cấp không gian cho liên kết */
-  border-radius: 4px;
-  transition: color 0.3s, background-color 0.3s;
+  padding: 10px 15px;
+  border-radius: 100px;
+  transition: color 1s, background-color 0.3s;
 
   &:hover {
-    color: ${({ theme }) => theme.colors.primary};
+    color: var(--text-primary-color);
     background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 100px;
   }
 
   &:active {

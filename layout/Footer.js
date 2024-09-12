@@ -2,11 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 
 export const FooterContainer = styled.footer`
-  background-color: ${({ theme }) => theme.colors.background};
+  background-color: var(--background-color);
   padding: ${({ theme }) => theme.spacing.medium};
-  border-top: 1px solid ${({ theme }) => theme.colors.grey};
+  border-top: 1px solid var(--grey-color);
   text-align: center;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary-color);
   z-index: ${({ theme }) => theme.zIndex.high}; /* Đảm bảo giá trị z-index cao */
 `;
 
