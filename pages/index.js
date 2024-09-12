@@ -1,19 +1,25 @@
 import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "next/font/google";
-import styles from "@/styles/Home.module.css";
 import {Login} from './Login/login.js';
 import {Signup} from './Login/signup.js';
+import React from 'react';
+import DefaultLayout from '@/layout/DefaultLayout';
+import styled from 'styled-components';
 
-const inter = Inter({ subsets: ["latin"] });
 
-export default function Home() {
+export default function HomePage() {
   return (
     <>
       <div>
-        <Login />
+        {/* <Login /> */}
         {/* <Signup />  */}
       </div>
+      <DefaultLayout>
+        HomePage
+
+      </DefaultLayout>
+
     </>
   );
 }
