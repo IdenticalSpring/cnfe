@@ -1,10 +1,17 @@
 // src/pages/Login.js
 import React, { useState } from 'react';
+import Link from 'next/link';
 import styled from 'styled-components';
 import { IconButton, InputAdornment, TextField } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import DefaultLayout from '@/layout/DefaultLayout';
+
+const StyledLink = styled.a`
+  text-decoration: none;
+  color: #1890ff;
+  cursor: pointer;
+`;
 
 const Container = styled.div`
   display: flex;
@@ -71,12 +78,12 @@ const ButtonGroup = styled.div`
   margin-top: 30px;
 
   a {
-    text-decoration: none;
-    color: #1890ff;
-    cursor: pointer;
+    // text-decoration: none;
+    // color: #1890ff;
+    // cursor: pointer;
 
     &:hover {
-      color: var(--background-hover-color);
+      color: red;
     }
   }
 `;
@@ -130,8 +137,12 @@ const Login = () => {
           />
           <LoginButton type="submit">Login</LoginButton>
           <ButtonGroup>
-            <a href='#' style={{ cursor: 'pointer' }}>Forgot Password?</a>
-            <a href='#' style={{ cursor: 'pointer' }}>Sign Up</a>
+              <Link href="/" passHref legacyBehavior>
+                <StyledLink>Forgot Password?</StyledLink>
+              </Link>
+              <Link href="./signup" passHref legacyBehavior>
+                <StyledLink>Sign Up</StyledLink>
+              </Link>
           </ButtonGroup>
         </FormWrapper>
       </Container>

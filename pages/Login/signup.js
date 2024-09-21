@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
+import Link from 'next/link';
 import styled from 'styled-components';
 import { IconButton, InputAdornment, TextField } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import DefaultLayout from '@/layout/DefaultLayout';
+
+const StyledLink = styled.a`
+  text-decoration: none;
+  color: #1890ff;
+  cursor: pointer;
+`;
 
 const Container = styled.div`
   display: flex;
@@ -38,7 +45,7 @@ export const Logo = styled.img`
 `;
 
 const Title = styled.h1`
-  margin-bottom: 20px;
+  margin-bottom: 20px !important;
   font-size: 24px;
   text-align: center;
 `;
@@ -73,6 +80,10 @@ const ButtonGroup = styled.div`
     color: blue;
     padding-left: 8px;
     cursor: pointer;
+
+    &:hover {
+    color: red;
+    }
   }
 
 `;
@@ -158,8 +169,9 @@ const Signup = () => {
           <SignupButton type="submit">Sign Up</SignupButton>
           <ButtonGroup>
             <span>Have an account? </span>
-            <span><a style={{ color: 'blue' }}>Login</a></span>
-             
+            <Link href="./login" passHref legacyBehavior>
+              <StyledLink>Login</StyledLink>
+            </Link>
           </ButtonGroup>
         </FormWrapper>
       </Container>
