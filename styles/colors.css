@@ -5,5 +5,10 @@
   --background-color: #ffffff;
   --text-primary-color: #000000;
   --text-secondary-color: #808080;
-  --background-hover-color: #BBBBBB;
+  --background-hover-color: #EEEEEE;
 }
+
+/* body {
+  background-size: 0lvw;
+
+} */

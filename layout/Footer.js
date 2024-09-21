@@ -7,7 +7,7 @@ export const FooterContainer = styled.footer`
   border-top: 1px solid var(--grey-color);
   text-align: center;
   color: var(--text-secondary-color);
-  z-index: ${({ theme }) => theme.zIndex.high}; /* Đảm bảo giá trị z-index cao */
+  z-index: 1000;
 `;
 
 export const FooterContent = styled.div`
