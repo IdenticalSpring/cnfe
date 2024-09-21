@@ -102,7 +102,7 @@ export const Header = () => {
           <Link href="/developer" passHref legacyBehavior>
             <StyledLink>Developer</StyledLink>
           </Link>
-          <Link href="#" passHref legacyBehavior>
+          <Link href="/Login/login" passHref legacyBehavior>
             <StyledLink>Sign in</StyledLink>
           </Link>
         </LinkWrapper>

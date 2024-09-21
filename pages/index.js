@@ -16,7 +16,7 @@ const Section = styled.section`
 
   @media (max-width: 768px) { /* Màn hình nhỏ (mobile) */
     padding: 16px 0;
-    background-size: cover;
+    background-size: contain;
   }
 `;
 
