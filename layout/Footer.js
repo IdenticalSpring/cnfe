@@ -2,11 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 
 export const FooterContainer = styled.footer`
-  background-color: ${({ theme }) => theme.colors.background};
+  background-color: var(--background-color);
   padding: ${({ theme }) => theme.spacing.medium};
-  border-top: 1px solid ${({ theme }) => theme.colors.grey};
+  border-top: 1px solid var(--grey-color);
   text-align: center;
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: var(--text-secondary-color);
   z-index: ${({ theme }) => theme.zIndex.high}; /* Đảm bảo giá trị z-index cao */
 `;
 
@@ -22,37 +22,41 @@ export const Logo = styled.img`
   margin-bottom: ${({ theme }) => theme.spacing.medium};
 `;
 
-export const Links = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing.medium};
-  
-  a {
-    color: ${({ theme }) => theme.colors.textSecondary};
-    text-decoration: none;
-    margin: 0 10px;
-    transition: color 0.3s;
-
-    &:hover {
-      color: ${({ theme }) => theme.colors.primary};
-    }
-  }
-`;
-
 export const Copyright = styled.div`
   font-size: ${({ theme }) => theme.typography.body2.fontSize};
+`;
+
+export const SocialLinks = styled.div`
+  display: flex;
+  gap: 16px;
+  margin: ${({ theme }) => theme.spacing.medium} 0;
+`;
+
+export const SocialIcon = styled.a`
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  img {
+    width: 100%;
+    height: 100%;
+  }
 `;
 
 export const Footer = () => {
   return (
     <FooterContainer>
       <FooterContent>
-        <Logo src="https://openui.fly.dev/openui/24x24.svg?text=🧩" alt="Logo" />
-        <Links>
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-          <a href="#">Help</a>
-        </Links>
+        <Logo src="/assets/img/iconLogo.png" alt="Logo" />
+        {/* <SocialLinks>
+          <SocialIcon href="https://facebook.com/yourprofile" target="_blank" rel="noopener noreferrer">
+            <img src="https://openui.fly.dev/openui/24x24.svg?text=🔵" alt="Facebook" />
+          </SocialIcon>
+          <SocialIcon href="https://instagram.com/yourprofile" target="_blank" rel="noopener noreferrer">
+            <img src="https://openui.fly.dev/openui/24x24.svg?text=📷" alt="Instagram" />
+          </SocialIcon>
+        </SocialLinks> */}
         <Copyright>
-          &copy; {new Date().getFullYear()} LeetCode. All rights reserved.
+          &copy; {new Date().getFullYear()} MasterCoding. All rights reserved.
         </Copyright>
       </FooterContent>
     </FooterContainer>
