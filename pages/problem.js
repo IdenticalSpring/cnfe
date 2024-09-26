@@ -1,5 +1,5 @@
 import DefaultLayout from '@/layout/DefaultLayout';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import Dropdown from 'antd/lib/dropdown';
 import Menu from 'antd/lib/menu';
@@ -38,65 +38,59 @@ const generateFakeData = () => {
 const Problem = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [allProblems, setAllProblems] = useState([]);
-    const [filteredProblems, setFilteredProblems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchText, setSearchText] = useState('');
+    const [selectedDifficulty, setSelectedDifficulty] = useState('All'); // Track selected difficulty
     const pageSize = 30;
 
     useEffect(() => {
         const data = generateFakeData();
         setAllProblems(data);
-        setFilteredProblems(data);
         setLoading(false);
     }, []);
+
+    // Memoized filtered problems
+    const filteredProblems = useMemo(() => {
+        let filtered = allProblems;
+
+        if (selectedDifficulty !== 'All') {
+            filtered = filtered.filter(problem => problem.difficulty === selectedDifficulty);
+        }
+
+        // Update filtered problems based on search text
+        if (searchText) {
+            filtered = filtered.filter(problem =>
+                problem.title.toLowerCase().includes(searchText.toLowerCase())
+            );
+        }
+
+        return filtered;
+    }, [allProblems, selectedDifficulty, searchText]);
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
 
-    const filterByDifficulty = (difficulty) => {
-        setLoading(true);
-        setCurrentPage(1);
-        let filtered = allProblems;
-
-        if (difficulty !== 'All') {
-            filtered = allProblems.filter(problem => problem.difficulty === difficulty);
-        }
-
-        // Update filtered problems based on search text
-        filtered = filtered.filter(problem =>
-            problem.title.toLowerCase().includes(searchText.toLowerCase())
-        );
-
-        setFilteredProblems(filtered);
-        setLoading(false);
+    const handleDifficultyChange = (difficulty) => {
+        setSelectedDifficulty(difficulty);
+        setCurrentPage(1); // Reset to the first page when changing difficulty
     };
 
     const handleSearch = (value) => {
         setSearchText(value);
-        const filtered = allProblems.filter(problem =>
-            problem.title.toLowerCase().includes(value.toLowerCase())
-        );
-        setFilteredProblems(filtered);
         setCurrentPage(1); // Reset to the first page when searching
     };
 
-    const menu = (
-        <Menu>
-            <Menu.Item key="all" onClick={() => filterByDifficulty('All')}>
-                <span style={{ color: 'inherit' }}>All</span>
-            </Menu.Item>
-            <Menu.Item key="easy" onClick={() => filterByDifficulty('Easy')}>
-                <span style={{ color: 'green' }}>Easy</span>
-            </Menu.Item>
-            <Menu.Item key="medium" onClick={() => filterByDifficulty('Medium')}>
-                <span style={{ color: 'orange' }}>Medium</span>
-            </Menu.Item>
-            <Menu.Item key="hard" onClick={() => filterByDifficulty('Hard')}>
-                <span style={{ color: 'red' }}>Hard</span>
-            </Menu.Item>
-        </Menu>
-    );
+    // Updated Menu Items
+    const menuItems = [
+        { key: 'all', label: <span onClick={() => handleDifficultyChange('All')}>All</span> },
+        { key: 'easy', label: <span style={{ color: 'green' }} onClick={() => handleDifficultyChange('Easy')}>Easy</span> },
+        { key: 'medium', label: <span style={{ color: 'orange' }} onClick={() => handleDifficultyChange('Medium')}>Medium</span> },
+        { key: 'hard', label: <span style={{ color: 'red' }} onClick={() => handleDifficultyChange('Hard')}>Hard</span> },
+    ];
+
+    // Create a menu from items
+    const menu = <Menu items={menuItems} />;
 
     const columns = [
         {
@@ -128,9 +122,11 @@ const Problem = () => {
 
     return (
         <DefaultLayout>
+            {/* Wrap content in a single parent element */}
             <ProblemListContainer>
                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-                    <Dropdown overlay={menu} placement="bottomLeft">
+                    <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomLeft">
+
                         <Button>
                             Difficulty <ArrowDropDownIcon />
                         </Button>
