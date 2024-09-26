@@ -37,14 +37,16 @@ const generateFakeData = () => {
 
 const Problem = () => {
     const [currentPage, setCurrentPage] = useState(1);
+    const [allProblems, setAllProblems] = useState([]);
     const [filteredProblems, setFilteredProblems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchText, setSearchText] = useState('');
     const pageSize = 30;
 
     useEffect(() => {
-        const allProblems = generateFakeData();
-        setFilteredProblems(allProblems);
+        const data = generateFakeData();
+        setAllProblems(data);
+        setFilteredProblems(data);
         setLoading(false);
     }, []);
 
@@ -54,24 +56,29 @@ const Problem = () => {
 
     const filterByDifficulty = (difficulty) => {
         setLoading(true);
-        const allProblems = generateFakeData();
-        setTimeout(() => {
-            if (difficulty === 'All') {
-                setFilteredProblems(allProblems);
-            } else {
-                setFilteredProblems(allProblems.filter(problem => problem.difficulty === difficulty));
-            }
-            setCurrentPage(1);
-            setLoading(false);
-        }, 1000);
+        setCurrentPage(1);
+        let filtered = allProblems;
+
+        if (difficulty !== 'All') {
+            filtered = allProblems.filter(problem => problem.difficulty === difficulty);
+        }
+
+        // Update filtered problems based on search text
+        filtered = filtered.filter(problem =>
+            problem.title.toLowerCase().includes(searchText.toLowerCase())
+        );
+
+        setFilteredProblems(filtered);
+        setLoading(false);
     };
 
     const handleSearch = (value) => {
         setSearchText(value);
-        const allProblems = generateFakeData();
-        const filtered = allProblems.filter(problem => problem.title.toLowerCase().includes(value.toLowerCase()));
+        const filtered = allProblems.filter(problem =>
+            problem.title.toLowerCase().includes(value.toLowerCase())
+        );
         setFilteredProblems(filtered);
-        setCurrentPage(1);
+        setCurrentPage(1); // Reset to the first page when searching
     };
 
     const menu = (
