@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import React from "react";
 import styled from "styled-components";
-
+import { useRouter } from 'next/router';
 export const Container = styled.div`
   padding: ${({ theme }) => theme.spacing.small};
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
@@ -60,7 +60,7 @@ export const LinkWrapper = styled.div`
 `;
 
 const StyledLink = styled.a`
-  color: var(--text-secondary-color);
+  color: ${({ isActive }) => (isActive ? '#DD0000	' : 'var(--text-secondary-color)')}; 
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
@@ -80,6 +80,7 @@ const StyledLink = styled.a`
 `;
 
 export const Header = () => {
+  const router = useRouter();
   return (
     <Container>
       <Nav>
@@ -91,19 +92,19 @@ export const Header = () => {
         </Link>
         <LinkWrapper>
           <Link href="/" passHref legacyBehavior>
-            <StyledLink>Home</StyledLink>
+            <StyledLink isActive={router.pathname === '/'}>Home</StyledLink>
           </Link>
           <Link href="/explore" passHref legacyBehavior>
-            <StyledLink>Explore</StyledLink>
+            <StyledLink isActive={router.pathname === '/explore'}>Explore</StyledLink>
           </Link>
-          <Link href="/product" passHref legacyBehavior>
-            <StyledLink>Product</StyledLink>
+          <Link href="/problem" passHref legacyBehavior>
+            <StyledLink isActive={router.pathname === '/problem'}>Problem</StyledLink>
           </Link>
           <Link href="/developer" passHref legacyBehavior>
-            <StyledLink>Developer</StyledLink>
+            <StyledLink isActive={router.pathname === '/developer'}>Developer</StyledLink>
           </Link>
           <Link href="/Login/login" passHref legacyBehavior>
-            <StyledLink>Sign in</StyledLink>
+            <StyledLink isActive={router.pathname === '/Login/login'}>Sign in</StyledLink>
           </Link>
         </LinkWrapper>
       </Nav>

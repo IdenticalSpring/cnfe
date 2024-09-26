@@ -2,15 +2,15 @@ import React from 'react';
 import DefaultLayout from '@/layout/DefaultLayout';
 import styled from 'styled-components';
 import Link from 'next/link';
-import bgImage from '@/public/assets/img/bg.jpg'; // Đảm bảo đường dẫn tới ảnh là đúng
+import bgImage from '@/public/assets/img/bg.jpg';
 
 
 // Styled components
 const Section = styled.section`
   padding: 32px 0;
-  background-image: url(${bgImage.src});
-  background-size: contain;
-  background-position: center;
+  // background-image: url(${bgImage.src});
+  // background-size: contain;
+  // background-position: center;
   width: 100%;
   height: auto;
 
