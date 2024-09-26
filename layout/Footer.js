@@ -8,6 +8,9 @@ export const FooterContainer = styled.footer`
   text-align: center;
   color: var(--text-secondary-color);
   z-index: 1000;
+  position: relative; 
+  width: 100%;
+  box-sizing: border-box; 
 `;
 
 export const FooterContent = styled.div`
@@ -47,17 +50,10 @@ export const Footer = () => {
     <FooterContainer>
       <FooterContent>
         <Logo src="/assets/img/iconLogo.png" alt="Logo" />
-        {/* <SocialLinks>
-          <SocialIcon href="https://facebook.com/yourprofile" target="_blank" rel="noopener noreferrer">
-            <img src="https://openui.fly.dev/openui/24x24.svg?text=🔵" alt="Facebook" />
-          </SocialIcon>
-          <SocialIcon href="https://instagram.com/yourprofile" target="_blank" rel="noopener noreferrer">
-            <img src="https://openui.fly.dev/openui/24x24.svg?text=📷" alt="Instagram" />
-          </SocialIcon>
-        </SocialLinks> */}
         <Copyright>
           &copy; {new Date().getFullYear()} MasterCoding. All rights reserved.
         </Copyright>
+
       </FooterContent>
     </FooterContainer>
   );

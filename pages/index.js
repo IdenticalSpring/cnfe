@@ -2,21 +2,15 @@ import React from 'react';
 import DefaultLayout from '@/layout/DefaultLayout';
 import styled from 'styled-components';
 import Link from 'next/link';
-import bgImage from '@/public/assets/img/bg.jpg'; // Đảm bảo đường dẫn tới ảnh là đúng
-
 
 // Styled components
 const Section = styled.section`
   padding: 32px 0;
-  background-image: url(${bgImage.src});
-  background-size: contain;
-  background-position: center;
   width: 100%;
   height: auto;
 
-  @media (max-width: 768px) { /* Màn hình nhỏ (mobile) */
+  @media (max-width: 768px) {
     padding: 16px 0;
-    background-size: contain;
   }
 `;
 
@@ -26,7 +20,7 @@ const Container = styled.div`
   text-align: center;
   padding: 0 16px;
 
-  @media (max-width: 768px) { /* Màn hình nhỏ (mobile) */
+  @media (max-width: 768px) {
     max-width: 100%;
     padding: 0 8px;
   }
@@ -39,7 +33,7 @@ const FlexContainer = styled.div`
   gap: 32px;
   margin-top: 45px;
 
-  @media (max-width: 768px) { /* Màn hình nhỏ (mobile) */
+  @media (max-width: 768px) {
     gap: 16px;
     margin-top: 30px;
   }
@@ -52,7 +46,7 @@ const Card = styled.div`
   padding: 24px;
   border-radius: 8px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  flex: 1 1 calc(33.33% - 32px); 
+  flex: 1 1 calc(33.33% - 32px);
   max-width: calc(33.33% - 32px);
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease; 
@@ -67,7 +61,7 @@ const Card = styled.div`
     transform: translateY(2px);
   }
 
-  @media (max-width: 768px) { /* Màn hình nhỏ (mobile) */
+  @media (max-width: 768px) {
     flex: 1 1 calc(100% - 16px); 
     max-width: calc(100% - 16px);
     padding: 16px;
@@ -78,10 +72,6 @@ const IconWrapper = styled.div`
   display: flex;
   justify-content: center;
   margin-bottom: 16px;
-
-  @media (max-width: 768px) { /* Màn hình nhỏ (mobile) */
-    margin-bottom: 12px;
-  }
 `;
 
 const Title = styled.h3`
@@ -89,7 +79,7 @@ const Title = styled.h3`
   font-weight: 600;
   margin-bottom: 8px;
 
-  @media (max-width: 768px) { /* Màn hình nhỏ (mobile) */
+  @media (max-width: 768px) {
     font-size: 16px;
   }
 `;
@@ -101,7 +91,7 @@ const Text = styled.p`
   margin-bottom: 16px;
   flex-grow: 1;
 
-  @media (max-width: 768px) { /* Màn hình nhỏ (mobile) */
+  @media (max-width: 768px) {
     font-size: 14px;
     margin-bottom: 12px;
   }
@@ -113,7 +103,7 @@ const Title_Head = styled.h1`
   margin-bottom: 8px;
   color: #FF9900;
 
-  @media (max-width: 768px) { /* Màn hình nhỏ (mobile) */
+  @media (max-width: 768px) {
     font-size: 24px;
     margin-bottom: 16px;
   }
@@ -130,11 +120,10 @@ const StyledLink = styled.a`
     text-decoration: underline;
   }
 
-  @media (max-width: 768px) { /* Màn hình nhỏ (mobile) */
+  @media (max-width: 768px) {
     font-size: 14px;
   }
 `;
-
 
 const features = [
   {
@@ -178,7 +167,7 @@ const features = [
     linkText: 'Developer Tools >>>'
   },
   {
-    id: 'feature-4',
+    id: 'feature-6',
     icon: '📈',
     title: 'Companies & Candidates',
     description: 'Not only does MasterCoding prepare candidates for technical interviews, we also help companies identify top technical talent. From sponsoring contests to providing online assessments and training, we offer numerous services to businesses.',
@@ -186,7 +175,7 @@ const features = [
     linkText: 'Learn More >>>'
   },
   {
-    id: 'feature-5',
+    id: 'feature-7',
     icon: '🔧',
     title: 'Developer',
     description: 'We now support 14 popular coding languages. At our core, MasterCoding is about developers. Our powerful development tools such as Playground help you test, debug and even write your own projects online.',
@@ -194,7 +183,7 @@ const features = [
     linkText: 'Developer Tools >>>'
   },
   {
-    id: 'feature-4',
+    id: 'feature-8',
     icon: '📈',
     title: 'Companies & Candidates',
     description: 'Not only does MasterCoding prepare candidates for technical interviews, we also help companies identify top technical talent. From sponsoring contests to providing online assessments and training, we offer numerous services to businesses.',
@@ -224,6 +213,7 @@ export default function HomePage() {
                   <img
                     src={`https://openui.fly.dev/openui/24x24.svg?text=${encodeURIComponent(feature.icon)}`}
                     alt="feature-icon"
+                    onError={(e) => { e.target.onerror = null; e.target.src = '/path/to/default/icon.svg'; }} // Use a default icon if the image fails to load
                   />
                 </IconWrapper>
                 <Title>{feature.title}</Title>
