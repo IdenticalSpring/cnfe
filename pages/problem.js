@@ -1,10 +1,16 @@
 import DefaultLayout from '@/layout/DefaultLayout';
 import React, { useState, useEffect } from 'react';
-import { Dropdown, Menu, Table, Button, Skeleton, Input } from 'antd';
 import styled from 'styled-components';
+import Dropdown from 'antd/lib/dropdown';
+import Menu from 'antd/lib/menu';
+import Table from 'antd/lib/table';
+import Button from 'antd/lib/button';
+import Skeleton from 'antd/lib/skeleton';
+import Input from 'antd/lib/input';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import SearchIcon from '@mui/icons-material/Search'; // Nhập biểu tượng tìm kiếm
+import SearchIcon from '@mui/icons-material/Search';
 
+// Styled components
 const ProblemListContainer = styled.div`
   padding: 20px;
   background-color: var(--background-color);
@@ -29,31 +35,26 @@ const generateFakeData = () => {
     return problems;
 };
 
-const allProblems = generateFakeData();
-
 const Problem = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [filteredProblems, setFilteredProblems] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [searchText, setSearchText] = useState(''); // Trạng thái để lưu tìm kiếm
+    const [searchText, setSearchText] = useState('');
     const pageSize = 30;
 
     useEffect(() => {
-        setTimeout(() => {
-            setFilteredProblems(allProblems);
-            setLoading(false);
-        }, 2000);
+        const allProblems = generateFakeData();
+        setFilteredProblems(allProblems);
+        setLoading(false);
     }, []);
 
-    // Handle pagination change
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
 
-    // Filter by difficulty
     const filterByDifficulty = (difficulty) => {
         setLoading(true);
-
+        const allProblems = generateFakeData();
         setTimeout(() => {
             if (difficulty === 'All') {
                 setFilteredProblems(allProblems);
@@ -65,21 +66,28 @@ const Problem = () => {
         }, 1000);
     };
 
-    // Handle search
     const handleSearch = (value) => {
         setSearchText(value);
+        const allProblems = generateFakeData();
         const filtered = allProblems.filter(problem => problem.title.toLowerCase().includes(value.toLowerCase()));
         setFilteredProblems(filtered);
-        setCurrentPage(1); // Đặt lại trang về 1 sau khi tìm kiếm
+        setCurrentPage(1);
     };
-
 
     const menu = (
         <Menu>
-            <Menu.Item onClick={() => filterByDifficulty('All')} style={{ color: 'inherit' }}>All</Menu.Item>
-            <Menu.Item onClick={() => filterByDifficulty('Easy')} style={{ color: 'green' }}>Easy</Menu.Item>
-            <Menu.Item onClick={() => filterByDifficulty('Medium')} style={{ color: 'orange' }}>Medium</Menu.Item>
-            <Menu.Item onClick={() => filterByDifficulty('Hard')} style={{ color: 'red' }}>Hard</Menu.Item>
+            <Menu.Item key="all" onClick={() => filterByDifficulty('All')}>
+                <span style={{ color: 'inherit' }}>All</span>
+            </Menu.Item>
+            <Menu.Item key="easy" onClick={() => filterByDifficulty('Easy')}>
+                <span style={{ color: 'green' }}>Easy</span>
+            </Menu.Item>
+            <Menu.Item key="medium" onClick={() => filterByDifficulty('Medium')}>
+                <span style={{ color: 'orange' }}>Medium</span>
+            </Menu.Item>
+            <Menu.Item key="hard" onClick={() => filterByDifficulty('Hard')}>
+                <span style={{ color: 'red' }}>Hard</span>
+            </Menu.Item>
         </Menu>
     );
 
@@ -106,7 +114,6 @@ const Problem = () => {
         },
     ];
 
-    // Calculate paginated data
     const paginatedProblems = filteredProblems.slice(
         (currentPage - 1) * pageSize,
         currentPage * pageSize
@@ -115,17 +122,18 @@ const Problem = () => {
     return (
         <DefaultLayout>
             <ProblemListContainer>
-
                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
                     <Dropdown overlay={menu} placement="bottomLeft">
-                        <Button>Difficulty <ArrowDropDownIcon /></Button>
+                        <Button>
+                            Difficulty <ArrowDropDownIcon />
+                        </Button>
                     </Dropdown>
                     <Input
                         placeholder="Search problems"
                         value={searchText}
                         onChange={(e) => handleSearch(e.target.value)}
                         style={{ marginLeft: '20px', width: '200px' }}
-                        suffix={<SearchIcon />} // Thêm biểu tượng tìm kiếm
+                        suffix={<SearchIcon />}
                     />
                 </div>
 
@@ -143,7 +151,6 @@ const Problem = () => {
                         }}
                     />
                 )}
-
             </ProblemListContainer>
         </DefaultLayout>
     );

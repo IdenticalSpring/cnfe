@@ -8,9 +8,7 @@ import bgImage from '@/public/assets/img/bg.jpg';
 // Styled components
 const Section = styled.section`
   padding: 32px 0;
-  // background-image: url(${bgImage.src});
-  // background-size: contain;
-  // background-position: center;
+
   width: 100%;
   height: auto;
 
@@ -178,7 +176,7 @@ const features = [
     linkText: 'Developer Tools >>>'
   },
   {
-    id: 'feature-4',
+    id: 'feature-6',
     icon: '📈',
     title: 'Companies & Candidates',
     description: 'Not only does MasterCoding prepare candidates for technical interviews, we also help companies identify top technical talent. From sponsoring contests to providing online assessments and training, we offer numerous services to businesses.',
@@ -186,7 +184,7 @@ const features = [
     linkText: 'Learn More >>>'
   },
   {
-    id: 'feature-5',
+    id: 'feature-7',
     icon: '🔧',
     title: 'Developer',
     description: 'We now support 14 popular coding languages. At our core, MasterCoding is about developers. Our powerful development tools such as Playground help you test, debug and even write your own projects online.',
@@ -194,7 +192,7 @@ const features = [
     linkText: 'Developer Tools >>>'
   },
   {
-    id: 'feature-4',
+    id: 'feature-8',
     icon: '📈',
     title: 'Companies & Candidates',
     description: 'Not only does MasterCoding prepare candidates for technical interviews, we also help companies identify top technical talent. From sponsoring contests to providing online assessments and training, we offer numerous services to businesses.',

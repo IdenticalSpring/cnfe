@@ -2,6 +2,8 @@ import Link from 'next/link';
 import React from "react";
 import styled from "styled-components";
 import { useRouter } from 'next/router';
+import isPropValid from '@emotion/is-prop-valid';
+
 export const Container = styled.div`
   padding: ${({ theme }) => theme.spacing.small};
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
@@ -59,8 +61,10 @@ export const LinkWrapper = styled.div`
 
 `;
 
-const StyledLink = styled.a`
-  color: ${({ isActive }) => (isActive ? '#DD0000	' : 'var(--text-secondary-color)')}; 
+const StyledLink = styled.a.withConfig({
+  shouldForwardProp: (prop) => isPropValid(prop),
+})`
+  color: ${({ isActive }) => (isActive ? '#DD0000' : 'var(--text-secondary-color)')}; 
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
