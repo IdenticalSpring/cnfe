@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import Link from 'next/link';
 import styled from 'styled-components';
 import { IconButton, InputAdornment, TextField } from '@mui/material';
@@ -50,11 +50,6 @@ const Title = styled.h1`
   text-align: center;
 `;
 
-const StyledTextField = styled(TextField)`
-  margin-bottom: 20px;
-  width: 100%;
-`;
-
 const SignupButton = styled.button`
   background-color: #1890ff;
   color: #fff;
@@ -82,37 +77,81 @@ const ButtonGroup = styled.div`
     cursor: pointer;
 
     &:hover {
-    color: red;
+      color: red;
     }
   }
-
 `;
 
+const PasswordField = memo(({ label, value, onChange, showPassword, handleClickShowPassword }) => (
+  <TextField
+    label={label}
+    variant="outlined"
+    type={showPassword ? 'text' : 'password'}
+    value={value}
+    onChange={onChange}
+    fullWidth
+    required
+    margin="normal"
+    InputProps={{
+      endAdornment: (
+        <InputAdornment position="end">
+          <IconButton onClick={handleClickShowPassword} edge="end">
+            {showPassword ? <VisibilityOff /> : <Visibility />}
+          </IconButton>
+        </InputAdornment>
+      ),
+    }}
+  />
+));
+
+const EmailField = memo(({ value, onChange }) => (
+  <TextField
+    label="Email"
+    variant="outlined"
+    type="email"
+    value={value}
+    onChange={onChange}
+    fullWidth
+    required
+    margin="normal"
+  />
+));
+
 const Signup = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [state, setState] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    showPassword: false,
+    showConfirmPassword: false,
+  });
 
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setState((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  }, []);
 
-  const handleClickShowConfirmPassword = () => {
-    setShowConfirmPassword(!showConfirmPassword);
-  };
+  const handleClickShowPassword = useCallback(() => {
+    setState((prevState) => ({
+      ...prevState,
+      showPassword: !prevState.showPassword,
+    }));
+  }, []);
 
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
+  const handleClickShowConfirmPassword = useCallback(() => {
+    setState((prevState) => ({
+      ...prevState,
+      showConfirmPassword: !prevState.showConfirmPassword,
+    }));
+  }, []);
 
-  const handleConfirmPasswordChange = (event) => {
-    setConfirmPassword(event.target.value);
-  };
+  const { email, password, confirmPassword, showPassword, showConfirmPassword } = state;
 
   return (
     <DefaultLayout>
-
       <Container>
         <FormWrapper>
           <LogoWrapper>
@@ -120,51 +159,20 @@ const Signup = () => {
           </LogoWrapper>
 
           <Title>Sign Up</Title>
-          <StyledTextField
-            label="Email"
-            variant="outlined"
-            type="email"
-            required
-          />
-          <StyledTextField
+          <EmailField value={email} onChange={handleChange} />
+          <PasswordField
             label="Password"
-            variant="outlined"
-            type={showPassword ? 'text' : 'password'}
             value={password}
-            onChange={handlePasswordChange}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={handleClickShowPassword}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            required
+            onChange={handleChange}
+            showPassword={showPassword}
+            handleClickShowPassword={handleClickShowPassword}
           />
-          <StyledTextField
+          <PasswordField
             label="Confirm Password"
-            variant="outlined"
-            type={showConfirmPassword ? 'text' : 'password'}
             value={confirmPassword}
-            onChange={handleConfirmPasswordChange}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={handleClickShowConfirmPassword}
-                    edge="end"
-                  >
-                    {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            required
+            onChange={handleChange}
+            showPassword={showConfirmPassword}
+            handleClickShowPassword={handleClickShowConfirmPassword}
           />
           <SignupButton type="submit">Sign Up</SignupButton>
           <ButtonGroup>

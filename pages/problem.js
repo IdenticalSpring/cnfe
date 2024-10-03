@@ -82,12 +82,30 @@ const Problem = () => {
     };
 
     // Updated Menu Items
+    // Updated Menu Items with onClick directly in the item structure
     const menuItems = [
-        { key: 'all', label: <span onClick={() => handleDifficultyChange('All')}>All</span> },
-        { key: 'easy', label: <span style={{ color: 'green' }} onClick={() => handleDifficultyChange('Easy')}>Easy</span> },
-        { key: 'medium', label: <span style={{ color: 'orange' }} onClick={() => handleDifficultyChange('Medium')}>Medium</span> },
-        { key: 'hard', label: <span style={{ color: 'red' }} onClick={() => handleDifficultyChange('Hard')}>Hard</span> },
+        {
+            key: 'all',
+            label: 'All',
+            onClick: () => handleDifficultyChange('All'),
+        },
+        {
+            key: 'easy',
+            label: <span style={{ color: 'green' }}>Easy</span>,
+            onClick: () => handleDifficultyChange('Easy'),
+        },
+        {
+            key: 'medium',
+            label: <span style={{ color: 'orange' }}>Medium</span>,
+            onClick: () => handleDifficultyChange('Medium'),
+        },
+        {
+            key: 'hard',
+            label: <span style={{ color: 'red' }}>Hard</span>,
+            onClick: () => handleDifficultyChange('Hard'),
+        },
     ];
+
 
     // Create a menu from items
     const menu = <Menu items={menuItems} />;

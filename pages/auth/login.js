@@ -137,12 +137,12 @@ const Login = () => {
           />
           <LoginButton type="submit">Login</LoginButton>
           <ButtonGroup>
-              <Link href="/" passHref legacyBehavior>
-                <StyledLink>Forgot Password?</StyledLink>
-              </Link>
-              <Link href="./signup" passHref legacyBehavior>
-                <StyledLink>Sign Up</StyledLink>
-              </Link>
+            <Link href="/" passHref legacyBehavior>
+              <StyledLink>Forgot Password?</StyledLink>
+            </Link>
+            <Link href="./signup" passHref legacyBehavior>
+              <StyledLink>Sign Up</StyledLink>
+            </Link>
           </ButtonGroup>
         </FormWrapper>
       </Container>
