@@ -5,6 +5,8 @@ import { IconButton, InputAdornment, TextField } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import DefaultLayout from '@/layout/DefaultLayout';
+import { registerUser } from '@/service/auth-api'; 
+import { notification } from 'antd';
 
 const StyledLink = styled.a`
   text-decoration: none;
@@ -52,7 +54,7 @@ const Title = styled.h1`
 
 const SignupButton = styled.button`
   background-color: #1890ff;
-  color: #fff;s
+  color: #fff;
   border: none;
   padding: 10px;
   margin: 10px 0;
@@ -82,7 +84,6 @@ const ButtonGroup = styled.div`
     }
   }
 `;
-
 const PasswordField = memo(({ label, value, onChange, showPassword, handleClickShowPassword, name }) => (
   <TextField
     label={label}
@@ -119,20 +120,25 @@ const EmailField = memo(({ value, onChange, name }) => (
     margin="normal"
   />
 ));
-const TextFieldComponent = memo(({ label, value, onChange, type = 'text' }) => (
+
+const TextFieldComponent = memo(({ label, value, onChange, name }) => (
   <TextField
     label={label}
     variant="outlined"
-    type={type}
+    type="text"
     value={value}
+    name={name}
     onChange={onChange}
     fullWidth
     required
     margin="normal"
   />
 ));
+
 const Signup = () => {
   const [state, setState] = useState({
+    username: '',
+    name: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -162,6 +168,20 @@ const Signup = () => {
     }));
   }, []);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log('Form submitted'); // Kiểm tra xem hàm có bị gọi không
+
+    const payload = {
+      username: state.username,
+      password: state.password,
+      name: state.name,
+      email: state.email,
+    };
+
+    const result = await registerUser(payload);
+  };
+
   const { username, name, email, password, confirmPassword, showPassword, showConfirmPassword } = state;
 
   return (
@@ -173,39 +193,41 @@ const Signup = () => {
           </LogoWrapper>
 
           <Title>Sign Up</Title>
-          {/* Username Field */}
-          <TextFieldComponent
-            label="Username"
-            value={username}
-            onChange={handleChange}
-            name="username"
-          />
+          <form onSubmit={handleSubmit}>
+            {/* Username Field */}
+            <TextFieldComponent
+              label="Username"
+              value={username}
+              onChange={handleChange}
+              name="username"
+            />
 
-          {/* Name Field */}
-          <TextFieldComponent
-            label="Name"
-            value={name}
-            onChange={handleChange}
-            name="name"
-          />
-          <EmailField value={email} onChange={handleChange} name="email" />
-          <PasswordField
-            label="Password"
-            value={password}
-            onChange={handleChange}
-            showPassword={showPassword}
-            handleClickShowPassword={handleClickShowPassword}
-            name="password"
-          />
-          <PasswordField
-            label="Confirm Password"
-            value={confirmPassword}
-            onChange={handleChange}
-            showPassword={showConfirmPassword}
-            handleClickShowPassword={handleClickShowConfirmPassword}
-            name="confirmPassword"
-          />
-          <SignupButton type="submit">Sign Up</SignupButton>
+            {/* Name Field */}
+            <TextFieldComponent
+              label="Name"
+              value={name}
+              onChange={handleChange}
+              name="name"
+            />
+            <EmailField value={email} onChange={handleChange} name="email" />
+            <PasswordField
+              label="Password"
+              value={password}
+              onChange={handleChange}
+              showPassword={showPassword}
+              handleClickShowPassword={handleClickShowPassword}
+              name="password"
+            />
+            <PasswordField
+              label="Confirm Password"
+              value={confirmPassword}
+              onChange={handleChange}
+              showPassword={showConfirmPassword}
+              handleClickShowPassword={handleClickShowConfirmPassword}
+              name="confirmPassword"
+            />
+            <SignupButton type="submit">Sign Up</SignupButton>
+          </form>
           <ButtonGroup>
             <span>Have an account? </span>
             <Link href="./login" passHref legacyBehavior>
