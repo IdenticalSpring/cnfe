@@ -32,8 +32,8 @@ const FormWrapper = styled.div`
 export const LogoWrapper = styled.div`
   display: flex;
   justify-content: center;
-  height: 100px;
-  margin-bottom: 25px;
+  height: 50px;
+  margin-bottom: 0px;
 `;
 
 export const Logo = styled.img`
@@ -45,16 +45,17 @@ export const Logo = styled.img`
 `;
 
 const Title = styled.h1`
-  margin-bottom: 20px !important;
+  margin-bottom: 10px !important;
   font-size: 24px;
   text-align: center;
 `;
 
 const SignupButton = styled.button`
   background-color: #1890ff;
-  color: #fff;
+  color: #fff;s
   border: none;
   padding: 10px;
+  margin: 10px 0;
   width: 100%;
   border-radius: 4px;
   font-size: 16px;
@@ -82,12 +83,13 @@ const ButtonGroup = styled.div`
   }
 `;
 
-const PasswordField = memo(({ label, value, onChange, showPassword, handleClickShowPassword }) => (
+const PasswordField = memo(({ label, value, onChange, showPassword, handleClickShowPassword, name }) => (
   <TextField
     label={label}
     variant="outlined"
     type={showPassword ? 'text' : 'password'}
     value={value}
+    name={name}
     onChange={onChange}
     fullWidth
     required
@@ -104,11 +106,12 @@ const PasswordField = memo(({ label, value, onChange, showPassword, handleClickS
   />
 ));
 
-const EmailField = memo(({ value, onChange }) => (
+const EmailField = memo(({ value, onChange, name }) => (
   <TextField
     label="Email"
     variant="outlined"
     type="email"
+    name={name}
     value={value}
     onChange={onChange}
     fullWidth
@@ -116,7 +119,18 @@ const EmailField = memo(({ value, onChange }) => (
     margin="normal"
   />
 ));
-
+const TextFieldComponent = memo(({ label, value, onChange, type = 'text' }) => (
+  <TextField
+    label={label}
+    variant="outlined"
+    type={type}
+    value={value}
+    onChange={onChange}
+    fullWidth
+    required
+    margin="normal"
+  />
+));
 const Signup = () => {
   const [state, setState] = useState({
     email: '',
@@ -148,7 +162,7 @@ const Signup = () => {
     }));
   }, []);
 
-  const { email, password, confirmPassword, showPassword, showConfirmPassword } = state;
+  const { username, name, email, password, confirmPassword, showPassword, showConfirmPassword } = state;
 
   return (
     <DefaultLayout>
@@ -159,13 +173,29 @@ const Signup = () => {
           </LogoWrapper>
 
           <Title>Sign Up</Title>
-          <EmailField value={email} onChange={handleChange} />
+          {/* Username Field */}
+          <TextFieldComponent
+            label="Username"
+            value={username}
+            onChange={handleChange}
+            name="username"
+          />
+
+          {/* Name Field */}
+          <TextFieldComponent
+            label="Name"
+            value={name}
+            onChange={handleChange}
+            name="name"
+          />
+          <EmailField value={email} onChange={handleChange} name="email" />
           <PasswordField
             label="Password"
             value={password}
             onChange={handleChange}
             showPassword={showPassword}
             handleClickShowPassword={handleClickShowPassword}
+            name="password"
           />
           <PasswordField
             label="Confirm Password"
@@ -173,6 +203,7 @@ const Signup = () => {
             onChange={handleChange}
             showPassword={showConfirmPassword}
             handleClickShowPassword={handleClickShowConfirmPassword}
+            name="confirmPassword"
           />
           <SignupButton type="submit">Sign Up</SignupButton>
           <ButtonGroup>
