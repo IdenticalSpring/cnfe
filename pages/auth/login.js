@@ -1,4 +1,3 @@
-// src/pages/Login.js
 import React, { useState } from 'react';
 import Link from 'next/link';
 import styled from 'styled-components';
@@ -6,12 +5,13 @@ import { IconButton, InputAdornment, TextField } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import DefaultLayout from '@/layout/DefaultLayout';
+import { loginUser } from '@/service/auth-api'; 
+import { notification } from 'antd';
 
 const StyledLink = styled.a`
   text-decoration: none;
   color: #1890ff;
   cursor: pointer;
-
 `;
 
 const Container = styled.div`
@@ -19,7 +19,6 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: var(--gray-color);
 `;
 
 const FormWrapper = styled.div`
@@ -28,8 +27,6 @@ const FormWrapper = styled.div`
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   width: 100%;
-  height: 100%;
-  max-height: 650px;
   max-width: 400px;
   position: relative;
 `;
@@ -79,10 +76,6 @@ const ButtonGroup = styled.div`
   margin-top: 30px;
 
   a {
-    // text-decoration: none;
-    // color: #1890ff;
-    // cursor: pointer;
-
     &:hover {
       color: red;
     }
@@ -90,15 +83,42 @@ const ButtonGroup = styled.div`
 `;
 
 const Login = () => {
-  const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
+  
+
+  const handleUsernameChange = (event) => {
+    setUsername(event.target.value);
+  };
+
+
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+   
+    const payload = {
+      username, 
+      password,
+    };
+
+
+    // Gọi hàm loginUser từ service
+    const result = await loginUser(payload);
+
+    if (result.success) {
+      // Chuyển hướng hoặc thực hiện logic tiếp theo sau khi đăng nhập thành công
+      console.log('Login successful:', result.data);
+    }
   };
 
   return (
@@ -111,11 +131,14 @@ const Login = () => {
 
           <Title>Login</Title>
           <StyledTextField
-            label="Email"
+            label="Username" 
             variant="outlined"
-            type="email"
+            type="text"
+            value={username}
+            onChange={handleUsernameChange} 
             required
           />
+
           <StyledTextField
             label="Password"
             variant="outlined"
@@ -125,10 +148,7 @@ const Login = () => {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton
-                    onClick={handleClickShowPassword}
-                    edge="end"
-                  >
+                  <IconButton onClick={handleClickShowPassword} edge="end">
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
@@ -136,7 +156,9 @@ const Login = () => {
             }}
             required
           />
-          <LoginButton type="submit">Login</LoginButton>
+          <LoginButton type="submit" onClick={handleSubmit}>
+            Login
+          </LoginButton>
           <ButtonGroup>
             <Link href="/" passHref legacyBehavior>
               <StyledLink>Forgot Password?</StyledLink>
