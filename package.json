@@ -2,6 +2,7 @@
   "name": "cnfe",
   "version": "0.1.0",
   "private": true,
+  
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -13,6 +14,7 @@
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.16.7",
+    "antd": "^5.21.0",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",
