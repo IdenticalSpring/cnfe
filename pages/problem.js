@@ -1,10 +1,11 @@
-import DefaultLayout from '@/layout/DefaultLayout';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import styled from 'styled-components';
 import { Dropdown, Table, Button, Skeleton, Input, Tag } from 'antd';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import SearchIcon from '@mui/icons-material/Search';
+import DefaultLayout from '@/layout/DefaultLayout';
 
+// Styled components
 const ProblemListContainer = styled.div`
   padding: 20px;
   background-color: var(--background-color);
@@ -18,7 +19,7 @@ const SearchContainer = styled.div`
   margin-bottom: 20px;
 `;
 
-const CustomButton = styled(Button)`
+const CustomButton = React.memo(styled(Button)`
   display: flex;
   align-items: center;
   gap: 5px;
@@ -31,7 +32,7 @@ const CustomButton = styled(Button)`
   &:hover {
     background-color: #ebedf0;
   }
-`;
+`);
 
 const TagDropdownContainer = styled.div`
   width: 400px;
@@ -62,32 +63,25 @@ const CustomTag = styled(Tag)`
   text-align: center;
 `;
 
-// Custom styles for alternating rows
 const TableStyles = styled.div`
   .custom-table-row-odd {
-    background-color: #f7f7f7; /* Light gray for odd rows */
+    background-color: #f7f7f7;
   }
 
   .custom-table-row-even {
-    background-color: #ffffff; /* White for even rows */
+    background-color: #ffffff;
   }
 `;
 
-// Function to generate fake problems data
-const generateFakeData = () => {
+// Generate fake data
+const generateFakeData = (count = 100) => {
     const difficulties = ['Easy', 'Medium', 'Hard'];
-    const problems = [];
-
-    for (let i = 1; i <= 100; i++) {
-        problems.push({
-            key: i,
-            title: `Problem ${i}`,
-            difficulty: difficulties[Math.floor(Math.random() * 3)],
-            acceptance: `${Math.floor(Math.random() * 50 + 20)}%`,
-        });
-    }
-
-    return problems;
+    return Array.from({ length: count }, (_, index) => ({
+        key: index + 1,
+        title: `Problem ${index + 1}`,
+        difficulty: difficulties[Math.floor(Math.random() * difficulties.length)],
+        acceptance: `${Math.floor(Math.random() * 50 + 20)}%`,
+    }));
 };
 
 const Problem = () => {
@@ -96,11 +90,25 @@ const Problem = () => {
     const [loading, setLoading] = useState(true);
     const [searchText, setSearchText] = useState('');
     const [selectedDifficulty, setSelectedDifficulty] = useState('All');
-    const [tagSearchText, setTagSearchText] = useState(''); // For searching tags
-    const pageSize = 30;
+    const [tagSearchText, setTagSearchText] = useState('');
+    const pageSize = 10; // Reduced page size for better performance
+
+    // Debounce search
+    const debounceSearch = useCallback((callback, delay) => {
+        let timer;
+        return (value) => {
+            clearTimeout(timer);
+            timer = setTimeout(() => callback(value), delay);
+        };
+    }, []);
+
+    const handleSearch = debounceSearch((value) => {
+        setSearchText(value);
+        setCurrentPage(1);
+    }, 300);
 
     useEffect(() => {
-        const data = generateFakeData();
+        const data = generateFakeData(100);
         setAllProblems(data);
         setLoading(false);
     }, []);
@@ -121,17 +129,10 @@ const Problem = () => {
         return filtered;
     }, [allProblems, selectedDifficulty, searchText]);
 
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-    };
+    const handlePageChange = (page) => setCurrentPage(page);
 
     const handleDifficultyChange = (difficulty) => {
         setSelectedDifficulty(difficulty);
-        setCurrentPage(1);
-    };
-
-    const handleSearch = (value) => {
-        setSearchText(value);
         setCurrentPage(1);
     };
 
@@ -174,39 +175,15 @@ const Problem = () => {
     );
 
     const menuItems = [
-        {
-            key: 'all',
-            label: 'All',
-            onClick: () => handleDifficultyChange('All'),
-        },
-        {
-            key: 'easy',
-            label: <span style={{ color: 'green' }}>Easy</span>,
-            onClick: () => handleDifficultyChange('Easy'),
-        },
-        {
-            key: 'medium',
-            label: <span style={{ color: 'orange' }}>Medium</span>,
-            onClick: () => handleDifficultyChange('Medium'),
-        },
-        {
-            key: 'hard',
-            label: <span style={{ color: 'red' }}>Hard</span>,
-            onClick: () => handleDifficultyChange('Hard'),
-        },
+        { key: 'all', label: 'All', onClick: () => handleDifficultyChange('All') },
+        { key: 'easy', label: <span style={{ color: 'green' }}>Easy</span>, onClick: () => handleDifficultyChange('Easy') },
+        { key: 'medium', label: <span style={{ color: 'orange' }}>Medium</span>, onClick: () => handleDifficultyChange('Medium') },
+        { key: 'hard', label: <span style={{ color: 'red' }}>Hard</span>, onClick: () => handleDifficultyChange('Hard') },
     ];
 
     const columns = [
-        {
-            title: 'Title',
-            dataIndex: 'title',
-            key: 'title',
-        },
-        {
-            title: 'Acceptance',
-            dataIndex: 'acceptance',
-            key: 'acceptance',
-        },
+        { title: 'Title', dataIndex: 'title', key: 'title' },
+        { title: 'Acceptance', dataIndex: 'acceptance', key: 'acceptance' },
         {
             title: 'Difficulty',
             dataIndex: 'difficulty',
@@ -228,23 +205,16 @@ const Problem = () => {
         <DefaultLayout>
             <ProblemListContainer>
                 <SearchContainer>
-                    {/* Dropdown for Difficulty */}
                     <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomLeft">
-                        <CustomButton>
-                            Difficulty <ArrowDropDownIcon />
-                        </CustomButton>
+                        <CustomButton>Difficulty <ArrowDropDownIcon /></CustomButton>
                     </Dropdown>
 
-                    {/* Dropdown for Tags using custom tagMenu */}
                     <Dropdown trigger={['click']} placement="bottomLeft" dropdownRender={() => tagMenu}>
-                        <CustomButton style={{ marginLeft: '10px' }}>
-                            Tags <ArrowDropDownIcon />
-                        </CustomButton>
+                        <CustomButton style={{ marginLeft: '10px' }}>Tags <ArrowDropDownIcon /></CustomButton>
                     </Dropdown>
 
                     <Input
                         placeholder="Search problems"
-                        value={searchText}
                         onChange={(e) => handleSearch(e.target.value)}
                         style={{ marginLeft: '20px', width: '200px', borderRadius: '8px' }}
                         suffix={<SearchIcon />}
