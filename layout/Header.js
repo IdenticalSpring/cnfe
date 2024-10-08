@@ -50,6 +50,10 @@ export const Title = styled.span`
   font-weight: ${({ theme }) => theme.typography.h1.fontWeight};
   color: var(--text-secondary-color);
   cursor: pointer;
+  &:active{
+    color:red;
+    transform: translateY(1px);
+  }
 `;
 
 export const LinkWrapper = styled.div`
@@ -107,7 +111,7 @@ export const Header = () => {
           <Link href="/developer" passHref legacyBehavior>
             <StyledLink isActive={router.pathname === '/developer'}>Developer</StyledLink>
           </Link>
-          <Link href="/Login/login" passHref legacyBehavior>
+          <Link href="/auth/login" passHref legacyBehavior>
             <StyledLink isActive={router.pathname === '/Login/login'}>Sign in</StyledLink>
           </Link>
         </LinkWrapper>

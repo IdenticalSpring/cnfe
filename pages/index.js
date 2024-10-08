@@ -131,7 +131,7 @@ const features = [
     icon: '🔧',
     title: 'A New Way to Learn',
     description: 'MasterCoding is the best platform to help you enhance your skills, expand your knowledge and prepare for technical interviews.',
-    link: '/Login/signup',
+    link: '/auth/signup',
     linkText: 'Sign Up >>>'
   },
   {

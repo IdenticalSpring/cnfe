@@ -14,11 +14,16 @@
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.16.7",
+    "@types/styled-components": "^5.1.34",
     "antd": "^5.21.1",
+    "axios": "^1.7.7",
+    "babel-plugin-styled-components": "^2.1.4",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",
     "react-router-dom": "^6.26.1",
+    "react-slick": "^0.30.2",
+    "slick-carousel": "^1.8.1",
     "styled-components": "^6.1.12"
   },
   "devDependencies": {

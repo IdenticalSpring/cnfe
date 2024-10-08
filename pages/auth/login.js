@@ -5,6 +5,8 @@ import { IconButton, InputAdornment, TextField } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import DefaultLayout from '@/layout/DefaultLayout';
+import { loginUser } from '@/service/auth-api'; 
+import { notification } from 'antd';
 
 const StyledLink = styled.a`
   text-decoration: none;
@@ -45,17 +47,17 @@ export const Logo = styled.img`
 `;
 
 const Title = styled.h1`
-  margin-bottom: 20px !important;
+  margin-bottom: 20px;
   font-size: 24px;
   text-align: center;
 `;
 
 const StyledTextField = styled(TextField)`
-  margin-bottom: 20px;
+  margin-bottom: 20px !important;
   width: 100%;
 `;
 
-const SignupButton = styled.button`
+const LoginButton = styled.button`
   background-color: #1890ff;
   color: #fff;
   border: none;
@@ -65,67 +67,78 @@ const SignupButton = styled.button`
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #40a9ff;
-  }
+  margin-top: 20px;
 `;
 
 const ButtonGroup = styled.div`
   display: flex;
-  justify-content: center;
-  margin-top: 10px;
+  justify-content: space-between;
+  margin-top: 30px;
 
   a {
-    color: blue;
-    padding-left: 8px;
-    cursor: pointer;
-
     &:hover {
-    color: red;
+      color: red;
     }
   }
-
 `;
 
-const Signup = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+const Login = () => {
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleClickShowConfirmPassword = () => {
-    setShowConfirmPassword(!showConfirmPassword);
+  
+
+  const handleUsernameChange = (event) => {
+    setUsername(event.target.value);
   };
+
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
 
-  const handleConfirmPasswordChange = (event) => {
-    setConfirmPassword(event.target.value);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+   
+    const payload = {
+      username, 
+      password,
+    };
+
+
+    // Gọi hàm loginUser từ service
+    const result = await loginUser(payload);
+
+    if (result.success) {
+      // Chuyển hướng hoặc thực hiện logic tiếp theo sau khi đăng nhập thành công
+      console.log('Login successful:', result.data);
+    }
   };
 
   return (
     <DefaultLayout>
-
       <Container>
         <FormWrapper>
           <LogoWrapper>
             <Logo src="/assets/img/iconlogo.png" alt="Logo" />
           </LogoWrapper>
 
-          <Title>Sign Up</Title>
+          <Title>Login</Title>
           <StyledTextField
-            label="Email"
+            label="Username" 
             variant="outlined"
-            type="email"
+            type="text"
+            value={username}
+            onChange={handleUsernameChange} 
             required
           />
+
           <StyledTextField
             label="Password"
             variant="outlined"
@@ -135,10 +148,7 @@ const Signup = () => {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton
-                    onClick={handleClickShowPassword}
-                    edge="end"
-                  >
+                  <IconButton onClick={handleClickShowPassword} edge="end">
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
@@ -146,31 +156,15 @@ const Signup = () => {
             }}
             required
           />
-          <StyledTextField
-            label="Confirm Password"
-            variant="outlined"
-            type={showConfirmPassword ? 'text' : 'password'}
-            value={confirmPassword}
-            onChange={handleConfirmPasswordChange}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={handleClickShowConfirmPassword}
-                    edge="end"
-                  >
-                    {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            required
-          />
-          <SignupButton type="submit">Sign Up</SignupButton>
+          <LoginButton type="submit" onClick={handleSubmit}>
+            Login
+          </LoginButton>
           <ButtonGroup>
-            <span>Have an account? </span>
-            <Link href="./login" passHref legacyBehavior>
-              <StyledLink>Login</StyledLink>
+            <Link href="/" passHref legacyBehavior>
+              <StyledLink>Forgot Password?</StyledLink>
+            </Link>
+            <Link href="./signup" passHref legacyBehavior>
+              <StyledLink>Sign Up</StyledLink>
             </Link>
           </ButtonGroup>
         </FormWrapper>
@@ -179,4 +173,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;
