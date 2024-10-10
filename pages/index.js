@@ -5,9 +5,13 @@ import Link from 'next/link';
 
 // Styled components
 const Section = styled.section`
-  background-color: var(--background-color);
-  color: var(--text-primary-color);
   padding: 32px 0;
+  width: 100%;
+  height: auto;
+
+  @media (max-width: 768px) {
+    padding: 16px 0;
+  }
 `;
 
 const Container = styled.div`
@@ -15,6 +19,11 @@ const Container = styled.div`
   margin: 0 auto;
   text-align: center;
   padding: 0 16px;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+    padding: 0 8px;
+  }
 `;
 
 const FlexContainer = styled.div`
@@ -23,6 +32,11 @@ const FlexContainer = styled.div`
   justify-content: center;
   gap: 32px;
   margin-top: 45px;
+
+  @media (max-width: 768px) {
+    gap: 16px;
+    margin-top: 30px;
+  }
 `;
 
 const Card = styled.div`
@@ -32,14 +46,25 @@ const Card = styled.div`
   padding: 24px;
   border-radius: 8px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  flex: 1 1 calc(33.33% - 32px); 
+  flex: 1 1 calc(33.33% - 32px);
   max-width: calc(33.33% - 32px);
   cursor: pointer;
-  &:hover{
-    background-color: rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease; 
+
+  &:hover {
+    background-color: var(--background-hover-color);
+    transform: translateY(-10px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
   }
+
   &:active {
     transform: translateY(2px);
+  }
+
+  @media (max-width: 768px) {
+    flex: 1 1 calc(100% - 16px); 
+    max-width: calc(100% - 16px);
+    padding: 16px;
   }
 `;
 
@@ -53,6 +78,10 @@ const Title = styled.h3`
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 8px;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
 `;
 
 const Text = styled.p`
@@ -61,6 +90,11 @@ const Text = styled.p`
   color: var(--grey-color);
   margin-bottom: 16px;
   flex-grow: 1;
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
 `;
 
 const Title_Head = styled.h1`
@@ -68,6 +102,11 @@ const Title_Head = styled.h1`
   font-weight: 600;
   margin-bottom: 8px;
   color: #FF9900;
+
+  @media (max-width: 768px) {
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
 `;
 
 const StyledLink = styled.a`
@@ -77,8 +116,12 @@ const StyledLink = styled.a`
   font-weight: 500;
   text-decoration: none;
   
-  &:hover{
-      text-decoration: underline;
+  &:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 14px;
   }
 `;
 
@@ -88,7 +131,7 @@ const features = [
     icon: '🔧',
     title: 'A New Way to Learn',
     description: 'MasterCoding is the best platform to help you enhance your skills, expand your knowledge and prepare for technical interviews.',
-    link: '/Login/signup',
+    link: '/auth/signup',
     linkText: 'Sign Up >>>'
   },
   {
@@ -122,7 +165,33 @@ const features = [
     description: 'We now support 14 popular coding languages. At our core, MasterCoding is about developers. Our powerful development tools such as Playground help you test, debug and even write your own projects online.',
     link: '/developer',
     linkText: 'Developer Tools >>>'
-  }
+  },
+  {
+    id: 'feature-6',
+    icon: '📈',
+    title: 'Companies & Candidates',
+    description: 'Not only does MasterCoding prepare candidates for technical interviews, we also help companies identify top technical talent. From sponsoring contests to providing online assessments and training, we offer numerous services to businesses.',
+    link: '/companies',
+    linkText: 'Learn More >>>'
+  },
+  {
+    id: 'feature-7',
+    icon: '🔧',
+    title: 'Developer',
+    description: 'We now support 14 popular coding languages. At our core, MasterCoding is about developers. Our powerful development tools such as Playground help you test, debug and even write your own projects online.',
+    link: '/developer',
+    linkText: 'Developer Tools >>>'
+  },
+  {
+    id: 'feature-8',
+    icon: '📈',
+    title: 'Companies & Candidates',
+    description: 'Not only does MasterCoding prepare candidates for technical interviews, we also help companies identify top technical talent. From sponsoring contests to providing online assessments and training, we offer numerous services to businesses.',
+    link: '/companies',
+    linkText: 'Learn More >>>'
+  },
+
+
 ];
 
 
@@ -144,6 +213,7 @@ export default function HomePage() {
                   <img
                     src={`https://openui.fly.dev/openui/24x24.svg?text=${encodeURIComponent(feature.icon)}`}
                     alt="feature-icon"
+                    onError={(e) => { e.target.onerror = null; e.target.src = '/path/to/default/icon.svg'; }} // Use a default icon if the image fails to load
                   />
                 </IconWrapper>
                 <Title>{feature.title}</Title>
