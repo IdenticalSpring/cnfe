@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Menu, Dropdown } from 'antd'
+import { DownOutlined } from '@ant-design/icons';
 
 const header = () => {
 
@@ -46,7 +47,7 @@ const header = () => {
         <HeaderContainer>
             <Dropdown overlay={menu}>
                 <AccountName>
-                    Tên Tài Khoản
+                    Tên Tài Khoản <DownOutlined />
                 </AccountName>
             </Dropdown>
         </HeaderContainer>

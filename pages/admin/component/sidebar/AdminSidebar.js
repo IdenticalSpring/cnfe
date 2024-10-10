@@ -95,9 +95,6 @@ const AdminSidebar = () => {
         <StyledMenuItem key="/admin/assignments" icon={<FormOutlined />} $isSelected={selectedKey === "/admin/assignments"}>
           Bài tập
         </StyledMenuItem>
-        <StyledMenuItem key="/logout" icon={<LogoutOutlined />} $isSelected={selectedKey === "/logout"}>
-          Logout
-        </StyledMenuItem>
       </StyledMenu>
     </StyledSider>
   );
