@@ -3,7 +3,6 @@ import { Table, Button, Modal, notification } from 'antd';
 import { Divider } from "antd";
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-import { adminAPI } from 'services/admin';
 
 // Styled component cho Table
 const StyledTable = styled(Table)`
