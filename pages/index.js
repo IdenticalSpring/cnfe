@@ -147,7 +147,7 @@ const features = [
     icon: '📊',
     title: 'Questions, Community & Contests',
     description: 'Over 3450 questions for you to practice. Come and join one of the largest tech communities with hundreds of thousands of active users and participate in our contests to challenge yourself and earn rewards.',
-    link: '/product',
+    link: '/admin',
     linkText: 'View Questions >>>'
   },
   {
