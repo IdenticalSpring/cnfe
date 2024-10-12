@@ -1,40 +1,52 @@
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Menu, Dropdown } from 'antd'
+import { Menu, Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
+import Cookies from 'js-cookie';
+import {jwtDecode} from 'jwt-decode';
 
-const header = () => {
+const HeaderContainer = styled.div`
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    padding: 16px;
+    background-color: #f0f2f5;
+    border-bottom: 1px solid #d9d9d9;
+    width: calc(100% - 200px);
+    margin-left: 200px;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    z-index: 1;
+`;
 
-    const SidebarWidth = '200px';
+const AccountName = styled.div`
+    font-size: 16px;
+    font-weight: 600;
+    margin-right: 20px;
+    color: #333;
+    cursor: pointer;
 
-    // Styled-components
-    const HeaderContainer = styled.div`
-        display: flex;
-        justify-content: end;
-        align-items: center;
-        padding: 16px;
-        background-color: #f0f2f5;
-        border-bottom: 1px solid #d9d9d9;
-        width: calc(100% - ${SidebarWidth});
-        margin-left: ${SidebarWidth};
-        box-sizing: border-box;
-        position: fixed;
-        top: 0;
-        z-index: 1;
-    `;
+    &:hover {
+        color: #ff9900;
+    }
+`;
 
-    const AccountName = styled.div`
-        font-size: 16px;
-        font-weight: 600;
-        margin-right: 20px;
-        color: #333;
-        cursor: pointer;
+const Header = () => {
+    const [displayName, setDisplayName] = useState('Người Dùng');
 
-        &:hover {
-            color: #ff9900;
+    useEffect(() => {
+        const token = Cookies.get('token');
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                setDisplayName(decoded.username || 'Người Dùng');
+            } catch (error) {
+                console.error('Lỗi khi giải mã token:', error);
+            }
         }
-    `;
+    }, []);
 
-    // Dropdown menu
     const menu = (
         <Menu>
             <Menu.Item key="1">
@@ -47,11 +59,11 @@ const header = () => {
         <HeaderContainer>
             <Dropdown overlay={menu}>
                 <AccountName>
-                    Tên Tài Khoản <DownOutlined />
+                    {displayName} <DownOutlined />
                 </AccountName>
             </Dropdown>
         </HeaderContainer>
-    )
-}
+    );
+};
 
-export default header;
+export default Header;
