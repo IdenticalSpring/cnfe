@@ -3,7 +3,7 @@ import { Table, Button, Modal, notification } from 'antd';
 import { Divider } from "antd";
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-import {adminAPI} from 'service/admin';
+import { adminAPI } from 'service/admin';
 
 // Styled component cho Table
 const StyledTable = styled(Table)`
@@ -33,11 +33,10 @@ const StyledTable = styled(Table)`
 
   .ant-table-tbody > tr {
     &:nth-child(odd) {
-      background-color: #f0f0f0; /* Màu xám cho hàng lẻ */
+      background-color: #f0f0f0;
     }
-    
     &:nth-child(even) {
-      background-color: #ffffff; /* Màu trắng cho hàng chẵn */
+      background-color: #ffffff;
     }
   }
 
@@ -62,13 +61,14 @@ const TableAccount = () => {
   // Khởi tạo notification component
   const [api, contextHolder] = notification.useNotification();
 
-  // Hàm lấy dữ liệu từ API
   const getAllData = async () => {
     try {
-      const rq = await adminAPI.getAllUsers();
-      
-      if (rq && rq.statusCode === 200) {
-        const users = rq.data.map(user => ({
+      const response = await adminAPI.getAllUsers();
+      console.log("API response:", response);
+
+      // Kiểm tra xem response.data.data có phải là mảng không
+      if (response && response.data && Array.isArray(response.data.data)) {
+        const users = response.data.data.map(user => ({
           id: user.id,
           name: user.name,
           username: user.username,
@@ -78,17 +78,31 @@ const TableAccount = () => {
         }));
         setData(users);
       } else {
-        console.error("Lỗi trong quá trình lấy dữ liệu");
+        console.error("Invalid data structure:", response);
+        api.error({
+          message: 'Lỗi dữ liệu',
+          description: 'Không thể tải dữ liệu người dùng. Vui lòng thử lại sau.',
+        });
       }
     } catch (error) {
-      console.error("Không thể gọi API:", error);
+      console.error("API call failed:", error);
+      api.error({
+        message: 'Lỗi kết nối',
+        description: 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.',
+      });
     }
   };
-  
 
+
+  // Gọi API lấy dữ liệu khi component mount
   useEffect(() => {
     getAllData();
   }, []);
+
+  // Log dữ liệu khi dữ liệu được cập nhật
+  useEffect(() => {
+    console.log("Data to render:", data);
+  }, [data]);
 
   const columns = [
     {
@@ -116,7 +130,7 @@ const TableAccount = () => {
       dataIndex: 'active',
       key: 'active',
       render: (active) => (
-        <span>{active ? 'Đang hoạt động' : 'Vô hiệu'}</span>
+        <span>{active}</span>
       ),
     },
     {
@@ -127,7 +141,7 @@ const TableAccount = () => {
           <Button
             type="link"
             icon={<EditOutlined className='custom-iconEdit' />}
-            // onClick={() => handleEdit(record.id)}
+          // onClick={() => handleEdit(record.id)}
           />
           <Divider type="vertical" />
           <Button
