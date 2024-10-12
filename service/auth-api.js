@@ -111,3 +111,50 @@ export const loginUser = async (payload) => {
         }
     }
 };
+
+export const logoutUser = async (router) => {
+    const url = `${baseURL}/auth/logout`;
+    const token = Cookies.get('token');
+
+    if (!token) {
+        Modal.error({
+            title: 'Lỗi',
+            content: 'Không tìm thấy token. Vui lòng đăng nhập lại.',
+        });
+        return { success: false, message: 'Không tìm thấy token' };
+    }
+
+    try {
+        const response = await axios.delete(url, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (response.status === 200 || response.status === 204) {
+            Cookies.remove('token');
+            Modal.success({
+                title: 'Đăng xuất thành công',
+                content: 'Bạn đã đăng xuất thành công. Bấm OK để tiếp tục.',
+                onOk: () => {
+                    router.push('/login');
+                },
+            });
+            return { success: true };
+        } else {
+            Modal.error({
+                title: 'Đăng xuất thất bại',
+                content: response.data.message || 'Có lỗi xảy ra khi đăng xuất.',
+            });
+            return { success: false, message: response.data.message };
+        }
+    } catch (error) {
+        console.error('Lỗi đăng xuất:', error);
+        Modal.error({
+            title: 'Lỗi',
+            content: error.response?.data?.message || 'Có lỗi xảy ra. Vui lòng thử lại sau.',
+        });
+        return { success: false, message: error.response?.data?.message || 'Có lỗi xảy ra. Vui lòng thử lại sau.' };
+    }
+};
