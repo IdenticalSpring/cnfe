@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { notification } from 'antd';
+import { Modal, notification } from 'antd';
+import Cookies from 'js-cookie';
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -20,45 +21,44 @@ export const registerUser = async (payload) => {
         console.log('API response:', response.data);
 
         if (response.status === 200 || response.status === 201) {
-            notification.success({
-                message: 'Success',
-                description: 'User registered successfully',
-                placement: 'bottomRight',
-                duration: 3,
+            // Hiển thị modal đăng ký thành công
+            return new Promise((resolve) => {
+                Modal.success({
+                    title: 'Đăng ký thành công',
+                    content: 'Người dùng đã được đăng ký thành công. Bấm OK để tiếp tục.',
+                    onOk: () => {
+                        resolve({ success: true, data: response.data });
+                    },
+                });
             });
-            return { success: true, data: response.data };
         } else {
-            notification.error({
-                message: 'Error',
-                description: response.data.message || 'Registration failed',
-                placement: 'bottomRight',
-                duration: 3,
+            // Hiển thị modal khi đăng ký thất bại
+            Modal.error({
+                title: 'Đăng ký thất bại',
+                content: response.data.message || 'Có lỗi xảy ra khi đăng ký.',
             });
             return { success: false, message: response.data.message };
         }
     } catch (error) {
         console.error('Error:', error);
         if (error.response) {
-            // Lỗi từ phía server trả về
-            notification.error({
-                message: 'Error',
-                description: error.response.data.message || 'Something went wrong.',
-                placement: 'bottomRight',
-                duration: 3,
+            // Hiển thị modal khi có lỗi từ server
+            Modal.error({
+                title: 'Lỗi',
+                content: error.response.data.message || 'Có lỗi xảy ra từ máy chủ. Vui lòng thử lại.',
             });
             return { success: false, message: error.response.data.message };
         } else {
-            // Lỗi mạng hoặc lỗi khác
-            notification.error({
-                message: 'Error',
-                description: 'Something went wrong. Please try again later.',
-                placement: 'bottomRight',
-                duration: 3,
+            // Hiển thị modal khi có lỗi kết nối hoặc lỗi khác
+            Modal.error({
+                title: 'Lỗi',
+                content: 'Có lỗi xảy ra. Vui lòng thử lại sau.',
             });
-            return { success: false, message: 'Something went wrong. Please try again later.' };
+            return { success: false, message: 'Có lỗi xảy ra. Vui lòng thử lại sau.' };
         }
     }
 };
+
 export const loginUser = async (payload) => {
     const url = `${baseURL}/auth/login`;
 
@@ -70,40 +70,44 @@ export const loginUser = async (payload) => {
         });
 
         if (response.status === 201) {
-            notification.success({
-                message: 'Success',
-                description: 'Logged in successfully',
-                placement: 'bottomRight',
-                duration: 3,
+            // Lưu JWT vào cookie
+            const token = response.data.data.access_token;
+            Cookies.set('token', token, { expires: 1 }); // Token hết hạn sau 1 ngày
+
+            // Hiển thị modal và đợi người dùng bấm "OK"
+            return new Promise((resolve) => {
+                Modal.success({
+                    title: 'Đăng nhập thành công',
+                    content: 'Bạn đã đăng nhập thành công. Bấm OK để tiếp tục.',
+                    onOk: () => {
+                        resolve({ success: true, data: response.data.data });
+                    },
+                });
             });
-            return { success: true, data: response.data };
         } else {
-            notification.error({
-                message: 'Error',
-                description: response.data.message || 'Login failed',
-                placement: 'bottomRight',
-                duration: 3,
+            // Hiển thị modal khi đăng nhập thất bại
+            Modal.error({
+                title: 'Đăng nhập thất bại',
+                content: response.data.message || 'Có lỗi xảy ra khi đăng nhập.',
             });
             return { success: false, message: response.data.message };
         }
     } catch (error) {
-        console.error('Login Error:', error);
+        console.error('Lỗi đăng nhập:', error);
         if (error.response) {
-            notification.error({
-                message: 'Error',
-                description: error.response.data.message || 'Something went wrong.',
-                placement: 'bottomRight',
-                duration: 3,
+            // Hiển thị modal lỗi từ server
+            Modal.error({
+                title: 'Lỗi',
+                content: error.response.data.message || 'Có lỗi xảy ra. Vui lòng thử lại.',
             });
             return { success: false, message: error.response.data.message };
         } else {
-            notification.error({
-                message: 'Error',
-                description: 'Something went wrong. Please try again later.',
-                placement: 'bottomRight',
-                duration: 3,
+            // Hiển thị modal lỗi kết nối
+            Modal.error({
+                title: 'Lỗi',
+                content: 'Có lỗi xảy ra. Vui lòng thử lại sau.',
             });
-            return { success: false, message: 'Something went wrong. Please try again later.' };
+            return { success: false, message: 'Có lỗi xảy ra. Vui lòng thử lại sau.' };
         }
     }
 };
