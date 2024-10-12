@@ -139,7 +139,7 @@ const features = [
     icon: '⚙️',
     title: 'Start Exploring',
     description: 'Explore is a well-organized tool that helps you get the most out of MasterCoding by providing structure to guide your progress towards the next step in your programming career.',
-    link: '/explore',
+    link: '/users/explore',
     linkText: 'Explore Now >>>'
   },
   {
@@ -147,13 +147,13 @@ const features = [
     icon: '📊',
     title: 'Questions, Community & Contests',
     description: 'Over 3450 questions for you to practice. Come and join one of the largest tech communities with hundreds of thousands of active users and participate in our contests to challenge yourself and earn rewards.',
-    link: '/admin',
+    link: '/users/problems',
     linkText: 'View Questions >>>'
   },
   {
     id: 'feature-4',
     icon: '📈',
-    title: 'Companies & Candidates',
+    title: 'Companies & Candida tes',
     description: 'Not only does MasterCoding prepare candidates for technical interviews, we also help companies identify top technical talent. From sponsoring contests to providing online assessments and training, we offer numerous services to businesses.',
     link: '/companies',
     linkText: 'Learn More >>>'
@@ -163,7 +163,7 @@ const features = [
     icon: '🔧',
     title: 'Developer',
     description: 'We now support 14 popular coding languages. At our core, MasterCoding is about developers. Our powerful development tools such as Playground help you test, debug and even write your own projects online.',
-    link: '/developer',
+    link: '/users/developer',
     linkText: 'Developer Tools >>>'
   },
   {
