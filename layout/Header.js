@@ -101,18 +101,18 @@ export const Header = () => {
           <Link href="/" passHref legacyBehavior>
             <StyledLink isActive={router.pathname === "/"}>Home</StyledLink>
           </Link>
-          <Link href="/explore" passHref legacyBehavior>
-            <StyledLink isActive={router.pathname === "/explore"}>
+          <Link href="/users/explore" passHref legacyBehavior>
+            <StyledLink isActive={router.pathname === "/users/explore"}>
               Explore
             </StyledLink>
           </Link>
-          <Link href="/problems" passHref legacyBehavior>
-            <StyledLink isActive={router.pathname === "/problems"}>
+          <Link href="/users/problems" passHref legacyBehavior>
+            <StyledLink isActive={router.pathname === "/users/problems"}>
               Problem
             </StyledLink>
           </Link>
-          <Link href="/developer" passHref legacyBehavior>
-            <StyledLink isActive={router.pathname === "/developer"}>
+          <Link href="/users/developer" passHref legacyBehavior>
+            <StyledLink isActive={router.pathname === "/users/developer"}>
               Developer
             </StyledLink>
           </Link>
