@@ -206,7 +206,7 @@ const index = () => {
       dataIndex: "title",
       key: "title",
       render: (text, record) => (
-        <Link href={`/problems/${record.key} `}>{text}</Link>
+        <Link href={`/users/problems/${record.key} `}>{text}</Link>
       ),
     },
     { title: "Acceptance", dataIndex: "acceptance", key: "acceptance" }, // Corrected here

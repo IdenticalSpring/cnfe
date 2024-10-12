@@ -1,26 +1,63 @@
-// pages/problems/[id].js
-import DefaultLayout from "@/layout/DefaultLayout";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ResizableBox } from "react-resizable";
-import styled from "styled-components";
-import { Button } from "antd"; // Import Button từ Ant Design
+import styled, { createGlobalStyle } from "styled-components";
+import { Button, Tooltip } from 'antd'; // Sử dụng Tooltip từ Ant Design
 import 'react-resizable/css/styles.css';  // Đảm bảo import CSS cho react-resizable
+import Header from "./header"; // Import Header component
+import HorizontalRuleIcon from '@mui/icons-material/HorizontalRule';
 
-// Styled components cho layout
+const GlobalStyle = createGlobalStyle`
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden; /* Ẩn thanh cuộn dọc của body */
+  }
+
+  #__next {
+    height: 100%;
+  }
+`;
+
+const ProblemHeader = styled.div`
+  display: flex;
+  width: auto;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--background-hover-color);
+  border-bottom: 1px solid #ddd;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px 20px;
+  z-index: 100;
+`;
+
 const ProblemSection = styled.div`
-  background-color: #f8f9fa;
-  padding: 20px;
+  background-color: var(--background-color);
+  padding: 5px;
   height: 100%;
-  overflow-y: auto;
+  overflow: auto;
   border-right: 1px solid #ddd;
+`;
+
+const IconButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 const CodeSection = styled.div`
   background-color: #ffffff;
   padding: 20px;
   height: 100%;
-  overflow-y: auto;
+  overflow: auto;
   border-bottom: 1px solid #ddd;
 `;
 
@@ -28,7 +65,7 @@ const TestCaseSection = styled.div`
   background-color: #ffffff;
   padding: 20px;
   height: 100%;
-  overflow-y: auto;
+  overflow: auto;
 `;
 
 const ProblemTitle = styled.h1`
@@ -65,56 +102,57 @@ const TestCase = styled.pre`
   border-radius: 8px;
   font-size: 14px;
   margin-bottom: 10px;
+  overflow: auto;
 `;
 
-// Thêm style cho thanh kéo
-// Thay đổi trong styled của thanh kéo dọc
-const StyledHandle = styled.div`
-  width: 5px; /* Đặt chiều rộng nhỏ hơn */
+const StyledHandle = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== "handleAxis",
+})`
+  width: 5px;
   background-color: transparent;
   cursor: col-resize;
   position: absolute;
   right: 0;
   top: 0;
   bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   &:hover {
-    background-color: #007bff; /* Màu xanh khi hover */
-    width: 2px; /* Đường kẻ mỏng khi hover */
+    background-color: orange;
+    width: 4px;
     transition: background-color 0.3s ease, width 0.3s ease;
   }
 `;
 
-// Thay đổi trong styled của thanh kéo ngang
-const StyledHandleHorizontal = styled.div`
-  height: 5px; /* Đặt chiều cao nhỏ hơn */
+const StyledHandleHorizontal = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== 'handleAxis',
+})`
+  height: 5px;
   background-color: transparent;
   cursor: row-resize;
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   &:hover {
-    background-color: #007bff; /* Màu xanh khi hover */
-    height: 2px; /* Đường kẻ mỏng khi hover */
+    background-color: orange;
+    height: 4px;
     transition: background-color 0.3s ease, height 0.3s ease;
   }
 `;
 
-// Thêm thẻ div để bọc toàn bộ trang
 const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
   width: 100%;
-`;
-
-const Toolbar = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  padding: 10px;
-  background-color: #f1f1f1;
+  overflow: hidden;
 `;
 
 const ProblemDetail = () => {
@@ -123,7 +161,18 @@ const ProblemDetail = () => {
 
   const [problem, setProblem] = useState({
     title: "Số của Ghế Trống Nhỏ Nhất",
-    description: `Có một bữa tiệc nơi có n người bạn tham dự. Có vô số ghế được đánh số từ 0 đến vô hạn. Khi một người bạn đến, họ sẽ ngồi lên chiếc ghế trống có số nhỏ nhất. Hãy trả lại số ghế mà người bạn đó sẽ ngồi.`,
+    description: `Có một bữa tiệc nơi có n người bạn tham dự. Có vô số ghế được đánh số từ 0 đến vô hạn. Khi một người bạn đến, họ sẽ ngồi lên chiếc ghế trống có số nhỏ nhất. Hãy trả lại số ghế mà người bạn đó sẽ ngồi.
+
+    Mỗi khi một người bạn rời khỏi bữa tiệc, chiếc ghế họ đã ngồi sẽ trở thành ghế trống. Các bạn bè đến bữa tiệc theo một lịch trình cụ thể, được mô tả bởi một danh sách các thời điểm đến và rời đi của mỗi người bạn. Danh sách này bao gồm nhiều mảng con, trong đó mỗi mảng con đại diện cho một người bạn, với thời gian đến và rời đi tương ứng.
+
+    Giả sử có 3 người bạn với các thời gian đến và rời đi như sau:
+    - Bạn 1: đến vào thời điểm 1 và rời đi vào thời điểm 4
+    - Bạn 2: đến vào thời điểm 2 và rời đi vào thời điểm 3
+    - Bạn 3: đến vào thời điểm 4 và rời đi vào thời điểm 6
+
+    Danh sách thời gian đến và rời đi sẽ được biểu diễn như sau:
+    [[1, 4], [2, 3], [4, 6]]
+    `,
     testCases: [
       {
         input: "times = [[1,4],[2,3],[4,6]], targetFriend = 1",
@@ -136,44 +185,60 @@ const ProblemDetail = () => {
     ],
   });
 
-  return (
-    <DefaultLayout>
-      {/* Thẻ div bọc toàn bộ trang */}
-      <PageWrapper>
-        {/* Toolbar với các nút Submit và Run */}
-        <Toolbar>
-          <Button type="primary" style={{ marginRight: '10px' }}>Run</Button>
-          <Button type="default">Submit</Button>
-        </Toolbar>
+  const [hydrated, setHydrated] = useState(false);
 
-        {/* Nội dung của trang */}
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  if (!hydrated) {
+    return null;
+  }
+
+  return (
+    <>
+      <GlobalStyle />
+      <Header />
+
+      <PageWrapper>
         <div style={{ display: "flex", height: "100%", width: "100%" }}>
-          {/* Phần mô tả bài toán */}
           <ResizableBox
             width={400}
             height={Infinity}
-            minConstraints={[200, Infinity]} // Giới hạn chiều rộng nhỏ nhất
-            maxConstraints={[800, Infinity]} // Giới hạn chiều rộng lớn nhất
-            axis="x" // Chỉ cho phép kéo giãn theo chiều ngang
-            handle={<StyledHandle />} // Thêm handle với hiệu ứng hover
+            minConstraints={[200, Infinity]}
+            maxConstraints={[800, Infinity]}
+            axis="x"
+            handle={
+              <StyledHandle>
+                <Tooltip title="Resize horizontally">
+                  <HorizontalRuleIcon style={{ transform: 'rotate(90deg)', color: "orange" }} />
+                </Tooltip>
+              </StyledHandle>
+            }
           >
             <ProblemSection>
-              <ProblemTitle>{problem.title}</ProblemTitle>
-              <SectionTitle>Mô tả</SectionTitle>
+              <ProblemHeader />
+              <ProblemTitle>
+                <span>{problem.title}</span>
+              </ProblemTitle>
               <ProblemDescription>{problem.description}</ProblemDescription>
             </ProblemSection>
           </ResizableBox>
 
-          {/* Phần trình soạn thảo mã và test cases */}
           <div style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
-            {/* Phần trình soạn thảo mã */}
             <ResizableBox
               width={Infinity}
               height={400}
               minConstraints={[Infinity, 200]}
               maxConstraints={[Infinity, 600]}
               axis="y"
-              handle={<StyledHandleHorizontal />} // Thêm handle với hiệu ứng hover cho chiều dọc
+              handle={
+                <StyledHandleHorizontal>
+                  <Tooltip title="Resize vertically">
+                    <HorizontalRuleIcon style={{ color: "orange" }} />
+                  </Tooltip>
+                </StyledHandleHorizontal>
+              }
             >
               <CodeSection>
                 <SectionTitle>Trình soạn thảo mã</SectionTitle>
@@ -181,7 +246,6 @@ const ProblemDetail = () => {
               </CodeSection>
             </ResizableBox>
 
-            {/* Phần test cases */}
             <TestCaseSection>
               <SectionTitle>Test Cases</SectionTitle>
               {problem.testCases.map((testCase, index) => (
@@ -197,7 +261,7 @@ const ProblemDetail = () => {
           </div>
         </div>
       </PageWrapper>
-    </DefaultLayout>
+    </>
   );
 };
 
