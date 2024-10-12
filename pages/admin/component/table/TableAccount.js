@@ -3,6 +3,7 @@ import { Table, Button, Modal, notification } from 'antd';
 import { Divider } from "antd";
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
+import {adminAPI} from 'service/admin';
 
 // Styled component cho Table
 const StyledTable = styled(Table)`
@@ -61,74 +62,33 @@ const TableAccount = () => {
   // Khởi tạo notification component
   const [api, contextHolder] = notification.useNotification();
 
-  // Dữ liệu giả để hiển thị trong bảng
-  const fakeData = [
-    {
-      id: 1,
-      name: "Nguyễn Văn A",
-      username: "userA",
-      email: "userA@example.com",
-      role: "Admin",
-      isActive: true,
-    },
-    {
-      id: 2,
-      name: "Trần Thị B",
-      username: "userB",
-      email: "userB@example.com",
-      role: "User",
-      isActive: true,
-    },
-    {
-      id: 3,
-      name: "Lê Văn C",
-      username: "userC",
-      email: "userC@example.com",
-      role: "Moderator",
-      isActive: false,
-    },
-  ];
-
-  useEffect(() => {    
-    const users = fakeData.map(user => ({
-      id: user.id,
-      name: user.name,
-      username: user.username,
-      email: user.email,
-      role: user.role.charAt(0).toUpperCase() + user.role.slice(1),
-      active: user.isActive,
-    }));
-    setData(users);
-  }, []);
-
-  // const getAllData = async () => {
-  //   try {
-  //     const rq = await adminAPI.getAllUsers();
-  //     console.log(rq);
+  // Hàm lấy dữ liệu từ API
+  const getAllData = async () => {
+    try {
+      const rq = await adminAPI.getAllUsers();
       
-  //     if (rq.statusCode === 200) {
-  //       const users = rq.data.map(user => ({
-  //         id: user.id,
-  //         name: user.name,
-  //         username: user.username,
-  //         email: user.email,
-  //         role: user.role.charAt(0).toUpperCase() + user.role.slice(1),
-  //         active: user.isActive,
-  //       }));
-  //       setData(users);
-  //     }
-  //     else {
-  //       console.error("lỗi");
-  //     }
-  //   }
-  //   catch {
-  //     console.error("không thể call api");
-  //   }
-  // }
+      if (rq && rq.statusCode === 200) {
+        const users = rq.data.map(user => ({
+          id: user.id,
+          name: user.name,
+          username: user.username,
+          email: user.email,
+          role: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+          active: user.isActive ? 'Đang hoạt động' : 'Vô hiệu',
+        }));
+        setData(users);
+      } else {
+        console.error("Lỗi trong quá trình lấy dữ liệu");
+      }
+    } catch (error) {
+      console.error("Không thể gọi API:", error);
+    }
+  };
+  
 
-  // useEffect(() => {
-  //   getAllData();
-  // }, []);
+  useEffect(() => {
+    getAllData();
+  }, []);
 
   const columns = [
     {
@@ -167,7 +127,7 @@ const TableAccount = () => {
           <Button
             type="link"
             icon={<EditOutlined className='custom-iconEdit' />}
-          // onClick={() => handleEdit(record.id)}
+            // onClick={() => handleEdit(record.id)}
           />
           <Divider type="vertical" />
           <Button

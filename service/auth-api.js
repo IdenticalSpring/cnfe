@@ -72,7 +72,8 @@ export const loginUser = async (payload) => {
         if (response.status === 201) {
             // Lưu JWT vào cookie
             const token = response.data.data.access_token;
-            Cookies.set('token', token);            
+            Cookies.set('token', token);  
+            console.log("Token đã lưu:", token);          
 
             // Hiển thị modal và đợi người dùng bấm "OK"
             return new Promise((resolve) => {
