@@ -14,7 +14,7 @@ export const adminAPI = {
             // Thêm token vào headers của request
             const response = await request.get('/admin/users/list', {
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    'Authorization': `Bearer ${token}`,
                 },
             });
             console.log("Response data:", response.data);

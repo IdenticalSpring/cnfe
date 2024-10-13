@@ -3,7 +3,7 @@ import { Table, Button, Modal, notification } from 'antd';
 import { Divider } from "antd";
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-import {adminAPI} from 'service/admin';
+// import {adminAPI} from 'service/admin'; // Cmt lại hàm gọi API
 
 // Styled component cho Table
 const StyledTable = styled(Table)`
@@ -33,11 +33,11 @@ const StyledTable = styled(Table)`
 
   .ant-table-tbody > tr {
     &:nth-child(odd) {
-      background-color: #f0f0f0; /* Màu xám cho hàng lẻ */
+      background-color: #ffffff; /* Màu xám cho hàng lẻ */
     }
     
     &:nth-child(even) {
-      background-color: #ffffff; /* Màu trắng cho hàng chẵn */
+      background-color: #f0f0f0; /* Màu trắng cho hàng chẵn */
     }
   }
 
@@ -59,35 +59,61 @@ const TableAccount = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
 
-  // Khởi tạo notification component
   const [api, contextHolder] = notification.useNotification();
 
-  // Hàm lấy dữ liệu từ API
-  const getAllData = async () => {
-    try {
-      const rq = await adminAPI.getAllUsers();
+  // const getAllData = async () => {
+  //   try {
+  //     const rq = await adminAPI.getAllUsers();
       
-      if (rq && rq.statusCode === 200) {
-        const users = rq.data.map(user => ({
-          id: user.id,
-          name: user.name,
-          username: user.username,
-          email: user.email,
-          role: user.role.charAt(0).toUpperCase() + user.role.slice(1),
-          active: user.isActive ? 'Đang hoạt động' : 'Vô hiệu',
-        }));
-        setData(users);
-      } else {
-        console.error("Lỗi trong quá trình lấy dữ liệu");
-      }
-    } catch (error) {
-      console.error("Không thể gọi API:", error);
-    }
-  };
+  //     if (rq && rq.statusCode === 200) {
+  //       const users = rq.data.map(user => ({
+  //         id: user.id,
+  //         name: user.name,
+  //         username: user.username,
+  //         email: user.email,
+  //         role: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+  //         active: user.isActive ? 'Đang hoạt động' : 'Vô hiệu',
+  //       }));
+  //       setData(users);
+  //     } else {
+  //       console.error("Lỗi trong quá trình lấy dữ liệu");
+  //     }
+  //   } catch (error) {
+  //     console.error("Không thể gọi API:", error);
+  //   }
+  // };
   
+  // Dữ liệu giả (fake data)
+  const fakeData = [
+    {
+      id: 1,
+      name: 'Nguyễn Văn A',
+      username: 'nguyenvana',
+      email: 'nguyenvana@example.com',
+      role: 'Admin',
+      active: 'Đang hoạt động',
+    },
+    {
+      id: 2,
+      name: 'Trần Thị B',
+      username: 'tranthib',
+      email: 'tranthib@example.com',
+      role: 'User',
+      active: 'Vô hiệu',
+    },
+    {
+      id: 3,
+      name: 'Lê Văn C',
+      username: 'levanc',
+      email: 'levanc@example.com',
+      role: 'Admin',
+      active: 'Đang hoạt động',
+    },
+  ];
 
   useEffect(() => {
-    getAllData();
+    // getAllData(); // Gọi API bị comment lại
+    setData(fakeData); // Dùng data giả
   }, []);
 
   const columns = [
@@ -149,12 +175,11 @@ const TableAccount = () => {
     setData(data.filter(user => user.id !== selectedUserId));
     setIsModalVisible(false);
 
-    // Hiển thị notification sau khi xóa thành công
     api.open({
       message: 'Xóa thành công',
       description: 'Tài khoản đã được xóa thành công!',
       placement: 'bottomRight',
-      duration: 3, // Hiển thị trong 3 giây
+      duration: 3,
       pauseOnHover: true,
       style: {
         position: 'relative',
