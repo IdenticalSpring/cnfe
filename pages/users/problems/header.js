@@ -56,7 +56,7 @@ const LogoWrapper = styled.div`
 const Logo = styled.img`
   height: auto;
   width: 100%;
-  max-height: 30px;
+  max-height: 20px;
   cursor: pointer;
 `;
 
