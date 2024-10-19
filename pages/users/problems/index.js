@@ -18,6 +18,7 @@ const SearchContainer = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+  gap: 10px;
 `;
 
 const CustomButton = React.memo(styled(Button)`
@@ -27,13 +28,15 @@ const CustomButton = React.memo(styled(Button)`
   background-color: #f6f8fa;
   border-radius: 8px;
   font-size: 14px;
-  height: 40px;
+  width: 100px;
+  height: 35px; 
   padding: 0 12px;
 
   &:hover {
     background-color: #ebedf0;
   }
 `);
+
 
 const TagDropdownContainer = styled.div`
   width: 400px;
@@ -75,7 +78,7 @@ const TableStyles = styled.div`
 `;
 
 // Generate fake data
-const generateFakeData = (count = 100) => {
+const generateFakeData = (count = 30) => {
   const difficulties = ["Easy", "Medium", "Hard"];
   return Array.from({ length: count }, (_, index) => ({
     key: index + 1,
@@ -92,7 +95,7 @@ const index = () => {
   const [searchText, setSearchText] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState("All");
   const [tagSearchText, setTagSearchText] = useState("");
-  const pageSize = 10; // Reduced page size for better performance
+  const pageSize = 20;
 
   // Debounce search
   const debounceSearch = useCallback((callback, delay) => {
@@ -109,7 +112,7 @@ const index = () => {
   }, 300);
 
   useEffect(() => {
-    const data = generateFakeData(100);
+    const data = generateFakeData(30);
     setAllProblems(data);
     setLoading(false);
   }, []);
@@ -150,12 +153,10 @@ const index = () => {
     { text: "Greedy", count: 383 },
   ];
 
-  // Filtered tags based on search input
   const filteredTags = tagData.filter((tag) =>
     tag.text.toLowerCase().includes(tagSearchText.toLowerCase())
   );
 
-  // Custom Dropdown for Tags with search bar
   const tagMenu = (
     <TagDropdownContainer>
       <TagSearchContainer>
@@ -206,7 +207,7 @@ const index = () => {
       dataIndex: "title",
       key: "title",
       render: (text, record) => (
-        <Link href={`/problems/${record.key} `}>{text}</Link>
+        <Link href={`/users/problems/${record.key} `}>{text}</Link>
       ),
     },
     { title: "Acceptance", dataIndex: "acceptance", key: "acceptance" }, // Corrected here
@@ -251,7 +252,7 @@ const index = () => {
             placement="bottomLeft"
             dropdownRender={() => tagMenu}
           >
-            <CustomButton style={{ marginLeft: "10px" }}>
+            <CustomButton >
               Tags <ArrowDropDownIcon />
             </CustomButton>
           </Dropdown>
@@ -259,7 +260,7 @@ const index = () => {
           <Input
             placeholder="Search problems"
             onChange={(e) => handleSearch(e.target.value)}
-            style={{ marginLeft: "20px", width: "200px", borderRadius: "8px" }}
+            style={{ height: 35, width: "200px", borderRadius: "8px" }}
             suffix={<SearchIcon />}
           />
         </SearchContainer>
