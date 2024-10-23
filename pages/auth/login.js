@@ -196,7 +196,7 @@ const Login = () => {
             <Link href="/" passHref legacyBehavior>
               <StyledLink>Forgot Password?</StyledLink>
             </Link>
-            <Link href="/signup" passHref legacyBehavior>
+            <Link href="/auth/signup" passHref legacyBehavior>
               <StyledLink>Sign Up</StyledLink>
             </Link>
           </ButtonGroup>
