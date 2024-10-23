@@ -7,7 +7,7 @@ import styled from 'styled-components';
 // Styled component cho Table
 const StyledTable = styled(Table)`
   .ant-table-thead > tr > th {
-    background-color: var(--background-hover-color);
+    background-color: var(--orange-color);
     color: #fff;
     font-weight: bold;
     text-align: center;
@@ -21,22 +21,13 @@ const StyledTable = styled(Table)`
     background-color: #f6f6f6;
   }
 
-  .ant-pagination-item-active {
-    background-color: var(--background-hover-color);
-    border-color: var(--background-hover-color);
-  }
-
-  .ant-pagination-item-active a {
-    color: white;
-  }
-
   .ant-table-tbody > tr {
     &:nth-child(odd) {
-      background-color: #f0f0f0; /* Màu xám cho hàng lẻ */
+      background-color: #f0f0f0;
     }
     
     &:nth-child(even) {
-      background-color: #ffffff; /* Màu trắng cho hàng chẵn */
+      background-color: #ffffff;
     }
   }
 
@@ -84,12 +75,148 @@ const TableAccount = () => {
       name: "Lê Văn C",
       username: "userC",
       email: "userC@example.com",
-      role: "Moderator",
+      role: "User",
+      isActive: false,
+    },
+    {
+      id: 4,
+      name: "Phạm Thị D",
+      username: "userD",
+      email: "userD@example.com",
+      role: "User",
+      isActive: true,
+    },
+    {
+      id: 5,
+      name: "Hoàng Văn E",
+      username: "userE",
+      email: "userE@example.com",
+      role: "Admin",
+      isActive: false,
+    },
+    {
+      id: 6,
+      name: "Ngô Thị F",
+      username: "userF",
+      email: "userF@example.com",
+      role: "User",
+      isActive: true,
+    },
+    {
+      id: 7,
+      name: "Đỗ Văn G",
+      username: "userG",
+      email: "userG@example.com",
+      role: "User",
+      isActive: false,
+    },
+    {
+      id: 8,
+      name: "Trịnh Thị H",
+      username: "userH",
+      email: "userH@example.com",
+      role: "Admin",
+      isActive: true,
+    },
+    {
+      id: 9,
+      name: "Vũ Văn I",
+      username: "userI",
+      email: "userI@example.com",
+      role: "User",
+      isActive: true,
+    },
+    {
+      id: 10,
+      name: "Nguyễn Thị J",
+      username: "userJ",
+      email: "userJ@example.com",
+      role: "User",
+      isActive: false,
+    },
+    {
+      id: 11,
+      name: "Lê Văn K",
+      username: "userK",
+      email: "userK@example.com",
+      role: "Admin",
+      isActive: true,
+    },
+    {
+      id: 12,
+      name: "Trần Thị L",
+      username: "userL",
+      email: "userL@example.com",
+      role: "User",
+      isActive: true,
+    },
+    {
+      id: 13,
+      name: "Nguyễn Văn M",
+      username: "userM",
+      email: "userM@example.com",
+      role: "User",
+      isActive: false,
+    },
+    {
+      id: 14,
+      name: "Phạm Thị N",
+      username: "userN",
+      email: "userN@example.com",
+      role: "User",
+      isActive: true,
+    },
+    {
+      id: 15,
+      name: "Hoàng Văn O",
+      username: "userO",
+      email: "userO@example.com",
+      role: "Admin",
+      isActive: false,
+    },
+    {
+      id: 16,
+      name: "Ngô Thị P",
+      username: "userP",
+      email: "userP@example.com",
+      role: "User",
+      isActive: true,
+    },
+    {
+      id: 17,
+      name: "Đỗ Văn Q",
+      username: "userQ",
+      email: "userQ@example.com",
+      role: "User",
+      isActive: false,
+    },
+    {
+      id: 18,
+      name: "Trịnh Thị R",
+      username: "userR",
+      email: "userR@example.com",
+      role: "Admin",
+      isActive: true,
+    },
+    {
+      id: 19,
+      name: "Vũ Văn S",
+      username: "userS",
+      email: "userS@example.com",
+      role: "User",
+      isActive: true,
+    },
+    {
+      id: 20,
+      name: "Nguyễn Thị T",
+      username: "userT",
+      email: "userT@example.com",
+      role: "User",
       isActive: false,
     },
   ];
 
-  useEffect(() => {    
+  useEffect(() => {
     const users = fakeData.map(user => ({
       id: user.id,
       name: user.name,
@@ -105,7 +232,7 @@ const TableAccount = () => {
   //   try {
   //     const rq = await adminAPI.getAllUsers();
   //     console.log(rq);
-      
+
   //     if (rq.statusCode === 200) {
   //       const users = rq.data.map(user => ({
   //         id: user.id,
@@ -167,7 +294,7 @@ const TableAccount = () => {
           <Button
             type="link"
             icon={<EditOutlined className='custom-iconEdit' />}
-          // onClick={() => handleEdit(record.id)}
+          onClick={() => handleEdit(record.id)}
           />
           <Divider type="vertical" />
           <Button
@@ -185,20 +312,20 @@ const TableAccount = () => {
     setIsModalVisible(true);
   };
 
+  const handleEdit = (id) => {
+    console.log('Edit record:', id);
+  };
+
   const handleDelete = () => {
     setData(data.filter(user => user.id !== selectedUserId));
     setIsModalVisible(false);
 
     // Hiển thị notification sau khi xóa thành công
-    api.open({
+    notification.success({
       message: 'Xóa thành công',
-      description: 'Tài khoản đã được xóa thành công!',
+      description: 'Tài khoản đã được xóa thành công.',
       placement: 'bottomRight',
-      duration: 3, // Hiển thị trong 3 giây
-      pauseOnHover: true,
-      style: {
-        position: 'relative',
-      },
+      duration: 2,
     });
   };
 
@@ -212,7 +339,7 @@ const TableAccount = () => {
       <StyledTable
         dataSource={data}
         columns={columns}
-        pagination={true}
+        pagination={{ pageSize: 5 }}
         rowKey="id"
       />
 
