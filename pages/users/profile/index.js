@@ -6,4 +6,4 @@ const index = () => {
   )
 }
 
-export default inde
+export default index

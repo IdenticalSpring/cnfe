@@ -123,9 +123,9 @@ const Login = () => {
 
         // Điều hướng dựa trên role
         if (role === 'admin') {
-          router.push('/admin'); // Chuyển hướng đến trang admin
+          router.push('/admin/dashboard'); // Chuyển hướng đến trang admin
         } else if (role === 'user') {
-          router.push('/page'); // Chuyển hướng đến trang user
+          router.push('/'); // Chuyển hướng đến trang user
         } else {
           notification.error({
             message: 'Error',

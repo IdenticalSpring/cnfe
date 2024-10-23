@@ -13,8 +13,8 @@ const Title_Head = styled.h1`
     visibility: visible;
 
     .icon {
-        font-size: 24px; /* Kích thước nhỏ hơn so với văn bản */
-        vertical-align: middle; /* Canh giữa theo chiều dọc với văn bản */
+        font-size: 24px;
+        vertical-align: middle;
     }
 `;
 

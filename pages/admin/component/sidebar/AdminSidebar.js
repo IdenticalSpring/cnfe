@@ -1,6 +1,6 @@
 import React from "react";
 import { Layout, Menu } from "antd";
-import { DashboardOutlined, LogoutOutlined, TeamOutlined, ReadOutlined, SolutionOutlined, FormOutlined } from "@ant-design/icons";
+import { DashboardOutlined, TeamOutlined, ReadOutlined, SolutionOutlined, FormOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import { useRouter } from 'next/router';
 
@@ -12,7 +12,7 @@ const StyledSider = styled(Sider)`
   position: fixed;
   left: 0;
   width: 200px;
-  background-color: #cd5c5c;
+  background-color: #E63946;
   border-radius: 0 20px 0 0;
   overflow: hidden;
 `;
@@ -22,7 +22,6 @@ export const Title = styled.span`
   font-size: calc(0.7rem + 0.5vw);
   font-weight: ${({ theme }) => theme.typography.h1.fontWeight};
   color: #fff;
-  cursor: pointer;
 `;
 
 export const LogoWrapper = styled.div`
@@ -63,8 +62,7 @@ const AdminSidebar = () => {
     if (pathname.includes('/admin/courses')) return '/admin/courses';
     if (pathname.includes('/admin/lessons')) return '/admin/lessons';
     if (pathname.includes('/admin/assignments')) return '/admin/assignments';
-    if (pathname.includes('/logout')) return '/logout';
-    return '/admin/dashboard'; // Default to dashboard
+    return '/admin/dashboard';
   };
 
   const selectedKey = getSelectedKey(router.pathname);

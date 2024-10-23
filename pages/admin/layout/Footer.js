@@ -10,15 +10,15 @@ const FooterContainer = styled.footer`
   padding: 16px;
   background-color: #f0f2f5;
   border-top: 1px solid #d9d9d9;
-  position: fixed;
+  position: relative;
   bottom: 0;
   z-index: 1000;
   box-sizing: border-box;
   color: #333;
   display: flex;
-  justify-content: center; /* Căn giữa nội dung */
-  align-items: center; /* Căn giữa logo và text theo trục dọc */
-  gap: 10px; /* Khoảng cách giữa logo và text */
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 `;
 
 export const Logo = styled.img`

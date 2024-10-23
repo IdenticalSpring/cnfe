@@ -1,8 +1,10 @@
 import Link from "next/link";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
-import isPropValid from "@emotion/is-prop-valid";
+import { Menu, Dropdown } from "antd";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 export const Container = styled.div`
   padding: ${({ theme }) => theme.spacing.small};
@@ -63,9 +65,7 @@ export const LinkWrapper = styled.div`
   cursor: pointer;
 `;
 
-const StyledLink = styled.a.withConfig({
-  shouldForwardProp: (prop) => isPropValid(prop),
-})`
+const StyledLink = styled.a`
   color: ${({ isActive }) =>
     isActive ? "#DD0000" : "var(--text-secondary-color)"};
   text-decoration: none;
@@ -88,6 +88,39 @@ const StyledLink = styled.a.withConfig({
 
 export const Header = () => {
   const router = useRouter();
+  const [username, setUsername] = useState(null);
+
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUsername(decoded.username);
+      } catch (error) {
+        console.error("Error decoding token", error);
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    Cookies.remove("token");
+    setUsername(null);
+    router.push("/auth/login");
+  };
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="profile">
+        <Link href="/users/profile" passHref legacyBehavior>
+          <span>Profile</span>
+        </Link>
+      </Menu.Item>
+      <Menu.Item key="logout" onClick={handleLogout}>
+        Log out
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
     <Container>
       <Nav>
@@ -116,11 +149,17 @@ export const Header = () => {
               Developer
             </StyledLink>
           </Link>
-          <Link href="/auth/login" passHref legacyBehavior>
-            <StyledLink isActive={router.pathname === "/auth/login"}>
-              Sign in
-            </StyledLink>
-          </Link>
+          {username ? (
+            <Dropdown overlay={menu}>
+              <StyledLink as="span">{username}</StyledLink>
+            </Dropdown>
+          ) : (
+            <Link href="/auth/login" passHref legacyBehavior>
+              <StyledLink isActive={router.pathname === "/auth/login"}>
+                Sign in
+              </StyledLink>
+            </Link>
+          )}
         </LinkWrapper>
       </Nav>
     </Container>
