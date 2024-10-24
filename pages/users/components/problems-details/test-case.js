@@ -26,18 +26,22 @@ const TestCase = styled.pre`
 `;
 
 const TestCaseComponent = ({ testCases }) => (
-    <TestCaseSection>
-        <SectionTitle>Test Cases</SectionTitle>
-        {testCases.map((testCase, index) => (
-            <div key={index}>
-                <h3>Test Case {index + 1}</h3>
-                <TestCase>
-                    <strong>Đầu vào:</strong> {testCase.input} <br />
-                    <strong>{testCase.output}</strong>
-                </TestCase>
-            </div>
-        ))}
-    </TestCaseSection>
+  <TestCaseSection>
+    <SectionTitle>Test Cases</SectionTitle>
+    {testCases && testCases.length > 0 ? (
+      testCases.map((testCase, index) => (
+        <div key={index}>
+          <h3>Test Case {index + 1}</h3>
+          <TestCase>
+            <strong>Đầu vào:</strong> {testCase.input} <br />
+            <strong>{testCase.output}</strong>
+          </TestCase>
+        </div>
+      ))
+    ) : (
+      <p>No test cases available.</p>
+    )}
+  </TestCaseSection>
 );
 
 export default TestCaseComponent;

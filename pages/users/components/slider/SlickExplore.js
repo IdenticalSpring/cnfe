@@ -32,19 +32,24 @@ const SlickExplore = ({ slidesData }) => {
   return (
     <SliderWrapper>
       <Slider {...settings}>
-        {slidesData.map((slide) => (
-          <CardWrapper key={slide.id}>
-            <CardSlider
-              title={slide.title}
-              subtitle={slide.subtitle}
-              chapters={slide.chapters}
-              items={slide.items}
-            />
-          </CardWrapper>
-        ))}
+        {slidesData && slidesData.length > 0 ? (
+          slidesData.map((slide) => (
+            <CardWrapper key={slide.id}>
+              <CardSlider
+                title={slide.title}
+                subtitle={slide.subtitle}
+                chapters={slide.chapters}
+                items={slide.items}
+              />
+            </CardWrapper>
+          ))
+        ) : (
+          <p>No slides available.</p>
+        )}
       </Slider>
     </SliderWrapper>
   );
 };
+
 
 export default SlickExplore;
