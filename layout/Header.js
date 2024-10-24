@@ -66,8 +66,7 @@ export const LinkWrapper = styled.div`
 `;
 
 const StyledLink = styled.a`
-  color: ${({ isActive }) =>
-    isActive ? "#DD0000" : "var(--text-secondary-color)"};
+  color: ${({ $isActive }) => $isActive ? "#DD0000" : "var(--text-secondary-color)"};
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
@@ -132,20 +131,20 @@ export const Header = () => {
         </Link>
         <LinkWrapper>
           <Link href="/" passHref legacyBehavior>
-            <StyledLink isActive={router.pathname === "/"}>Home</StyledLink>
+            <StyledLink $isActive={router.pathname === "/"}>Home</StyledLink>
           </Link>
           <Link href="/users/explore" passHref legacyBehavior>
-            <StyledLink isActive={router.pathname === "/users/explore"}>
+            <StyledLink $isActive={router.pathname === "/users/explore"}>
               Explore
             </StyledLink>
           </Link>
           <Link href="/users/problems" passHref legacyBehavior>
-            <StyledLink isActive={router.pathname === "/users/problems"}>
+            <StyledLink $isActive={router.pathname === "/users/problems"}>
               Problem
             </StyledLink>
           </Link>
           <Link href="/users/developer" passHref legacyBehavior>
-            <StyledLink isActive={router.pathname === "/users/developer"}>
+            <StyledLink $isActive={router.pathname === "/users/developer"}>
               Developer
             </StyledLink>
           </Link>
@@ -155,7 +154,7 @@ export const Header = () => {
             </Dropdown>
           ) : (
             <Link href="/auth/login" passHref legacyBehavior>
-              <StyledLink isActive={router.pathname === "/auth/login"}>
+              <StyledLink $isActive={router.pathname === "/auth/login"}>
                 Sign in
               </StyledLink>
             </Link>
