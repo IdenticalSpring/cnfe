@@ -73,11 +73,12 @@ const Header = () => {
         <HeaderContainer>
             <LeftSection>
                 {/* Thêm logo vào vị trí LeftSection */}
-                <Link href="/" passHref>
+                <Link href="/">
                     <LogoWrapper>
                         <Logo src="/assets/img/logo-nobg.png" alt="Logo" />
                     </LogoWrapper>
                 </Link>
+
 
                 {/* btn back */}
                 <CustomTooltip title="Back to Problems">

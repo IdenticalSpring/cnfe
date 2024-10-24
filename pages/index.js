@@ -2,6 +2,7 @@ import React from 'react';
 import DefaultLayout from '@/layout/DefaultLayout';
 import styled from 'styled-components';
 import Link from 'next/link';
+import Image from 'next/image';
 
 // Styled components
 const Section = styled.section`
@@ -210,11 +211,13 @@ export default function HomePage() {
             {features.map(feature => (
               <Card key={feature.id}>
                 <IconWrapper>
-                  <img
+                  {/* <Image
                     src={`https://openui.fly.dev/openui/24x24.svg?text=${encodeURIComponent(feature.icon)}`}
                     alt="feature-icon"
-                    onError={(e) => { e.target.onerror = null; e.target.src = '/path/to/default/icon.svg'; }} // Use a default icon if the image fails to load
-                  />
+                    width={24}  // Đặt chiều rộng ảnh
+                    height={24} // Đặt chiều cao ảnh
+                    onError={(e) => { e.target.onerror = null; e.target.src = '/path/to/default/icon.svg'; }}
+                  /> */}
                 </IconWrapper>
                 <Title>{feature.title}</Title>
                 <Text>{feature.description}</Text>

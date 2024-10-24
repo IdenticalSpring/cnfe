@@ -88,7 +88,7 @@ const generateFakeData = (count = 30) => {
   }));
 };
 
-const index = () => {
+const Index = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [allProblems, setAllProblems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -291,4 +291,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default Index;
