@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Menu, Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import Cookies from 'js-cookie';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 const HeaderContainer = styled.div`
     display: flex;
@@ -47,17 +47,18 @@ const Header = () => {
         }
     }, []);
 
-    const menu = (
-        <Menu>
-            <Menu.Item key="1">
-                <a href="/logout">Logout</a>
-            </Menu.Item>
-        </Menu>
-    );
+    const menuItems = [
+        {
+            key: '1',
+            label: <a href="/logout">Logout</a>,
+        },
+    ];
+
+
 
     return (
         <HeaderContainer>
-            <Dropdown overlay={menu}>
+            <Dropdown menu={{ items: menuItems }}>
                 <AccountName>
                     {displayName} <DownOutlined />
                 </AccountName>

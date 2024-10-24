@@ -107,18 +107,24 @@ export const Header = () => {
     router.push("/auth/login");
   };
 
-  const menu = (
-    <Menu>
-      <Menu.Item key="profile">
+  const menuItems = [
+    {
+      key: "profile",
+      label: (
         <Link href="/users/profile" passHref legacyBehavior>
           <span>Profile</span>
         </Link>
-      </Menu.Item>
-      <Menu.Item key="logout" onClick={handleLogout}>
-        Log out
-      </Menu.Item>
-    </Menu>
-  );
+      ),
+    },
+    {
+      key: "logout",
+      label: (
+        <span onClick={handleLogout}>
+          Log out
+        </span>
+      ),
+    },
+  ];
 
   return (
     <Container>
@@ -149,7 +155,7 @@ export const Header = () => {
             </StyledLink>
           </Link>
           {username ? (
-            <Dropdown overlay={menu}>
+            <Dropdown menu={{ items: menuItems }}>
               <StyledLink as="span">{username}</StyledLink>
             </Dropdown>
           ) : (
