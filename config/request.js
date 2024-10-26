@@ -29,7 +29,3 @@ request.interceptors.request.use((config) => {
 }, (error) => {
   return Promise.reject(error);
 });
-
-export const getToken = () => {
-  return Cookies.get('token');
-};

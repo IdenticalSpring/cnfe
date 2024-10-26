@@ -49,9 +49,6 @@ const TableAccount = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
 
-  // Khởi tạo notification component
-  const [api, contextHolder] = notification.useNotification();
-
   // Dữ liệu giả để hiển thị trong bảng
   const fakeData = [
     {
@@ -228,60 +225,36 @@ const TableAccount = () => {
     setData(users);
   }, []);
 
-  // const getAllData = async () => {
-  //   try {
-  //     const rq = await adminAPI.getAllUsers();
-  //     console.log(rq);
-
-  //     if (rq.statusCode === 200) {
-  //       const users = rq.data.map(user => ({
-  //         id: user.id,
-  //         name: user.name,
-  //         username: user.username,
-  //         email: user.email,
-  //         role: user.role.charAt(0).toUpperCase() + user.role.slice(1),
-  //         active: user.isActive,
-  //       }));
-  //       setData(users);
-  //     }
-  //     else {
-  //       console.error("lỗi");
-  //     }
-  //   }
-  //   catch {
-  //     console.error("không thể call api");
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   getAllData();
-  // }, []);
-
   const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      width: 150, // Đặt chiều rộng cố định cho cột
     },
     {
       title: 'Username',
       dataIndex: 'username',
       key: 'username',
+      width: 100,
     },
     {
       title: 'Email',
       dataIndex: 'email',
       key: 'email',
+      width: 250,
     },
     {
       title: 'Role',
       dataIndex: 'role',
       key: 'role',
+      width: 100,
     },
     {
       title: 'Active',
       dataIndex: 'active',
       key: 'active',
+      width: 100,
       render: (active) => (
         <span>{active ? 'Đang hoạt động' : 'Vô hiệu'}</span>
       ),
@@ -289,12 +262,13 @@ const TableAccount = () => {
     {
       title: 'Action',
       key: 'action',
+      width: 100,
       render: (_, record) => (
         <span>
           <Button
             type="link"
             icon={<EditOutlined className='custom-iconEdit' />}
-          onClick={() => handleEdit(record.id)}
+            onClick={() => handleEdit(record.id)}
           />
           <Divider type="vertical" />
           <Button
@@ -305,7 +279,7 @@ const TableAccount = () => {
         </span>
       ),
     },
-  ];
+  ];  
 
   const showDeleteModal = (id) => {
     setSelectedUserId(id);
@@ -320,7 +294,6 @@ const TableAccount = () => {
     setData(data.filter(user => user.id !== selectedUserId));
     setIsModalVisible(false);
 
-    // Hiển thị notification sau khi xóa thành công
     notification.success({
       message: 'Xóa thành công',
       description: 'Tài khoản đã được xóa thành công.',
@@ -335,7 +308,6 @@ const TableAccount = () => {
 
   return (
     <TableContainer>
-      {contextHolder}
       <StyledTable
         dataSource={data}
         columns={columns}

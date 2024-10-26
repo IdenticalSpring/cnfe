@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
-import Link from 'next/link';
-import styled from 'styled-components';
-import { IconButton, InputAdornment, TextField } from '@mui/material';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import DefaultLayout from '@/layout/DefaultLayout';
-import { loginUser } from '@/service/auth-api';
-import { notification } from 'antd';
-import { useRouter } from 'next/router';
-import { jwtDecode } from 'jwt-decode';
+import React, { useState } from "react";
+import Link from "next/link";
+import styled from "styled-components";
+import { IconButton, InputAdornment, TextField } from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import DefaultLayout from "@/layout/DefaultLayout";
+import { loginUser } from "@/service/auth-api";
+import { notification } from "antd";
+import { useRouter } from "next/router";
+import jwtDecode from "jwt-decode";
+import { authAPI } from "@/service/auth-api";
 
 const StyledLink = styled.a`
   text-decoration: none;
@@ -33,14 +35,14 @@ const FormWrapper = styled.div`
   position: relative;
 `;
 
-export const LogoWrapper = styled.div`
+const LogoWrapper = styled.div`
   display: flex;
   justify-content: center;
   height: 100px;
   margin-bottom: 25px;
 `;
 
-export const Logo = styled.img`
+const Logo = styled.img`
   height: auto;
   width: auto;
   max-height: 200px;
@@ -72,6 +74,29 @@ const LoginButton = styled.button`
   margin-top: 20px;
 `;
 
+const OAuthButton = styled(LoginButton)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  color: #333;
+  margin-top: 10px;
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+
+  svg {
+    margin-right: 10px;
+  }
+`;
+
+const GoogleIconImage = styled.img`
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+`;
+
 const ButtonGroup = styled.div`
   display: flex;
   justify-content: space-between;
@@ -85,8 +110,8 @@ const ButtonGroup = styled.div`
 `;
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
@@ -104,54 +129,61 @@ const Login = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    const payload = {
-      username,
-      password,
-    };
-
-    // Gọi hàm loginUser từ service
+    const payload = { username, password };
     const result = await loginUser(payload);
 
     if (result.success) {
       const token = result.data.access_token;
-
-      // Giải mã JWT để lấy thông tin role
       try {
         const decodedToken = jwtDecode(token);
         const role = decodedToken.role;
 
-        // Điều hướng dựa trên role
-        if (role === 'admin') {
-          router.push('/admin/dashboard'); // Chuyển hướng đến trang admin
-        } else if (role === 'user') {
-          router.push('/'); // Chuyển hướng đến trang user
+        if (role === "admin") {
+          router.push("/admin/dashboard");
+        } else if (role === "user") {
+          router.push("/");
         } else {
           notification.error({
-            message: 'Error',
-            description: 'Vai trò không hợp lệ!',
-            placement: 'bottomRight',
+            message: "Error",
+            description: "Vai trò không hợp lệ!",
+            placement: "bottomRight",
             duration: 3,
           });
         }
       } catch (error) {
-        console.error('JWT Decode Error:', error);
         notification.error({
-          message: 'Error',
-          description: 'Token không hợp lệ!',
-          placement: 'bottomRight',
+          message: "Error",
+          description: "Token không hợp lệ!",
+          placement: "bottomRight",
           duration: 3,
         });
       }
     } else {
-      console.log('Login failed');
       notification.error({
-        message: 'Error',
-        description: result.message || 'Đăng nhập thất bại!',
-        placement: 'bottomRight',
+        message: "Error",
+        description: result.message || "Đăng nhập thất bại!",
+        placement: "bottomRight",
         duration: 3,
       });
     }
+  };
+
+  const handleGoogleLogin = async () => {
+    // const result = await authAPI.loginWithGoogle();
+    // if (result.success) {
+    //   notification.success({
+    //     message: "Đăng nhập thành công",
+    //     description: "Bạn đã đăng nhập bằng Google thành công!",
+    //   });
+    //   return result.data;
+    // } else {
+    //   console.log('lỗi');
+    // }
+    console.log("gg");
+  };
+
+  const handleGithubLogin = () => {
+    console.log("git");
   };
 
   return (
@@ -175,7 +207,7 @@ const Login = () => {
           <StyledTextField
             label="Password"
             variant="outlined"
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             value={password}
             onChange={handlePasswordChange}
             InputProps={{
@@ -192,12 +224,23 @@ const Login = () => {
           <LoginButton type="submit" onClick={handleSubmit}>
             Login
           </LoginButton>
+
+          <OAuthButton onClick={handleGoogleLogin}>
+            <GoogleIconImage src="/assets/img/google.png" alt="Google Icon" />
+            Login with Google
+          </OAuthButton>
+
+          <OAuthButton onClick={handleGithubLogin}>
+            <GitHubIcon />
+            Login with GitHub
+          </OAuthButton>
+
           <ButtonGroup>
             <Link href="/" passHref legacyBehavior>
-              <StyledLink>Forgot Password?</StyledLink>
+              <StyledLink>Forgot password</StyledLink>
             </Link>
             <Link href="/auth/signup" passHref legacyBehavior>
-              <StyledLink>Sign Up</StyledLink>
+              <StyledLink>Sign up</StyledLink>
             </Link>
           </ButtonGroup>
         </FormWrapper>

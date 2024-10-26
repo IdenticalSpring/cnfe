@@ -152,6 +152,7 @@ const TableCourse = () => {
       title: 'Title',
       dataIndex: 'title',
       key: 'title',
+      width: 150,
     },
     {
       title: 'Description',
@@ -167,27 +168,31 @@ const TableCourse = () => {
           </span>
         );
       },
-      width: 550,
+      width: 500,
     },
     {
       title: 'Image',
       dataIndex: 'img',
       key: 'img',
+      width: 150,
       render: (text, record) => <img src={record.img} alt={record.title} width="50" />,
     },
     {
       title: 'Created At',
       dataIndex: 'createAt',
       key: 'createAt',
+      width: 150,
     },
     {
       title: 'Updated At',
       dataIndex: 'updateAt',
       key: 'updateAt',
+      width: 150,
     },
     {
       title: 'Action',
       key: 'action',
+      width: 150,
       render: (text, record) => (
         <span>
           <Button

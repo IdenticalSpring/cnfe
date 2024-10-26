@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Modal, notification } from 'antd';
 import Cookies from 'js-cookie';
+import { request } from "config/request";
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -159,3 +160,15 @@ export const logoutUser = async (router) => {
         return { success: false, message: error.response?.data?.message || 'Có lỗi xảy ra. Vui lòng thử lại sau.' };
     }
 };
+
+// export const authAPI = {
+//     loginWithGoogle: async () => {
+//         try {
+//             const response = await request.get("/auth/google");
+//             return response.data;
+//           } catch (error) {
+//             console.error("Lỗi đăng nhập Google:", error);
+//             return { success: false, message: "Đăng nhập thất bại!" };
+//           }
+//     },
+// };
