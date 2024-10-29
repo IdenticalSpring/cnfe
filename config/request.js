@@ -18,8 +18,6 @@ request.defaults.paramsSerializer = {
 
 request.interceptors.request.use((config) => {
   const token = Cookies.get('token');
-  console.log("Token đã lấy:", token);
-
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   } else {
