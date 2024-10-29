@@ -110,22 +110,19 @@ const Login = () => {
       password,
     };
 
-    // Gọi hàm loginUser từ service
     const result = await loginUser(payload);
 
     if (result.success) {
       const token = result.data.access_token;
 
-      // Giải mã JWT để lấy thông tin role
       try {
         const decodedToken = jwtDecode(token);
         const role = decodedToken.role;
 
-        // Điều hướng dựa trên role
         if (role === 'admin') {
-          router.push('/admin/dashboard'); // Chuyển hướng đến trang admin
+          router.push('/admin/dashboard');
         } else if (role === 'user') {
-          router.push('/'); // Chuyển hướng đến trang user
+          router.push('/');
         } else {
           notification.error({
             message: 'Error',

@@ -59,7 +59,9 @@ const AdminSidebar = () => {
   const getSelectedKey = (pathname) => {
     if (pathname.includes('/admin/dashboard')) return '/admin/dashboard';
     if (pathname.includes('/admin/users')) return '/admin/users';
-    if (pathname.includes('/admin/courses')) return '/admin/courses';
+    if (pathname.includes('/admin/courses') || pathname.includes('/admin/course/CreateCourse') || pathname.includes('/admin/course/')) {
+      return '/admin/courses';
+    }
     if (pathname.includes('/admin/lessons')) return '/admin/lessons';
     if (pathname.includes('/admin/assignments')) return '/admin/assignments';
     return '/admin/dashboard';
