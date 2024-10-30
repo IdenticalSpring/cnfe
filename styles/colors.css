@@ -1,11 +1,24 @@
 :root {
   --primary-color: #000000;
-  /* --secondary-color: #ffffff; */
   --grey-color: #808080;
   --background-color: #ffffff;
   --text-primary-color: #000000;
   --text-secondary-color: #808080;
   --background-hover-color: #EEEEEE;
+  --orange-color: #FF9900;
+  --success-color: #52c41a;
+}
+
+.ant-tooltip-inner {
+  background-color: var(--background-color) !important;
+  /* Nền xám */
+  color: var(--primary-color) !important;
+  /* Chữ màu trắng */
+}
+
+.ant-tooltip-arrow {
+  border-top-color: white !important;
+  /* Mũi tên màu trắng */
 }
 
 /* body {

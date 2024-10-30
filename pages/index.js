@@ -2,6 +2,7 @@ import React from 'react';
 import DefaultLayout from '@/layout/DefaultLayout';
 import styled from 'styled-components';
 import Link from 'next/link';
+import Image from 'next/image';
 
 // Styled components
 const Section = styled.section`
@@ -139,7 +140,7 @@ const features = [
     icon: '⚙️',
     title: 'Start Exploring',
     description: 'Explore is a well-organized tool that helps you get the most out of MasterCoding by providing structure to guide your progress towards the next step in your programming career.',
-    link: '/explore',
+    link: '/users/explore',
     linkText: 'Explore Now >>>'
   },
   {
@@ -147,13 +148,13 @@ const features = [
     icon: '📊',
     title: 'Questions, Community & Contests',
     description: 'Over 3450 questions for you to practice. Come and join one of the largest tech communities with hundreds of thousands of active users and participate in our contests to challenge yourself and earn rewards.',
-    link: '/product',
+    link: '/users/problems',
     linkText: 'View Questions >>>'
   },
   {
     id: 'feature-4',
     icon: '📈',
-    title: 'Companies & Candidates',
+    title: 'Companies & Candida tes',
     description: 'Not only does MasterCoding prepare candidates for technical interviews, we also help companies identify top technical talent. From sponsoring contests to providing online assessments and training, we offer numerous services to businesses.',
     link: '/companies',
     linkText: 'Learn More >>>'
@@ -163,7 +164,7 @@ const features = [
     icon: '🔧',
     title: 'Developer',
     description: 'We now support 14 popular coding languages. At our core, MasterCoding is about developers. Our powerful development tools such as Playground help you test, debug and even write your own projects online.',
-    link: '/developer',
+    link: '/users/developer',
     linkText: 'Developer Tools >>>'
   },
   {
@@ -210,11 +211,13 @@ export default function HomePage() {
             {features.map(feature => (
               <Card key={feature.id}>
                 <IconWrapper>
-                  <img
+                  {/* <Image
                     src={`https://openui.fly.dev/openui/24x24.svg?text=${encodeURIComponent(feature.icon)}`}
                     alt="feature-icon"
-                    onError={(e) => { e.target.onerror = null; e.target.src = '/path/to/default/icon.svg'; }} // Use a default icon if the image fails to load
-                  />
+                    width={24}  // Đặt chiều rộng ảnh
+                    height={24} // Đặt chiều cao ảnh
+                    onError={(e) => { e.target.onerror = null; e.target.src = '/path/to/default/icon.svg'; }}
+                  /> */}
                 </IconWrapper>
                 <Title>{feature.title}</Title>
                 <Text>{feature.description}</Text>
