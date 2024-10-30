@@ -7,46 +7,85 @@ import "slick-carousel/slick/slick-theme.css";
 import axios from 'axios';
 
 const PageWrapper = styled.div`
-  padding: 20px 40px;
+  padding: 40px 60px;
+  background: #f9fbfc;
+  min-height: 100vh;
 `;
 
 const Title = styled.div`
-  margin-bottom: 40px;
+  margin-bottom: 60px;
+  text-align: center;
 `;
 
 const WelcomeText = styled.div`
-  font-size: 32px;
+  font-size: 36px;
   color: #8c8c8c;
   font-weight: 400;
 `;
 
 const ExploreText = styled.div`
-  font-size: 48px;
-  font-weight: 500;
+  font-size: 52px;
+  font-weight: 700;
   color: #0073E6;
+  position: relative;
+  display: inline-block;
+  margin-top: 10px;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: #0073E6;
+    border-radius: 2px;
+  }
+`;
+
+const SectionTitle = styled.h2`
+  font-size: 28px;
+  color: #333;
+  margin: 50px 0 30px;
+  font-weight: 600;
+  position: relative;
+
+  &:before {
+    content: '';
+    width: 6px;
+    height: 100%;
+    background: #0073E6;
+    position: absolute;
+    left: -20px;
+    top: 0;
+    border-radius: 3px;
+  }
 `;
 
 const SlideCard = styled.div`
   margin: 10px;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-  height: 340px;
+  height: 400px;
   display: flex;
   flex-direction: column;
   background: ${props => props.background || '#e6f3ff'};
-  cursor: pointer;
-  transition: transform 0.2s;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 
   &:hover {
-    transform: translateY(-4px);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 115, 230, 0.2);
   }
 `;
 
 const ImageContainer = styled.div`
   width: 100%;
-  height: 140px;
+  height: 160px;
   overflow: hidden;
   position: relative;
+  background: #f0f0f0;
 `;
 
 const SlideImage = styled.img`
@@ -56,66 +95,62 @@ const SlideImage = styled.img`
   position: absolute;
   top: 0;
   left: 0;
+  transition: transform 0.3s ease;
+
+  ${SlideCard}:hover & {
+    transform: scale(1.05);
+  }
 `;
 
 const ContentContainer = styled.div`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  padding-top: 10px;
+  padding: 20px;
+  background-color: #fff;
 `;
 
 const CardTitle = styled.div`
-  padding: 10px 20px;
-  font-size: 18px;
-  font-weight: 500;
-  color: #262626;
-`;
-
-const CardDescription = styled.div`
-  padding: 0 20px;
-  font-size: 14px;
-  color: #595959;
-  flex-grow: 1;
-  line-height: 1.5;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
   margin-bottom: 10px;
 `;
 
+const CardDescription = styled.div`
+  font-size: 15px;
+  color: #595959;
+  flex-grow: 1;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+`;
+
 const StatsContainer = styled.div`
-  padding: 15px 20px;
   display: flex;
-  gap: 40px;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-  background: rgba(255, 255, 255, 0.3);
+  justify-content: space-between;
+  padding: 15px;
+  background-color: #f8f9fb;
+  border-top: 1px solid #e0e0e0;
+  font-size: 14px;
+  color: #666;
 `;
 
 const StatItem = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const StatLabel = styled.div`
-  color: #ff4d4f;
-  font-size: 14px;
   font-weight: 500;
 `;
 
-const StatValue = styled.div`
-  color: #8c8c8c;
+const PlaceholderText = styled.div`
   font-size: 14px;
+  color: #b3b3b3;
+  text-align: center;
+  padding: 20px;
 `;
 
 const SliderWrapper = styled.div`
-  .slick-track {
-    display: flex;
-    .slick-slide {
-      height: inherit;
-      > div {
-        height: 100%;
-      }
-    }
-  }
+  margin-bottom: 50px;
 
   .slick-prev, .slick-next {
     z-index: 1;
@@ -126,75 +161,76 @@ const SliderWrapper = styled.div`
   }
 `;
 
-// Hàm lấy màu nền dựa vào index
-const getBackgroundColor = (index) => {
-  const colors = [
-    '#e6f3ff',
-    '#e6f0ff',
-    '#f9ecff',
-    '#e6f3ff',
-    '#f3e6ff'
-  ];
-  return colors[index % colors.length];
+const settings = {
+  dots: false,
+  infinite: false,
+  speed: 500,
+  slidesToShow: 4,
+  slidesToScroll: 1,
+  swipeToSlide: true,
+  responsive: [
+    { breakpoint: 1440, settings: { slidesToShow: 3 } },
+    { breakpoint: 1024, settings: { slidesToShow: 2 } },
+    { breakpoint: 768, settings: { slidesToShow: 1 } }
+  ]
 };
-
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+const fetchCoursesByType = async (type) => {
+  try {
+    const response = await axios.get(`${baseURL}/courses/getByType`, { params: { type } });
+    return response.data?.data?.data || [];
+  } catch (error) {
+    console.error(`Error fetching ${type} courses:`, error);
+    return [];
+  }
+};
+
 const Explore = () => {
-  const [slidesData, setSlidesData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const settings = {
-    dots: false,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    swipeToSlide: true,
-    responsive: [
-      {
-        breakpoint: 1440,
-        settings: {
-          slidesToShow: 3,
-        }
-      },
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,
-        }
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 1,
-        }
-      }
-    ]
-  };
-
-  const fetchAllCourses = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get(`${baseURL}/courses`);
-      const { data } = response.data;
-      setSlidesData(data);
-    } catch (error) {
-      console.error('Error fetching courses:', error);
-    }
-    setIsLoading(false);
-  };
+  const [learnCourses, setLearnCourses] = useState([]);
+  const [featuredCourses, setFeaturedCourses] = useState([]);
+  const [interviewCourses, setInterviewCourses] = useState([]);
 
   useEffect(() => {
-    fetchAllCourses();
+    const loadCourses = async () => {
+      const learn = await fetchCoursesByType('learn');
+      const featured = await fetchCoursesByType('featured');
+      const interview = await fetchCoursesByType('interview');
+
+      setLearnCourses(learn);
+      setFeaturedCourses(featured);
+      setInterviewCourses(interview);
+    };
+
+    loadCourses();
   }, []);
 
-  // Group data by type for categorized display
-  const groupedData = slidesData.reduce((acc, item) => {
-    (acc[item.type] = acc[item.type] || []).push(item);
-    return acc;
-  }, {});
+  const renderCourses = (courses, type) => {
+    if (!courses || courses.length === 0) {
+      return <PlaceholderText>No {type} courses available.</PlaceholderText>;
+    }
+
+    return (
+      <Slider {...settings}>
+        {courses.map((course, index) => (
+          <SlideCard key={course.id} background={index % 2 === 0 ? '#e6f3ff' : '#f9f0ff'}>
+            <ImageContainer>
+              <SlideImage src={course.imageUrl || "/api/placeholder/400/225"} alt={course.title} />
+            </ImageContainer>
+            <ContentContainer>
+              <CardTitle>{course.title}</CardTitle>
+              <CardDescription>{course.description || "No description available"}</CardDescription>
+            </ContentContainer>
+            <StatsContainer>
+              <StatItem>Chapters: {course.chapters || '0'}</StatItem>
+              <StatItem>Items: {course.items || '0'}</StatItem>
+            </StatsContainer>
+          </SlideCard>
+        ))}
+      </Slider>
+    );
+  };
 
   return (
     <DefaultLayout>
@@ -204,45 +240,20 @@ const Explore = () => {
           <ExploreText>Master Coding Explore</ExploreText>
         </Title>
 
-        {/* Render each category of courses */}
-        {Object.entries(groupedData).map(([type, courses]) => (
-          <div key={type}>
-            <h2>{type.charAt(0).toUpperCase() + type.slice(1)}</h2>
-            <SliderWrapper>
-              <Slider {...settings}>
-                {courses.map((course, index) => (
-                  <div key={course.id}>
-                    <SlideCard background={getBackgroundColor(index)}>
-                      <ImageContainer>
-                        <SlideImage src={course.imageUrl || "/api/placeholder/400/225"} alt={course.title} />
-                      </ImageContainer>
-                      <ContentContainer>
-                        <CardTitle>{course.title}</CardTitle>
-                        <CardDescription>{course.description}</CardDescription>
-                        <StatsContainer>
-                          <StatItem>
-                            <StatLabel>Chapters</StatLabel>
-                            <StatValue>{course.chapters || '0'}</StatValue>
-                          </StatItem>
-                          <StatItem>
-                            <StatLabel>Items</StatLabel>
-                            <StatValue>{course.items || '0'}</StatValue>
-                          </StatItem>
-                        </StatsContainer>
-                      </ContentContainer>
-                    </SlideCard>
-                  </div>
-                ))}
-              </Slider>
-            </SliderWrapper>
-          </div>
-        ))}
+        <SectionTitle>Learn Courses</SectionTitle>
+        <SliderWrapper>
+          {renderCourses(learnCourses, "learn")}
+        </SliderWrapper>
 
-        {isLoading && (
-          <div style={{ textAlign: 'center', padding: '20px' }}>
-            Loading data...
-          </div>
-        )}
+        <SectionTitle>Featured Courses</SectionTitle>
+        <SliderWrapper>
+          {renderCourses(featuredCourses, "featured")}
+        </SliderWrapper>
+
+        <SectionTitle>Interview Courses</SectionTitle>
+        <SliderWrapper>
+          {renderCourses(interviewCourses, "interview")}
+        </SliderWrapper>
       </PageWrapper>
     </DefaultLayout>
   );
