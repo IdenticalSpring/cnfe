@@ -1,5 +1,5 @@
 import DefaultLayout from '@/layout/DefaultLayout';
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
@@ -138,15 +138,12 @@ const getBackgroundColor = (index) => {
   return colors[index % colors.length];
 };
 
+
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const Explore = () => {
   const [slidesData, setSlidesData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [isDragging, setIsDragging] = useState(false); // Khai báo trạng thái isDragging
-  const observer = useRef();
 
   const settings = {
     dots: false,
@@ -154,77 +151,50 @@ const Explore = () => {
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 1,
-    swipe: true,
     swipeToSlide: true,
-    touchThreshold: 5,
-    cssEase: 'cubic-bezier(0.23, 1, 0.32, 1)',
-    useCSS: true,
-    useTransform: true,
-    draggable: true,
-    beforeChange: () => setIsDragging(true), // Sử dụng isDragging
-    afterChange: () => setIsDragging(false),
     responsive: [
       {
         breakpoint: 1440,
         settings: {
           slidesToShow: 3,
-          slidesToScroll: 1,
         }
       },
       {
         breakpoint: 1024,
         settings: {
           slidesToShow: 2,
-          slidesToScroll: 1,
         }
       },
       {
         breakpoint: 768,
         settings: {
           slidesToShow: 1,
-          slidesToScroll: 1,
         }
       }
     ]
   };
 
-  const fetchPaginatedCourses = async (page = 1) => {
+  const fetchAllCourses = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${baseURL}/courses/getPagination`, {
-        params: { page },
-      });
-      const { data, currentPage: fetchedPage, totalPages } = response.data.data;
-      const uniqueData = data.map((item, index) => ({
-        ...item,
-        uniqueKey: `${item.id}-${fetchedPage}-${index}`,
-      }));
-      setSlidesData((prevData) => [...prevData, ...uniqueData]);
-      setCurrentPage(fetchedPage);
-      setTotalPages(totalPages);
+      const response = await axios.get(`${baseURL}/courses`);
+      const { data } = response.data;
+      setSlidesData(data);
     } catch (error) {
-      console.error('Error fetching paginated courses:', error);
+      console.error('Error fetching courses:', error);
     }
     setIsLoading(false);
   };
 
   useEffect(() => {
-    fetchPaginatedCourses(currentPage);
-  }, [currentPage]);
+    fetchAllCourses();
+  }, []);
 
-  const lastSlideRef = useCallback(
-    (node) => {
-      if (isLoading) return;
-      if (observer.current) observer.current.disconnect();
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && currentPage < totalPages) {
-          setCurrentPage((prevPage) => prevPage + 1);
-        }
-      });
-      if (node) observer.current.observe(node);
-    },
-    [isLoading, currentPage, totalPages]
-  );
+  // Group data by type for categorized display
+  const groupedData = slidesData.reduce((acc, item) => {
+    (acc[item.type] = acc[item.type] || []).push(item);
+    return acc;
+  }, {});
 
   return (
     <DefaultLayout>
@@ -234,43 +204,43 @@ const Explore = () => {
           <ExploreText>Master Coding Explore</ExploreText>
         </Title>
 
-        <SliderWrapper>
-          <Slider {...settings}>
-            {slidesData.map((slide, index) => {
-              const isLastElement = index === slidesData.length - 1;
-              return (
-                <div key={slide.uniqueKey} ref={isLastElement ? lastSlideRef : null}>
-                  <SlideCard background={getBackgroundColor(index)}>
-                    <ImageContainer>
-                      <SlideImage
-                        src={slide.imageUrl || "/api/placeholder/400/225"}
-                        alt={slide.title}
-                      />
-                    </ImageContainer>
-                    <ContentContainer>
-                      <CardTitle>{slide.title}</CardTitle>
-                      <CardDescription>{slide.description}</CardDescription>
-                      <StatsContainer>
-                        <StatItem>
-                          <StatLabel>Chapters</StatLabel>
-                          <StatValue>{slide.chapters || '0%'}</StatValue>
-                        </StatItem>
-                        <StatItem>
-                          <StatLabel>Items</StatLabel>
-                          <StatValue>{slide.items || '0%'}</StatValue>
-                        </StatItem>
-                      </StatsContainer>
-                    </ContentContainer>
-                  </SlideCard>
-                </div>
-              );
-            })}
-          </Slider>
-        </SliderWrapper>
+        {/* Render each category of courses */}
+        {Object.entries(groupedData).map(([type, courses]) => (
+          <div key={type}>
+            <h2>{type.charAt(0).toUpperCase() + type.slice(1)}</h2>
+            <SliderWrapper>
+              <Slider {...settings}>
+                {courses.map((course, index) => (
+                  <div key={course.id}>
+                    <SlideCard background={getBackgroundColor(index)}>
+                      <ImageContainer>
+                        <SlideImage src={course.imageUrl || "/api/placeholder/400/225"} alt={course.title} />
+                      </ImageContainer>
+                      <ContentContainer>
+                        <CardTitle>{course.title}</CardTitle>
+                        <CardDescription>{course.description}</CardDescription>
+                        <StatsContainer>
+                          <StatItem>
+                            <StatLabel>Chapters</StatLabel>
+                            <StatValue>{course.chapters || '0'}</StatValue>
+                          </StatItem>
+                          <StatItem>
+                            <StatLabel>Items</StatLabel>
+                            <StatValue>{course.items || '0'}</StatValue>
+                          </StatItem>
+                        </StatsContainer>
+                      </ContentContainer>
+                    </SlideCard>
+                  </div>
+                ))}
+              </Slider>
+            </SliderWrapper>
+          </div>
+        ))}
 
         {isLoading && (
           <div style={{ textAlign: 'center', padding: '20px' }}>
-            Loading more items...
+            Loading data...
           </div>
         )}
       </PageWrapper>
