@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 const ProblemTitle = styled.h1`
   font-size: 28px;
@@ -24,7 +24,7 @@ const DescriptionContainer = styled.div`
 const ProblemHeader = styled.div`
   position: sticky;
   top: 0;
-  background-color: var(--background-hover-color); 
+  background-color: var(--background-hover-color);
   border-bottom: 1px solid #ddd;
   font-weight: bold;
   padding: 10px 20px;
@@ -37,13 +37,12 @@ const ProblemContent = styled.div`
 `;
 
 const Description = ({ title, description }) => (
-    <DescriptionContainer>
-        <ProblemHeader>{title}</ProblemHeader>
-        <ProblemContent>
-            <ProblemDescription>{description}</ProblemDescription>
-        </ProblemContent>
-    </DescriptionContainer>
+  <DescriptionContainer>
+    <ProblemHeader>{title}</ProblemHeader>
+    <ProblemContent>
+      <ProblemDescription>{description}</ProblemDescription>
+    </ProblemContent>
+  </DescriptionContainer>
 );
 
 export default Description;
-
