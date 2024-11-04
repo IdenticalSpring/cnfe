@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Dropdown, Table, Button, Skeleton, Input, Tag } from "antd";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -23,10 +23,10 @@ const ProblemListContainer = styled.div`
   background-color: var(--background-color);
   color: var(--text-primary-color);
   min-height: 100vh;
-  width: 100%; /* Đảm bảo container chiếm toàn bộ chiều rộng */
+  width: 100%;
 
   @media (max-width: 1024px) {
-    margin: 0 20px; /* Giảm margin ở màn hình nhỏ hơn */
+    margin: 0 20px;
     padding: 10px;
   }
 
@@ -74,10 +74,6 @@ const TagList = styled.div`
   overflow-y: auto;
 `;
 
-const TagSearchContainer = styled.div`
-  margin-bottom: 10px;
-`;
-
 const CustomTag = styled(Tag)`
   display: flex;
   justify-content: center;
@@ -86,6 +82,7 @@ const CustomTag = styled(Tag)`
   font-size: 14px;
   text-align: center;
 `;
+
 const StyledTable = styled(Table)`
   .ant-table-thead > tr > th {
     background-color: var(--background-hover-color);
@@ -111,68 +108,123 @@ const Index = () => {
   const [difficultyLabels, setDifficultyLabels] = useState({});
   const [pageSize, setPageSize] = useState(20);
   const [totalProblems, setTotalProblems] = useState(0);
+  const [topics, setTopics] = useState([]);
+  const [isDifficultyLoaded, setIsDifficultyLoaded] = useState(false); // Track if difficulties are loaded
+
+  const fetchProblems = async (
+    page = 1,
+    size = pageSize,
+    difficultyId = null,
+    title = ""
+  ) => {
+    setLoading(true);
+    try {
+      let response;
+      if (difficultyId && title) {
+        response = await userAPI.getFilteredProblemsByDifficultyAndTitle(
+          difficultyId,
+          title,
+          page,
+          size
+        );
+      } else if (difficultyId) {
+        response = await userAPI.getSearchProblemByDifficulty(
+          difficultyId,
+          page,
+          size
+        );
+      } else if (title) {
+        response = await userAPI.getSearchProblemByTitle(title);
+      } else {
+        response = await userAPI.getAllProblemsByPage(page, size);
+      }
+
+      const problemsData = response?.data?.data || [];
+      const totalItems = response?.data?.totalItems || 0;
+
+      const formattedData = problemsData.map((problem) => ({
+        key: problem.id,
+        title: problem.title,
+        acceptance: problem.acceptance_rate || "none",
+        difficulty: difficultyLabels[problem.difficultyId] || "Unknown",
+      }));
+
+      setAllProblems(formattedData);
+      setTotalProblems(totalItems);
+    } catch (error) {
+      console.error("Error fetching problems:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearch = debounce((value) => {
     setSearchText(value);
     setCurrentPage(1);
-  }, 300);
 
-  const filteredProblems = useMemo(() => {
-    return allProblems.filter((problem) => {
-      const matchesDifficulty =
-        selectedDifficulty === "All" ||
-        problem.difficulty === selectedDifficulty;
-      const matchesSearchText = problem.title
-        .toLowerCase()
-        .includes(searchText.toLowerCase());
-      return matchesDifficulty && matchesSearchText;
-    });
-  }, [allProblems, selectedDifficulty, searchText]);
+    const difficultyId =
+      selectedDifficulty === "Easy"
+        ? 1
+        : selectedDifficulty === "Medium"
+        ? 2
+        : selectedDifficulty === "Hard"
+        ? 3
+        : null;
+
+    fetchProblems(1, pageSize, difficultyId, value);
+  }, 300);
 
   const handlePageChange = (page, size) => {
     setCurrentPage(page);
     setPageSize(size || pageSize);
+
+    const difficultyId =
+      selectedDifficulty === "Easy"
+        ? 1
+        : selectedDifficulty === "Medium"
+        ? 2
+        : selectedDifficulty === "Hard"
+        ? 3
+        : null;
+
+    fetchProblems(page, size, difficultyId, searchText);
   };
+
   const handleDifficultyChange = (difficulty) => {
     setSelectedDifficulty(difficulty);
     setCurrentPage(1);
+
+    const difficultyId =
+      difficulty === "Easy"
+        ? 1
+        : difficulty === "Medium"
+        ? 2
+        : difficulty === "Hard"
+        ? 3
+        : null;
+
+    fetchProblems(1, pageSize, difficultyId, searchText);
   };
-
-  const tagData = [
-    { text: "Array", count: 1750 },
-    { text: "String", count: 726 },
-    { text: "Hash Table", count: 629 },
-    { text: "Dynamic Programming", count: 533 },
-    { text: "Math", count: 523 },
-    { text: "Sorting", count: 415 },
-    { text: "Greedy", count: 383 },
-  ];
-
-  const filteredTags = tagData.filter((tag) =>
-    tag.text.toLowerCase().includes(tagSearchText.toLowerCase())
-  );
 
   const tagMenu = (
     <TagDropdownContainer>
-      <TagSearchContainer>
-        <Input
-          placeholder="Filter topics"
-          suffix={<SearchIcon />}
-          value={tagSearchText}
-          onChange={(e) => setTagSearchText(e.target.value)}
-        />
-      </TagSearchContainer>
+      <Input
+        placeholder="Search topics"
+        suffix={<SearchIcon />}
+        value={tagSearchText}
+        onChange={(e) => setTagSearchText(e.target.value)}
+        style={{ marginBottom: "10px" }}
+      />
       <TagList>
-        {filteredTags.map((tag, index) => (
-          <CustomTag key={index}>
-            <span>{tag.text}</span>
-            <span
-              style={{ marginLeft: "5px", fontWeight: "bold", color: "orange" }}
-            >
-              {tag.count}
-            </span>
-          </CustomTag>
-        ))}
+        {topics
+          .filter((topic) =>
+            topic.name.toLowerCase().includes(tagSearchText.toLowerCase())
+          )
+          .map((topic) => (
+            <CustomTag key={topic.id}>
+              <span>{topic.name}</span>
+            </CustomTag>
+          ))}
       </TagList>
     </TagDropdownContainer>
   );
@@ -204,14 +256,7 @@ const Index = () => {
       key: "title",
       render: (text, record) => (
         <Link href={`/users/problems/${record.key}`} passHref>
-          <span
-            style={{
-              cursor: "pointer",
-              color: "blue",
-            }}
-          >
-            {text}
-          </span>
+          <span style={{ cursor: "pointer", color: "blue" }}>{text}</span>
         </Link>
       ),
     },
@@ -240,42 +285,39 @@ const Index = () => {
   ];
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
+    const fetchDifficulties = async () => {
       try {
-        const difficultyResponse = await userAPI.getDifficulties();
-        const difficulties = difficultyResponse?.data?.reduce((acc, item) => {
+        const response = await userAPI.getDifficulties();
+        const difficulties = response?.data?.reduce((acc, item) => {
           acc[item.id] = item.name;
           return acc;
         }, {});
-
         setDifficultyLabels(difficulties);
-
-        const response = await userAPI.getAllProblemsByPage(
-          currentPage,
-          pageSize
-        );
-        const problemsData = response?.data?.data || [];
-        const totalItems = response?.data?.totalItems || 0;
-
-        const formattedData = problemsData.map((problem) => ({
-          key: problem?.id,
-          title: problem?.title,
-          acceptance: problem?.acceptance_rate || "none",
-          difficulty: difficulties[problem?.difficultyId] || "Unknown",
-        }));
-
-        setAllProblems(formattedData);
-        setTotalProblems(totalItems);
+        setIsDifficultyLoaded(true); // Set flag after difficulties are loaded
       } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
+        console.error("Error fetching difficulties:", error);
       }
     };
 
-    fetchData();
-  }, [currentPage, pageSize]);
+    const fetchTopics = async () => {
+      try {
+        const response = await userAPI.getAllTopics();
+        setTopics(response.data);
+      } catch (error) {
+        console.error("Error fetching topics:", error);
+      }
+    };
+
+    fetchDifficulties();
+    fetchTopics();
+  }, []);
+
+  // Only call fetchProblems after difficulties are loaded
+  useEffect(() => {
+    if (isDifficultyLoaded) {
+      fetchProblems(currentPage, pageSize);
+    }
+  }, [isDifficultyLoaded]);
 
   return (
     <DefaultLayout>
@@ -314,7 +356,7 @@ const Index = () => {
             <Skeleton active paragraph={{ rows: 10 }} />
           ) : (
             <StyledTable
-              dataSource={filteredProblems}
+              dataSource={allProblems}
               columns={columns}
               pagination={{
                 current: currentPage,
@@ -322,7 +364,6 @@ const Index = () => {
                 total: totalProblems,
                 onChange: handlePageChange,
                 showSizeChanger: false,
-                pageSizeOptions: [10, 20, 50, 100],
               }}
             />
           )}

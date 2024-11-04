@@ -27,14 +27,24 @@ export const userAPI = {
     const response = await request.get(`/problems/detail/${id}`);
     return response.data;
   },
-  getSearchProblemByDifficulty: async (difficultyId, page) => {
+  getSearchProblemByDifficulty: async (id) => {
     const response = await request.get(
-      `/problems/search-by-difficulty?difficultyId=${difficultyId}&page=${page}`
+      `/problems/search-by-difficulty?difficultyId=${id}`
+    );
+    return response.data;
+  },
+  getSearchProblemByTitle: async (title) => {
+    const response = await request.get(
+      `/problems/search-by-title?title=${title}`
     );
     return response.data;
   },
   getAllCompanies: async () => {
     const response = await request.get("/companies");
+    return response.data;
+  },
+  getAllTopics: async () => {
+    const response = await request.get("/topics");
     return response.data;
   },
 };

@@ -5,6 +5,7 @@ import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import axios from 'axios';
+import Link from 'next/link';
 
 const PageWrapper = styled.div`
   padding: 40px 60px;
@@ -179,13 +180,15 @@ const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const fetchCoursesByType = async (type) => {
   try {
-    const response = await axios.get(`${baseURL}/courses/getByType`, { params: { type } });
-    return response.data?.data?.data || [];
+    const response = await axios.get(`${baseURL}/courses/getByType`, { params: { type, page: 1 } });
+    return response.data?.data?.data || []; 
   } catch (error) {
     console.error(`Error fetching ${type} courses:`, error);
     return [];
   }
 };
+
+
 
 const Explore = () => {
   const [learnCourses, setLearnCourses] = useState([]);
@@ -207,30 +210,33 @@ const Explore = () => {
   }, []);
 
   const renderCourses = (courses, type) => {
-    if (!courses || courses.length === 0) {
+    if (!Array.isArray(courses) || courses.length === 0) {
       return <PlaceholderText>No {type} courses available.</PlaceholderText>;
     }
 
     return (
       <Slider {...settings}>
         {courses.map((course, index) => (
-          <SlideCard key={course.id} background={index % 2 === 0 ? '#e6f3ff' : '#f9f0ff'}>
-            <ImageContainer>
-              <SlideImage src={course.imageUrl || "/api/placeholder/400/225"} alt={course.title} />
-            </ImageContainer>
-            <ContentContainer>
-              <CardTitle>{course.title}</CardTitle>
-              <CardDescription>{course.description || "No description available"}</CardDescription>
-            </ContentContainer>
-            <StatsContainer>
-              <StatItem>Chapters: {course.chapters || '0'}</StatItem>
-              <StatItem>Items: {course.items || '0'}</StatItem>
-            </StatsContainer>
-          </SlideCard>
+          <Link key={course.id} href={`/users/course/${course.id}`} passHref>
+            <SlideCard key={course.id} background={index % 2 === 0 ? '#e6f3ff' : '#f9f0ff'}>
+              <ImageContainer>
+                <SlideImage src={course.imageUrl || "/api/placeholder/400/225"} alt={course.title} />
+              </ImageContainer>
+              <ContentContainer>
+                <CardTitle>{course.title}</CardTitle>
+                <CardDescription>{course.description || "No description available"}</CardDescription>
+              </ContentContainer>
+              <StatsContainer>
+                <StatItem>Chapters: {course.chapters || '0'}</StatItem>
+                <StatItem>Items: {course.items || '0'}</StatItem>
+              </StatsContainer>
+            </SlideCard>
+          </Link>
         ))}
       </Slider>
     );
   };
+
 
   return (
     <DefaultLayout>

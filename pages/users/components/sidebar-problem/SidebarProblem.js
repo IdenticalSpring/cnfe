@@ -87,7 +87,6 @@ const Sidebar = () => {
     const fetchCompanies = async () => {
       try {
         const response = await userAPI.getAllCompanies();
-        console.log("API response:", response);
         setCompanies(response.data);
       } catch (error) {
         console.error("Error fetching companies:", error);

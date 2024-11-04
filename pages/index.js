@@ -142,7 +142,7 @@ const features = [
     title: "Start Exploring",
     description:
       "Explore is a well-organized tool that helps you get the most out of MasterCoding by providing structure to guide your progress towards the next step in your programming career.",
-    link: "/users/explore",
+    link: "/users/course",
     linkText: "Explore Now >>>",
   },
   {
@@ -160,7 +160,7 @@ const features = [
     title: "Companies & Candida tes",
     description:
       "Not only does MasterCoding prepare candidates for technical interviews, we also help companies identify top technical talent. From sponsoring contests to providing online assessments and training, we offer numerous services to businesses.",
-    link: "/companies",
+    link: "/",
     linkText: "Learn More >>>",
   },
   {
@@ -178,7 +178,7 @@ const features = [
     title: "Companies & Candidates",
     description:
       "Not only does MasterCoding prepare candidates for technical interviews, we also help companies identify top technical talent. From sponsoring contests to providing online assessments and training, we offer numerous services to businesses.",
-    link: "/companies",
+    link: "/",
     linkText: "Learn More >>>",
   },
   {
@@ -187,7 +187,7 @@ const features = [
     title: "Developer",
     description:
       "We now support 14 popular coding languages. At our core, MasterCoding is about developers. Our powerful development tools such as Playground help you test, debug and even write your own projects online.",
-    link: "/developer",
+    link: "/",
     linkText: "Developer Tools >>>",
   },
   {
@@ -196,7 +196,7 @@ const features = [
     title: "Companies & Candidates",
     description:
       "Not only does MasterCoding prepare candidates for technical interviews, we also help companies identify top technical talent. From sponsoring contests to providing online assessments and training, we offer numerous services to businesses.",
-    link: "/companies",
+    link: "/",
     linkText: "Learn More >>>",
   },
 ];
@@ -209,12 +209,11 @@ export default function HomePage() {
           <Title_Head>
             This is a smart programming learning support website.
           </Title_Head>
-
+          s
           <Text>
             At MasterCoding, our mission is to help you improve yourself and
             land your dream job.
           </Text>
-
           <FlexContainer>
             {features.map((feature) => (
               <Card key={feature.id}>
