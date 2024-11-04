@@ -1,75 +1,259 @@
 import DefaultLayout from '@/layout/DefaultLayout';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import SlickExplore from './components/slider/SlickExplore';
-// import { userAPI } from 'service/user';
+import Slider from 'react-slick';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import axios from 'axios';
 
-// Styled Component cho tiêu đề
-const Title = styled.div`
-  font-size: 48px;
-  font-weight: 300;
-  color: #262626;
-  margin-bottom: 20px;
-`;
-
-const WelcomeText = styled.span`
-  font-size: 32px;
-  color: #999;
-`;
-
-const ExploreText = styled.span`
-  font-weight: 600;
-  color: #0070f3;
-`;
-
-// Styled Component cho Wrapper chính
 const PageWrapper = styled.div`
-  margin-left: 20px;
+  padding: 40px 60px;
+  background: #f9fbfc;
+  min-height: 100vh;
 `;
+
+const Title = styled.div`
+  margin-bottom: 60px;
+  text-align: center;
+`;
+
+const WelcomeText = styled.div`
+  font-size: 36px;
+  color: #8c8c8c;
+  font-weight: 400;
+`;
+
+const ExploreText = styled.div`
+  font-size: 52px;
+  font-weight: 700;
+  color: #0073E6;
+  position: relative;
+  display: inline-block;
+  margin-top: 10px;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: #0073E6;
+    border-radius: 2px;
+  }
+`;
+
+const SectionTitle = styled.h2`
+  font-size: 28px;
+  color: #333;
+  margin: 50px 0 30px;
+  font-weight: 600;
+  position: relative;
+
+  &:before {
+    content: '';
+    width: 6px;
+    height: 100%;
+    background: #0073E6;
+    position: absolute;
+    left: -20px;
+    top: 0;
+    border-radius: 3px;
+  }
+`;
+
+const SlideCard = styled.div`
+  margin: 10px;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  background: ${props => props.background || '#e6f3ff'};
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0, 115, 230, 0.2);
+  }
+`;
+
+const ImageContainer = styled.div`
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+  position: relative;
+  background: #f0f0f0;
+`;
+
+const SlideImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 0.3s ease;
+
+  ${SlideCard}:hover & {
+    transform: scale(1.05);
+  }
+`;
+
+const ContentContainer = styled.div`
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #fff;
+`;
+
+const CardTitle = styled.div`
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+`;
+
+const CardDescription = styled.div`
+  font-size: 15px;
+  color: #595959;
+  flex-grow: 1;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+`;
+
+const StatsContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  background-color: #f8f9fb;
+  border-top: 1px solid #e0e0e0;
+  font-size: 14px;
+  color: #666;
+`;
+
+const StatItem = styled.div`
+  font-weight: 500;
+`;
+
+const PlaceholderText = styled.div`
+  font-size: 14px;
+  color: #b3b3b3;
+  text-align: center;
+  padding: 20px;
+`;
+
+const SliderWrapper = styled.div`
+  margin-bottom: 50px;
+
+  .slick-prev, .slick-next {
+    z-index: 1;
+    &:before {
+      color: #0073E6;
+      font-size: 24px;
+    }
+  }
+`;
+
+const settings = {
+  dots: false,
+  infinite: false,
+  speed: 500,
+  slidesToShow: 4,
+  slidesToScroll: 1,
+  swipeToSlide: true,
+  responsive: [
+    { breakpoint: 1440, settings: { slidesToShow: 3 } },
+    { breakpoint: 1024, settings: { slidesToShow: 2 } },
+    { breakpoint: 768, settings: { slidesToShow: 1 } }
+  ]
+};
+
+const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+const fetchCoursesByType = async (type) => {
+  try {
+    const response = await axios.get(`${baseURL}/courses/getByType`, { params: { type } });
+    return response.data?.data?.data || [];
+  } catch (error) {
+    console.error(`Error fetching ${type} courses:`, error);
+    return [];
+  }
+};
 
 const Explore = () => {
-  const [slidesData, setSlidesData] = useState([]);
+  const [learnCourses, setLearnCourses] = useState([]);
+  const [featuredCourses, setFeaturedCourses] = useState([]);
+  const [interviewCourses, setInterviewCourses] = useState([]);
 
   useEffect(() => {
-    // Tạo data giả thay vì gọi API
-    const fakeData = [
-      { id: 1, title: "LeetCode's Interview Crash Course", subtitle: "Data Structures and Algorithms", chapters: 13, items: 149 },
-      { id: 2, title: "System Design Fundamentals", subtitle: "Design Large Scale Systems", chapters: 10, items: 120 },
-      { id: 3, title: "JavaScript Algorithms", subtitle: "Learn Algorithms in JavaScript", chapters: 15, items: 180 },
-      { id: 4, title: "Python for Data Science", subtitle: "Data Science with Python", chapters: 12, items: 135 },
-      { id: 5, title: "ReactJS Essentials", subtitle: "Build Interactive UIs", chapters: 8, items: 90 },
-      { id: 6, title: "Java Programming Basics", subtitle: "Learn the Basics of Java", chapters: 10, items: 110 },
-      { id: 7, title: "Introduction to Machine Learning", subtitle: "Foundations of ML", chapters: 9, items: 150 },
-      { id: 8, title: "Web Development Bootcamp", subtitle: "Full Stack Web Development", chapters: 20, items: 200 },
-      { id: 9, title: "Mobile App Development", subtitle: "Create Apps for iOS and Android", chapters: 16, items: 175 },
-      { id: 10, title: "Cloud Computing Essentials", subtitle: "Understanding Cloud Services", chapters: 14, items: 160 },
-    ];
-    
+    const loadCourses = async () => {
+      const learn = await fetchCoursesByType('learn');
+      const featured = await fetchCoursesByType('featured');
+      const interview = await fetchCoursesByType('interview');
 
-    setSlidesData(fakeData); // Gán data giả vào state
-
-    // Comment lại phần API call
-    /*
-    const fetchData = async () => {
-      try {
-        const response = await userAPI.getAllEx();
-        setSlidesData(response.data); 
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
+      setLearnCourses(learn);
+      setFeaturedCourses(featured);
+      setInterviewCourses(interview);
     };
 
-    fetchData();
-    */
+    loadCourses();
   }, []);
+
+  const renderCourses = (courses, type) => {
+    if (!courses || courses.length === 0) {
+      return <PlaceholderText>No {type} courses available.</PlaceholderText>;
+    }
+
+    return (
+      <Slider {...settings}>
+        {courses.map((course, index) => (
+          <SlideCard key={course.id} background={index % 2 === 0 ? '#e6f3ff' : '#f9f0ff'}>
+            <ImageContainer>
+              <SlideImage src={course.imageUrl || "/api/placeholder/400/225"} alt={course.title} />
+            </ImageContainer>
+            <ContentContainer>
+              <CardTitle>{course.title}</CardTitle>
+              <CardDescription>{course.description || "No description available"}</CardDescription>
+            </ContentContainer>
+            <StatsContainer>
+              <StatItem>Chapters: {course.chapters || '0'}</StatItem>
+              <StatItem>Items: {course.items || '0'}</StatItem>
+            </StatsContainer>
+          </SlideCard>
+        ))}
+      </Slider>
+    );
+  };
 
   return (
     <DefaultLayout>
       <PageWrapper>
         <Title>
-          <WelcomeText>Welcome to</WelcomeText> <br /> <ExploreText>LeetCode Explore</ExploreText>
+          <WelcomeText>Welcome to</WelcomeText>
+          <ExploreText>Master Coding Explore</ExploreText>
         </Title>
-        <SlickExplore title="First Slider" slidesData={slidesData} />
+
+        <SectionTitle>Learn Courses</SectionTitle>
+        <SliderWrapper>
+          {renderCourses(learnCourses, "learn")}
+        </SliderWrapper>
+
+        <SectionTitle>Featured Courses</SectionTitle>
+        <SliderWrapper>
+          {renderCourses(featuredCourses, "featured")}
+        </SliderWrapper>
+
+        <SectionTitle>Interview Courses</SectionTitle>
+        <SliderWrapper>
+          {renderCourses(interviewCourses, "interview")}
+        </SliderWrapper>
       </PageWrapper>
     </DefaultLayout>
   );
