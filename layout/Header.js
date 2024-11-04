@@ -139,7 +139,7 @@ export const Header = () => {
           <Link href="/" passHref legacyBehavior>
             <StyledLink $isActive={router.pathname === "/"}>Home</StyledLink>
           </Link>
-          <Link href="/users/explore" passHref legacyBehavior>
+          <Link href="/users/course/explore" passHref legacyBehavior>
             <StyledLink $isActive={router.pathname === "/users/explore"}>
               Explore
             </StyledLink>
