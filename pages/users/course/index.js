@@ -5,6 +5,7 @@ import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import axios from 'axios';
+import Link from 'next/link';
 
 const PageWrapper = styled.div`
   padding: 40px 60px;
@@ -214,6 +215,7 @@ const Explore = () => {
     return (
       <Slider {...settings}>
         {courses.map((course, index) => (
+          <Link key={course.id} href={`/users/course/${course.id}`} passHref>
           <SlideCard key={course.id} background={index % 2 === 0 ? '#e6f3ff' : '#f9f0ff'}>
             <ImageContainer>
               <SlideImage src={course.imageUrl || "/api/placeholder/400/225"} alt={course.title} />
@@ -227,6 +229,7 @@ const Explore = () => {
               <StatItem>Items: {course.items || '0'}</StatItem>
             </StatsContainer>
           </SlideCard>
+          </Link>
         ))}
       </Slider>
     );
