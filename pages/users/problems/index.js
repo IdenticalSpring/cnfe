@@ -81,6 +81,12 @@ const CustomTag = styled(Tag)`
   padding: 4px 8px;
   font-size: 14px;
   text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: var(--link-hover-color);
+  }
 `;
 
 const StyledTable = styled(Table)`
@@ -109,101 +115,46 @@ const Index = () => {
   const [pageSize, setPageSize] = useState(20);
   const [totalProblems, setTotalProblems] = useState(0);
   const [topics, setTopics] = useState([]);
-  const [isDifficultyLoaded, setIsDifficultyLoaded] = useState(false); // Track if difficulties are loaded
-
-  const fetchProblems = async (
-    page = 1,
-    size = pageSize,
-    difficultyId = null,
-    title = ""
-  ) => {
-    setLoading(true);
-    try {
-      let response;
-      if (difficultyId && title) {
-        response = await userAPI.getFilteredProblemsByDifficultyAndTitle(
-          difficultyId,
-          title,
-          page,
-          size
-        );
-      } else if (difficultyId) {
-        response = await userAPI.getSearchProblemByDifficulty(
-          difficultyId,
-          page,
-          size
-        );
-      } else if (title) {
-        response = await userAPI.getSearchProblemByTitle(title);
-      } else {
-        response = await userAPI.getAllProblemsByPage(page, size);
-      }
-
-      const problemsData = response?.data?.data || [];
-      const totalItems = response?.data?.totalItems || 0;
-
-      const formattedData = problemsData.map((problem) => ({
-        key: problem.id,
-        title: problem.title,
-        acceptance: problem.acceptance_rate || "none",
-        difficulty: difficultyLabels[problem.difficultyId] || "Unknown",
-      }));
-
-      setAllProblems(formattedData);
-      setTotalProblems(totalItems);
-    } catch (error) {
-      console.error("Error fetching problems:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [isDifficultyLoaded, setIsDifficultyLoaded] = useState(false);
+  const [selectedTopic, setSelectedTopic] = useState(null); // Track the selected topic
 
   const handleSearch = debounce((value) => {
     setSearchText(value);
     setCurrentPage(1);
 
-    const difficultyId =
-      selectedDifficulty === "Easy"
-        ? 1
-        : selectedDifficulty === "Medium"
-        ? 2
-        : selectedDifficulty === "Hard"
-        ? 3
-        : null;
-
+    const difficultyId = Object.keys(difficultyLabels).find(
+      (key) => difficultyLabels[key] === selectedDifficulty
+    );
     fetchProblems(1, pageSize, difficultyId, value);
   }, 300);
 
   const handlePageChange = (page, size) => {
+    const difficultyId = Object.keys(difficultyLabels).find(
+      (key) => difficultyLabels[key] === selectedDifficulty
+    );
     setCurrentPage(page);
     setPageSize(size || pageSize);
-
-    const difficultyId =
-      selectedDifficulty === "Easy"
-        ? 1
-        : selectedDifficulty === "Medium"
-        ? 2
-        : selectedDifficulty === "Hard"
-        ? 3
-        : null;
-
     fetchProblems(page, size, difficultyId, searchText);
   };
 
   const handleDifficultyChange = (difficulty) => {
+    const difficultyId = Object.keys(difficultyLabels).find(
+      (key) => difficultyLabels[key] === difficulty
+    );
     setSelectedDifficulty(difficulty);
     setCurrentPage(1);
+    fetchProblems(1, pageSize, difficultyId, searchText, selectedTopic);
+  };
+  const handleTopicChange = (topicId) => {
+    const newTopic = selectedTopic === topicId ? null : topicId;
+    setSelectedTopic(newTopic);
+    setCurrentPage(1);
 
-    const difficultyId =
-      difficulty === "Easy"
-        ? 1
-        : difficulty === "Medium"
-        ? 2
-        : difficulty === "Hard"
-        ? 3
-        : null;
+    const difficultyId = Object.keys(difficultyLabels).find(
+      (key) => difficultyLabels[key] === selectedDifficulty
+    );
 
-    fetchProblems(1, pageSize, difficultyId, searchText);
+    fetchProblems(1, pageSize, difficultyId, searchText, newTopic);
   };
 
   const tagMenu = (
@@ -221,7 +172,15 @@ const Index = () => {
             topic.name.toLowerCase().includes(tagSearchText.toLowerCase())
           )
           .map((topic) => (
-            <CustomTag key={topic.id}>
+            <CustomTag
+              key={topic.id}
+              onClick={() => handleTopicChange(topic.id)}
+              style={{
+                borderColor: selectedTopic === topic.id ? "orange" : "default",
+                borderWidth: selectedTopic === topic.id ? "2px" : "1px",
+                borderStyle: selectedTopic === topic.id ? "solid" : "none",
+              }}
+            >
               <span>{topic.name}</span>
             </CustomTag>
           ))}
@@ -293,7 +252,7 @@ const Index = () => {
           return acc;
         }, {});
         setDifficultyLabels(difficulties);
-        setIsDifficultyLoaded(true); // Set flag after difficulties are loaded
+        setIsDifficultyLoaded(true);
       } catch (error) {
         console.error("Error fetching difficulties:", error);
       }
@@ -319,6 +278,48 @@ const Index = () => {
     }
   }, [isDifficultyLoaded]);
 
+  const fetchProblems = async (
+    page = 1,
+    size = pageSize,
+    difficultyId = null,
+    title = "",
+    topicId = null
+  ) => {
+    setLoading(true);
+
+    try {
+      let response;
+
+      if (difficultyId || topicId) {
+        response = await userAPI.getSearchProblemByDifficultyAndTopic(
+          difficultyId,
+          topicId
+        );
+      } else if (title) {
+        response = await userAPI.getSearchProblemByTitle(title);
+      } else {
+        response = await userAPI.getAllProblemsByPage(page, size);
+      }
+
+      const problemsData = response?.data?.data || [];
+      const totalItems = response?.data?.totalItems || 0;
+
+      const formattedData = problemsData.map((problem) => ({
+        key: problem.id,
+        title: problem.title,
+        acceptance: problem.acceptance_rate || "none",
+        difficulty: difficultyLabels[problem.difficultyId] || "Unknown",
+      }));
+
+      setAllProblems(formattedData);
+      setTotalProblems(totalItems);
+    } catch (error) {
+      console.error("Error fetching problems:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <DefaultLayout>
       <PageContainer>
@@ -340,7 +341,7 @@ const Index = () => {
               dropdownRender={() => tagMenu}
             >
               <CustomButton>
-                Tags <ArrowDropDownIcon />
+                Topics <ArrowDropDownIcon />
               </CustomButton>
             </Dropdown>
 

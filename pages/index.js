@@ -209,7 +209,7 @@ export default function HomePage() {
           <Title_Head>
             This is a smart programming learning support website.
           </Title_Head>
-          s
+
           <Text>
             At MasterCoding, our mission is to help you improve yourself and
             land your dream job.

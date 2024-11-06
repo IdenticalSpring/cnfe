@@ -21,7 +21,6 @@ const GlobalStyle = createGlobalStyle`
   
   html, body {
     height: 100%;
-    background-color: #f0f0f0; /* Màu xám nhạt */
     overflow: hidden;
   }
 
@@ -46,8 +45,6 @@ const StyledHandle = styled.div.withConfig({
   z-index: 2;
   &:hover {
     background-color: orange;
-    width: 4px;
-    transition: background-color 0.3s ease, width 0.3s ease;
   }
 `;
 
@@ -64,11 +61,8 @@ const StyledHandleHorizontal = styled.div.withConfig({
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2;
   &:hover {
     background-color: orange;
-    height: 4px;
-    transition: background-color 0.3s ease, height 0.3s ease;
   }
 `;
 
@@ -79,7 +73,6 @@ const PageWrapper = styled.div`
   width: 100%;
   background-color: #f0f0f0;
   overflow: hidden;
-  z-index: 1;
 `;
 
 const ContentContainer = styled.div`
@@ -87,8 +80,8 @@ const ContentContainer = styled.div`
   margin: 5px;
   border-radius: 8px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 1;
   flex-grow: 1;
+  overflow: auto; // Đảm bảo rằng nội dung có thể cuộn nếu vượt quá kích thước
 `;
 
 const DetailProblem = ({ problemId }) => {
@@ -118,8 +111,7 @@ const DetailProblem = ({ problemId }) => {
       <GlobalStyle />
       <Header style={{ zIndex: 3 }} />
       <PageWrapper>
-        {loading && <Loading />}{" "}
-        {/* Hiển thị component Loading khi loading là true */}
+        {loading}{" "}
         <div style={{ display: "flex", height: "100%", width: "100%" }}>
           <ResizableBox
             width={400}
@@ -127,6 +119,7 @@ const DetailProblem = ({ problemId }) => {
             minConstraints={[200, Infinity]}
             maxConstraints={[800, Infinity]}
             axis="x"
+            resizeHandles={["e"]}
             handle={
               <StyledHandle>
                 <HorizontalRuleIcon
@@ -137,6 +130,7 @@ const DetailProblem = ({ problemId }) => {
           >
             <ContentContainer>
               <Description
+                id={problem?.id}
                 title={problem?.title}
                 description={problem?.description}
               />
@@ -151,6 +145,7 @@ const DetailProblem = ({ problemId }) => {
               minConstraints={[Infinity, 200]}
               maxConstraints={[Infinity, 600]}
               axis="y"
+              resizeHandles={["s"]}
               handle={
                 <StyledHandleHorizontal>
                   <HorizontalRuleIcon style={{ color: "orange" }} />

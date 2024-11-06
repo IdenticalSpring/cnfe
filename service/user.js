@@ -47,4 +47,10 @@ export const userAPI = {
     const response = await request.get("/topics");
     return response.data;
   },
+  getSearchProblemByDifficultyAndTopic: async (difficultId, topicId) => {
+    const response = await request.get(
+      `/problems/search-by-difficulty-and-topic?difficultyId=${difficultId}&topicId=${topicId}`
+    );
+    return response.data;
+  },
 };
