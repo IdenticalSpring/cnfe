@@ -277,13 +277,6 @@ const Index = () => {
     fetchTopics();
   }, []);
 
-  // Only call fetchProblems after difficulties are loaded
-  useEffect(() => {
-    if (isDifficultyLoaded) {
-      fetchProblems(currentPage, pageSize);
-    }
-  }, [isDifficultyLoaded]);
-
   const fetchProblems = async (
     page = 1,
     size = pageSize,
