@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { adminAPI } from "service/admin";
 import { useRouter } from "next/router";
 import ButtonCustom from "components/button/Button";
+import Image from "next/image";
 
 const TableContainer = styled.div`
   margin-right: 20px;
@@ -164,7 +165,13 @@ const TableCourse = () => {
       key: "img",
       width: 150,
       render: (text, record) => (
-        <img src={record.img} alt={record.title} width="50" />
+        <Image
+          src={record.img}
+          alt={record.title}
+          width={50}
+          height={50}
+          layout="fixed" // hoặc "intrinsic" nếu bạn muốn kích thước tự động
+        />
       ),
     },
     {
@@ -297,7 +304,11 @@ const TableCourse = () => {
           </WarningText>
         </ModalContent>
         <ButtonContainer>
-          <ButtonCustom onClick={handleDelete} bgColor="#FF4D4F" hoverColor="#FF7875">
+          <ButtonCustom
+            onClick={handleDelete}
+            bgColor="#FF4D4F"
+            hoverColor="#FF7875"
+          >
             Đồng ý
           </ButtonCustom>
           <ButtonCustom onClick={handleCancel} bgColor="#f0f0f0" color="#000">

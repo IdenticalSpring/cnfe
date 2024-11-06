@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import MonacoEditor from "@monaco-editor/react";
 import { Select } from "antd";
 import styled from "styled-components";
-import languageContent from "./languageContent"; // Import the languageContent file
+import languageContent from "@/utils/languageContent";
 
 const languages = [
   { label: "TypeScript", value: "typescript" },
