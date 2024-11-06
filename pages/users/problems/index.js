@@ -1,17 +1,38 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Dropdown, Table, Button, Skeleton, Input, Tag } from "antd";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import SearchIcon from "@mui/icons-material/Search";
 import DefaultLayout from "@/layout/DefaultLayout";
 import Link from "next/link";
+import { userAPI } from "service/user";
+import debounce from "lodash.debounce";
+import SidebarProblem from "../components/sidebar-problem/SidebarProblem";
 
-// Styled components
+const PageContainer = styled.div`
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  flex-wrap: wrap;
+`;
+
 const ProblemListContainer = styled.div`
+  flex: 8;
+  margin-left: 100px;
   padding: 20px;
   background-color: var(--background-color);
   color: var(--text-primary-color);
   min-height: 100vh;
+  width: 100%;
+
+  @media (max-width: 1024px) {
+    margin: 0 20px;
+    padding: 10px;
+  }
+
+  @media (max-width: 768px) {
+    margin: 0 10px;
+  }
 `;
 
 const SearchContainer = styled.div`
@@ -19,9 +40,14 @@ const SearchContainer = styled.div`
   align-items: center;
   margin-bottom: 20px;
   gap: 10px;
+  justify-content: space-between;
+`;
+const DropdownGroup = styled.div`
+  display: flex;
+  gap: 10px;
 `;
 
-const CustomButton = React.memo(styled(Button)`
+const CustomButton = styled(Button)`
   display: flex;
   align-items: center;
   gap: 5px;
@@ -29,14 +55,13 @@ const CustomButton = React.memo(styled(Button)`
   border-radius: 8px;
   font-size: 14px;
   width: 100px;
-  height: 35px; 
+  height: 35px;
   padding: 0 12px;
 
   &:hover {
     background-color: #ebedf0;
   }
-`);
-
+`;
 
 const TagDropdownContainer = styled.div`
   width: 400px;
@@ -54,10 +79,6 @@ const TagList = styled.div`
   overflow-y: auto;
 `;
 
-const TagSearchContainer = styled.div`
-  margin-bottom: 10px;
-`;
-
 const CustomTag = styled(Tag)`
   display: flex;
   justify-content: center;
@@ -65,28 +86,28 @@ const CustomTag = styled(Tag)`
   padding: 4px 8px;
   font-size: 14px;
   text-align: center;
-`;
+  cursor: pointer;
+  transition: all 0.3s ease;
 
-const TableStyles = styled.div`
-  .custom-table-row-odd {
-    background-color: #f7f7f7;
-  }
-
-  .custom-table-row-even {
-    background-color: #ffffff;
+  &:hover {
+    color: var(--link-hover-color);
   }
 `;
 
-// Generate fake data
-const generateFakeData = (count = 30) => {
-  const difficulties = ["Easy", "Medium", "Hard"];
-  return Array.from({ length: count }, (_, index) => ({
-    key: index + 1,
-    title: `Problem ${index + 1}`,
-    difficulty: difficulties[Math.floor(Math.random() * difficulties.length)],
-    acceptance: `${Math.floor(Math.random() * 50 + 20)}%`,
-  }));
-};
+const StyledTable = styled(Table)`
+  .ant-table-thead > tr > th {
+    background-color: var(--background-hover-color);
+  }
+  .ant-table-tbody > tr {
+    &:nth-child(odd) {
+      background-color: #ffffff;
+    }
+
+    &:nth-child(even) {
+      background-color: #f0f0f0;
+    }
+  }
+`;
 
 const Index = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -95,89 +116,80 @@ const Index = () => {
   const [searchText, setSearchText] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState("All");
   const [tagSearchText, setTagSearchText] = useState("");
-  const pageSize = 20;
+  const [difficultyLabels, setDifficultyLabels] = useState({});
+  const [pageSize, setPageSize] = useState(20);
+  const [totalProblems, setTotalProblems] = useState(0);
+  const [topics, setTopics] = useState([]);
+  const [isDifficultyLoaded, setIsDifficultyLoaded] = useState(false);
+  const [selectedTopic, setSelectedTopic] = useState(null); // Track the selected topic
 
-  // Debounce search
-  const debounceSearch = useCallback((callback, delay) => {
-    let timer;
-    return (value) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => callback(value), delay);
-    };
-  }, []);
-
-  const handleSearch = debounceSearch((value) => {
+  const handleSearch = debounce((value) => {
     setSearchText(value);
     setCurrentPage(1);
+
+    const difficultyId = Object.keys(difficultyLabels).find(
+      (key) => difficultyLabels[key] === selectedDifficulty
+    );
+    fetchProblems(1, pageSize, difficultyId, value);
   }, 300);
 
-  useEffect(() => {
-    const data = generateFakeData(30);
-    setAllProblems(data);
-    setLoading(false);
-  }, []);
-
-  const filteredProblems = useMemo(() => {
-    let filtered = allProblems;
-
-    if (selectedDifficulty !== "All") {
-      filtered = filtered.filter(
-        (problem) => problem.difficulty === selectedDifficulty
-      );
-    }
-
-    if (searchText) {
-      filtered = filtered.filter((problem) =>
-        problem.title.toLowerCase().includes(searchText.toLowerCase())
-      );
-    }
-
-    return filtered;
-  }, [allProblems, selectedDifficulty, searchText]);
-
-  const handlePageChange = (page) => setCurrentPage(page);
-
-  const handleDifficultyChange = (difficulty) => {
-    setSelectedDifficulty(difficulty);
-    setCurrentPage(1);
+  const handlePageChange = (page, size) => {
+    const difficultyId = Object.keys(difficultyLabels).find(
+      (key) => difficultyLabels[key] === selectedDifficulty
+    );
+    setCurrentPage(page);
+    setPageSize(size || pageSize);
+    fetchProblems(page, size, difficultyId, searchText);
   };
 
-  // Fake tag data
-  const tagData = [
-    { text: "Array", count: 1750 },
-    { text: "String", count: 726 },
-    { text: "Hash Table", count: 629 },
-    { text: "Dynamic Programming", count: 533 },
-    { text: "Math", count: 523 },
-    { text: "Sorting", count: 415 },
-    { text: "Greedy", count: 383 },
-  ];
+  const handleDifficultyChange = (difficulty) => {
+    const difficultyId = Object.keys(difficultyLabels).find(
+      (key) => difficultyLabels[key] === difficulty
+    );
+    setSelectedDifficulty(difficulty);
+    setCurrentPage(1);
+    fetchProblems(1, pageSize, difficultyId, searchText, selectedTopic);
+  };
 
-  const filteredTags = tagData.filter((tag) =>
-    tag.text.toLowerCase().includes(tagSearchText.toLowerCase())
-  );
+  const handleTopicChange = (topicId) => {
+    const newTopic = selectedTopic === topicId ? null : topicId;
+    setSelectedTopic(newTopic);
+    setCurrentPage(1);
+
+    const difficultyId = Object.keys(difficultyLabels).find(
+      (key) => difficultyLabels[key] === selectedDifficulty
+    );
+
+    fetchProblems(1, pageSize, difficultyId, searchText, newTopic);
+  };
 
   const tagMenu = (
     <TagDropdownContainer>
-      <TagSearchContainer>
-        <Input
-          placeholder="Filter topics"
-          suffix={<SearchIcon />}
-          value={tagSearchText}
-          onChange={(e) => setTagSearchText(e.target.value)}
-        />
-      </TagSearchContainer>
+      <Input
+        placeholder="Search topics"
+        suffix={<SearchIcon />}
+        value={tagSearchText}
+        onChange={(e) => setTagSearchText(e.target.value)}
+        style={{ marginBottom: "10px" }}
+      />
       <TagList>
-        {filteredTags.map((tag, index) => (
-          <CustomTag key={index}>
-            <span>{tag.text}</span>
-            <span
-              style={{ marginLeft: "5px", fontWeight: "bold", color: "orange" }}
+        {topics
+          .filter((topic) =>
+            topic.name.toLowerCase().includes(tagSearchText.toLowerCase())
+          )
+          .map((topic) => (
+            <CustomTag
+              key={topic.id}
+              onClick={() => handleTopicChange(topic.id)}
+              style={{
+                borderColor: selectedTopic === topic.id ? "orange" : "default",
+                borderWidth: selectedTopic === topic.id ? "2px" : "1px",
+                borderStyle: selectedTopic === topic.id ? "solid" : "none",
+              }}
             >
-              {tag.count}
-            </span>
-          </CustomTag>
-        ))}
+              <span>{topic.name}</span>
+            </CustomTag>
+          ))}
       </TagList>
     </TagDropdownContainer>
   );
@@ -205,15 +217,24 @@ const Index = () => {
     {
       title: "Title",
       dataIndex: "title",
+      width: 700,
       key: "title",
       render: (text, record) => (
-        <Link href={`/users/problems/${record.key} `}>{text}</Link>
+        <Link href={`/users/problems/${record.key}`} passHref>
+          <span style={{ cursor: "pointer", color: "blue" }}>{text}</span>
+        </Link>
       ),
     },
-    { title: "Acceptance", dataIndex: "acceptance", key: "acceptance" }, // Corrected here
+    {
+      title: "Acceptance",
+      dataIndex: "acceptance",
+      width: 700,
+      key: "acceptance",
+    },
     {
       title: "Difficulty",
       dataIndex: "difficulty",
+      width: 200,
       key: "difficulty",
       render: (text) => (
         <span
@@ -228,65 +249,136 @@ const Index = () => {
     },
   ];
 
-  const paginatedProblems = filteredProblems.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+  useEffect(() => {
+    const fetchDifficulties = async () => {
+      try {
+        const response = await userAPI.getDifficulties();
+        const difficulties = response?.data?.reduce((acc, item) => {
+          acc[item.id] = item.name;
+          return acc;
+        }, {});
+        setDifficultyLabels(difficulties);
+        setIsDifficultyLoaded(true);
+      } catch (error) {
+        console.error("Error fetching difficulties:", error);
+      }
+    };
+
+    const fetchTopics = async () => {
+      try {
+        const response = await userAPI.getAllTopics();
+        setTopics(response.data);
+      } catch (error) {
+        console.error("Error fetching topics:", error);
+      }
+    };
+
+    fetchDifficulties();
+    fetchTopics();
+  }, []);
+
+  // Only call fetchProblems after difficulties are loaded
+  useEffect(() => {
+    if (isDifficultyLoaded) {
+      fetchProblems(currentPage, pageSize);
+    }
+  }, [isDifficultyLoaded]);
+
+  const fetchProblems = async (
+    page = 1,
+    size = pageSize,
+    difficultyId = null,
+    title = "",
+    topicId = null
+  ) => {
+    setLoading(true);
+
+    try {
+      let response;
+
+      if (difficultyId || topicId) {
+        response = await userAPI.getSearchProblemByDifficultyAndTopic(
+          difficultyId,
+          topicId
+        );
+      } else if (title) {
+        response = await userAPI.getSearchProblemByTitle(title);
+      } else {
+        response = await userAPI.getAllProblemsByPage(page, size);
+      }
+
+      const problemsData = response?.data?.data || [];
+      const totalItems = response?.data?.totalItems || 0;
+
+      const formattedData = problemsData.map((problem) => ({
+        key: problem.id,
+        title: problem.title,
+        acceptance: problem.acceptance_rate || "none",
+        difficulty: difficultyLabels[problem.difficultyId] || "Unknown",
+      }));
+
+      setAllProblems(formattedData);
+      setTotalProblems(totalItems);
+    } catch (error) {
+      console.error("Error fetching problems:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <DefaultLayout>
-      <ProblemListContainer>
-        <SearchContainer>
-          <Dropdown
-            menu={{ items: menuItems }}
-            trigger={["click"]}
-            placement="bottomLeft"
-          >
-            <CustomButton>
-              Difficulty <ArrowDropDownIcon />
-            </CustomButton>
-          </Dropdown>
+      <PageContainer>
+        <ProblemListContainer>
+          <SearchContainer>
+            <DropdownGroup>
+              <Dropdown
+                menu={{ items: menuItems }}
+                trigger={["click"]}
+                placement="bottomLeft"
+              >
+                <CustomButton>
+                  Difficulty <ArrowDropDownIcon />
+                </CustomButton>
+              </Dropdown>
 
-          <Dropdown
-            trigger={["click"]}
-            placement="bottomLeft"
-            dropdownRender={() => tagMenu}
-          >
-            <CustomButton >
-              Tags <ArrowDropDownIcon />
-            </CustomButton>
-          </Dropdown>
+              <Dropdown
+                trigger={["click"]}
+                placement="bottomLeft"
+                dropdownRender={() => tagMenu}
+              >
+                <CustomButton>
+                  Topics <ArrowDropDownIcon />
+                </CustomButton>
+              </Dropdown>
+            </DropdownGroup>
 
-          <Input
-            placeholder="Search problems"
-            onChange={(e) => handleSearch(e.target.value)}
-            style={{ height: 35, width: "200px", borderRadius: "8px" }}
-            suffix={<SearchIcon />}
-          />
-        </SearchContainer>
+            <Input
+              placeholder="Search problems"
+              onChange={(e) => handleSearch(e.target.value)}
+              style={{ height: 35, width: "200px", borderRadius: "8px" }}
+              suffix={<SearchIcon />}
+            />
+          </SearchContainer>
 
-        {loading ? (
-          <Skeleton active paragraph={{ rows: 10 }} />
-        ) : (
-          <TableStyles>
-            <Table
-              dataSource={paginatedProblems}
+          {loading ? (
+            <Skeleton active paragraph={{ rows: 10 }} />
+          ) : (
+            <StyledTable
+              dataSource={allProblems}
               columns={columns}
               pagination={{
                 current: currentPage,
                 pageSize: pageSize,
-                total: filteredProblems.length,
+                total: totalProblems,
                 onChange: handlePageChange,
+                showSizeChanger: false,
               }}
-              rowClassName={(record, index) =>
-                index % 2 === 0
-                  ? "custom-table-row-even"
-                  : "custom-table-row-odd"
-              }
             />
-          </TableStyles>
-        )}
-      </ProblemListContainer>
+          )}
+        </ProblemListContainer>
+        <SidebarProblem />
+      </PageContainer>
     </DefaultLayout>
   );
 };

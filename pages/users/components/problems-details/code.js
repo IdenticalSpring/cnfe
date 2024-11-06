@@ -1,59 +1,91 @@
-import React from 'react';
-import styled from 'styled-components';
+import React, { useState } from "react";
+import MonacoEditor from "@monaco-editor/react";
+import { Select } from "antd";
+import styled from "styled-components";
+import languageContent from "./languageContent"; // Import the languageContent file
 
-const CodeSection = styled.div`
-  background-color: #ffffff;
-  padding: 20px;
-  max-width: 100%;
-  min-height: 300px;  /* Minimum height for the container */
-  max-height: 1000px; /* Maximum height for the container */
-  overflow: hidden; 
-  border-bottom: 1px solid #ddd;
+const languages = [
+  { label: "TypeScript", value: "typescript" },
+  { label: "JavaScript", value: "javascript" },
+  { label: "C", value: "c" },
+  { label: "C++", value: "cpp" },
+  { label: "C#", value: "csharp" },
+  { label: "Java", value: "java" },
+  { label: "Python", value: "python" },
+  { label: "Dart", value: "dart" },
+  { label: "PHP", value: "php" },
+  { label: "Ruby", value: "ruby" },
+  { label: "Kotlin", value: "kotlin" },
+  { label: "Lua", value: "lua" },
+  { label: "Assembly", value: "assembly" },
+];
+
+// Styled components for layout
+const EditorContainer = styled.div`
   display: flex;
   flex-direction: column;
-   border: 1px solid #ddd;
-  border-radius: 8px;
+  height: 50vh;
+  padding: 16px;
 `;
 
-const SectionTitle = styled.h2`
-  font-size: 20px;
-  margin-bottom: 10px;
-  font-weight: bold;
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
 `;
 
-const CodeEditorWrapper = styled.div`
+const CodeEditor = styled.div`
   flex-grow: 1;
-  overflow: auto; /* Enable scrolling if content overflows */
+  overflow: hidden;
   border: 1px solid #ddd;
   border-radius: 8px;
-  background-color: #f9f9f9;
-  min-height: 300px;  /* Minimum height for the editor wrapper */
-  max-height: 1000px; /* Maximum height for the editor wrapper */
-  width: 100%;  /* Ensure the editor takes the full width of the container */
-  max-width: 100%; /* Limit the width within the container */
-  box-sizing: border-box; /* Ensure padding and borders are included in the element's width/height */
 `;
 
-const CodeEditor = styled.textarea`
-  width: 100%;
-  height: 100%;  
-  font-family: monospace;
-  font-size: 16px;
-  padding: 10px;
-  border: solid 1px;
-  background-color: #f9f9f9;
-
-  overflow: auto;
-  box-sizing: border-box; 
+const LanguageSelect = styled(Select)`
+  min-width: 150px;
+  margin-right: 16px;
 `;
 
-const CodeEditorComponent = () => (
-    <CodeSection>
-        <SectionTitle>Trình soạn thảo mã</SectionTitle>
-        <CodeEditorWrapper>
-            <CodeEditor placeholder="Viết mã của bạn ở đây..." />
-        </CodeEditorWrapper>
-    </CodeSection>
-);
+const Code = () => {
+  const [language, setLanguage] = useState("typescript");
+  const [code, setCode] = useState(languageContent["typescript"]); // Set initial content for TypeScript
 
-export default CodeEditorComponent;
+  const handleLanguageChange = (value) => {
+    setLanguage(value);
+    setCode(languageContent[value] || "// Write your code here..."); // Set default content based on language
+  };
+
+  return (
+    <EditorContainer>
+      <Header>
+        <LanguageSelect
+          defaultValue="typescript"
+          value={language}
+          onChange={handleLanguageChange}
+          options={languages.map((lang) => ({
+            label: lang.label,
+            value: lang.value,
+          }))}
+          style={{ width: 200 }}
+        />
+      </Header>
+      <CodeEditor>
+        <MonacoEditor
+          width="flex-grow"
+          height="100%"
+          language={language}
+          theme="vs-light"
+          value={code}
+          onChange={(value) => setCode(value)}
+          options={{
+            minimap: { enabled: false },
+            fontSize: 16,
+            scrollBeyondLastLine: false,
+          }}
+        />
+      </CodeEditor>
+    </EditorContainer>
+  );
+};
+
+export default Code;
