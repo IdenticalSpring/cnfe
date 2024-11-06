@@ -53,4 +53,10 @@ export const userAPI = {
     );
     return response.data;
   },
+  getSearchByCompanies: async (companyId) => {
+    const response = await request.get(
+      `/problems/search-by-company?companyId=${companyId}`
+    );
+    return response.data;
+  },
 };

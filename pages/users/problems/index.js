@@ -40,6 +40,11 @@ const SearchContainer = styled.div`
   align-items: center;
   margin-bottom: 20px;
   gap: 10px;
+  justify-content: space-between;
+`;
+const DropdownGroup = styled.div`
+  display: flex;
+  gap: 10px;
 `;
 
 const CustomButton = styled(Button)`
@@ -145,6 +150,7 @@ const Index = () => {
     setCurrentPage(1);
     fetchProblems(1, pageSize, difficultyId, searchText, selectedTopic);
   };
+
   const handleTopicChange = (topicId) => {
     const newTopic = selectedTopic === topicId ? null : topicId;
     setSelectedTopic(newTopic);
@@ -325,25 +331,27 @@ const Index = () => {
       <PageContainer>
         <ProblemListContainer>
           <SearchContainer>
-            <Dropdown
-              menu={{ items: menuItems }}
-              trigger={["click"]}
-              placement="bottomLeft"
-            >
-              <CustomButton>
-                Difficulty <ArrowDropDownIcon />
-              </CustomButton>
-            </Dropdown>
+            <DropdownGroup>
+              <Dropdown
+                menu={{ items: menuItems }}
+                trigger={["click"]}
+                placement="bottomLeft"
+              >
+                <CustomButton>
+                  Difficulty <ArrowDropDownIcon />
+                </CustomButton>
+              </Dropdown>
 
-            <Dropdown
-              trigger={["click"]}
-              placement="bottomLeft"
-              dropdownRender={() => tagMenu}
-            >
-              <CustomButton>
-                Topics <ArrowDropDownIcon />
-              </CustomButton>
-            </Dropdown>
+              <Dropdown
+                trigger={["click"]}
+                placement="bottomLeft"
+                dropdownRender={() => tagMenu}
+              >
+                <CustomButton>
+                  Topics <ArrowDropDownIcon />
+                </CustomButton>
+              </Dropdown>
+            </DropdownGroup>
 
             <Input
               placeholder="Search problems"

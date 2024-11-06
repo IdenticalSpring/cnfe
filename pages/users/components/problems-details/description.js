@@ -97,8 +97,13 @@ const Description = ({ id, title, description }) => {
       </ProblemHeader>
       <ProblemContent>
         <h2>
-          {id}. {title}
+          {loading ? (
+            <Skeleton active paragraph={{ rows: 1 }} />
+          ) : (
+            `${id}. ${title}`
+          )}
         </h2>
+
         <TagContainer>
           {loading ? (
             <Skeleton.Button active size="small" style={{ width: 80 }} />
