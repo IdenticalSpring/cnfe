@@ -4,6 +4,7 @@ import DefaultLayout from '@/layout/DefaultLayout';
 import styled from 'styled-components';
 import { BookOutlined, PlayCircleOutlined, MessageOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { userAPI } from '@/service/user';
+import { Skeleton } from 'antd';
 
 const CoursePrice = styled.div`
   color: white;
@@ -328,6 +329,7 @@ const CourseDetail = () => {
   const [selectedLesson, setSelectedLesson] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [openChapters, setOpenChapters] = useState({});
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { id } = router.query;
 
@@ -340,17 +342,15 @@ const CourseDetail = () => {
 
   useEffect(() => {
     if (id) {
-      userAPI.getCourseById(id)
-        .then(setCourse)
-        .catch((error) => console.error('Error fetching course details:', error));
-    }
-  }, [id]);
-
-  useEffect(() => {
-    if (id) {
-      userAPI.getChaptersAndLessonsByCourseId(id)
-        .then(setChapters)
-        .catch((error) => console.error('Error fetching chapters and lessons:', error));
+      setLoading(true);
+      Promise.all([
+        userAPI.getCourseById(id).then(setCourse),
+        userAPI.getChaptersAndLessonsByCourseId(id).then(setChapters)
+      ]).catch((error) => {
+        console.error('Error fetching data:', error);
+      }).finally(() => {
+        setLoading(false);
+      });
     }
   }, [id]);
 
@@ -363,106 +363,110 @@ const CourseDetail = () => {
       .catch((error) => console.error('Error fetching lesson details:', error));
   };
 
-  if (!course) return <div>Loading...</div>;
-
   return (
     <DefaultLayout>
       <PageWrapper>
-        <HeaderSection $bgImage={course.imageUrl}>
-          <HeaderContainer>
-            <BackButton onClick={() => router.push('/users/course')}>Back to Explore</BackButton>
-            <HeaderContent>
-              <CourseTitle>{course.title}</CourseTitle>
-              <CourseStats>
-                <StatItem>
-                  <BookOutlined style={{ fontSize: '16px' }} />
-                  {chapters.length} Chapters
-                </StatItem>
-                <StatItem>
-                  <PlayCircleOutlined style={{ fontSize: '16px' }} />
-                  {chapters.reduce((acc, chapter) => acc + (chapter.lessons?.length || 0), 0)} Lessons
-                </StatItem>
-                <StatItem>
-                  <MessageOutlined style={{ fontSize: '16px' }} />
-                  24 Discussions
-                </StatItem>
-              </CourseStats>
-              <ActionButtons>
-                <PrimaryButton>Start Learning</PrimaryButton>
-                <SecondaryButton>
-                  <ShareAltOutlined style={{ fontSize: '16px' }} />
-                  Share
-                </SecondaryButton>
-              </ActionButtons>
-            </HeaderContent>
-          </HeaderContainer>
-        </HeaderSection>
+        {loading ? (
+          <Skeleton active paragraph={{ rows: 10 }} />
+        ) : (
+          <>
+            <HeaderSection $bgImage={course.imageUrl}>
+              <HeaderContainer>
+                <BackButton onClick={() => router.push('/users/course')}>Back to Explore</BackButton>
+                <HeaderContent>
+                  <CourseTitle>{course.title}</CourseTitle>
+                  <CourseStats>
+                    <StatItem>
+                      <BookOutlined style={{ fontSize: '16px' }} />
+                      {chapters.length} Chapters
+                    </StatItem>
+                    <StatItem>
+                      <PlayCircleOutlined style={{ fontSize: '16px' }} />
+                      {chapters.reduce((acc, chapter) => acc + (chapter.lessons?.length || 0), 0)} Lessons
+                    </StatItem>
+                    <StatItem>
+                      <MessageOutlined style={{ fontSize: '16px' }} />
+                      24 Discussions
+                    </StatItem>
+                  </CourseStats>
+                  <ActionButtons>
+                    <PrimaryButton>Start Learning</PrimaryButton>
+                    <SecondaryButton>
+                      <ShareAltOutlined style={{ fontSize: '16px' }} />
+                      Share
+                    </SecondaryButton>
+                  </ActionButtons>
+                </HeaderContent>
+              </HeaderContainer>
+            </HeaderSection>
 
-        <MainContent>
-          <ContentGrid>
-            <NavCard>
-              <NavItem $active={activeTab === 'overview'} onClick={() => setActiveTab('overview')}>
-                <BookOutlined style={{ fontSize: '20px' }} />
-                Overview
-              </NavItem>
+            <MainContent>
+              <ContentGrid>
+                <NavCard>
+                  <NavItem $active={activeTab === 'overview'} onClick={() => setActiveTab('overview')}>
+                    <BookOutlined style={{ fontSize: '20px' }} />
+                    Overview
+                  </NavItem>
 
-              <NavItem $active={activeTab === 'content'}>
-                <PlayCircleOutlined style={{ fontSize: '20px' }} />
-                Course Content
-              </NavItem>
+                  <NavItem $active={activeTab === 'content'}>
+                    <PlayCircleOutlined style={{ fontSize: '20px' }} />
+                    Course Content
+                  </NavItem>
 
-              {chapters.map((chapter) => (
-                <div key={chapter.id}>
-                  <ChapterHeader onClick={() => toggleChapter(chapter.id)}>
-                    <ChapterTitle>{chapter.title}</ChapterTitle>
-                    <span>{openChapters[chapter.id] ? '−' : '+'}</span>
-                  </ChapterHeader>
-                  <LessonList $open={openChapters[chapter.id]}>
-                    {chapter.lessons?.map((lesson) => (
-                      <LessonItem key={lesson.id} onClick={() => fetchLessonDetails(lesson.id)}>
-                        {lesson.title}
-                      </LessonItem>
-                    ))}
-                  </LessonList>
-                </div>
-              ))}
+                  {chapters.map((chapter) => (
+                    <div key={chapter.id}>
+                      <ChapterHeader onClick={() => toggleChapter(chapter.id)}>
+                        <ChapterTitle>{chapter.title}</ChapterTitle>
+                        <span>{openChapters[chapter.id] ? '−' : '+'}</span>
+                      </ChapterHeader>
+                      <LessonList $open={openChapters[chapter.id]}>
+                        {chapter.lessons?.map((lesson) => (
+                          <LessonItem key={lesson.id} onClick={() => fetchLessonDetails(lesson.id)}>
+                            {lesson.title}
+                          </LessonItem>
+                        ))}
+                      </LessonList>
+                    </div>
+                  ))}
 
-              <NavItem
-                $active={activeTab === 'discussion'}
-                onClick={() => setActiveTab('discussion')}
-                style={{ marginTop: '20px' }}
-              >
-                <MessageOutlined style={{ fontSize: '20px' }} />
-                Discussion
-              </NavItem>
-            </NavCard>
+                  <NavItem
+                    $active={activeTab === 'discussion'}
+                    onClick={() => setActiveTab('discussion')}
+                    style={{ marginTop: '20px' }}
+                  >
+                    <MessageOutlined style={{ fontSize: '20px' }} />
+                    Discussion
+                  </NavItem>
+                </NavCard>
 
-            <ContentCard>
-              <TabContent $active={activeTab === 'overview'}>
-                <h2>Course Overview</h2>
-                <p>{course.description}</p>
-              </TabContent>
+                <ContentCard>
+                  <TabContent $active={activeTab === 'overview'}>
+                    <h2>Course Overview</h2>
+                    <p>{course.description}</p>
+                  </TabContent>
 
-              <TabContent $active={activeTab === 'content'}>
-                {selectedLesson ? (
-                  <div>
-                    <h3>{selectedLesson.title}</h3>
-                    <p>{selectedLesson.content}</p>
-                  </div>
-                ) : (
-                  <p>Select a lesson to view its content.</p>
-                )}
-              </TabContent>
+                  <TabContent $active={activeTab === 'content'}>
+                    {selectedLesson ? (
+                      <div>
+                        <h3>{selectedLesson.title}</h3>
+                        <p>{selectedLesson.content}</p>
+                      </div>
+                    ) : (
+                      <p>Select a lesson to view its content.</p>
+                    )}
+                  </TabContent>
 
-              <TabContent $active={activeTab === 'discussion'}>
-                <DiscussionHeader>
-                  <h2>Discussion Forum</h2>
-                  <PrimaryButton>New Discussion</PrimaryButton>
-                </DiscussionHeader>
-              </TabContent>
-            </ContentCard>
-          </ContentGrid>
-        </MainContent>
+                  <TabContent $active={activeTab === 'discussion'}>
+                    <DiscussionHeader>
+                      <h2>Discussion Forum</h2>
+                      <PrimaryButton>New Discussion</PrimaryButton>
+                    </DiscussionHeader>
+                  </TabContent>
+                </ContentCard>
+              </ContentGrid>
+            </MainContent>
+          </>
+        )}
       </PageWrapper>
     </DefaultLayout>
   );
