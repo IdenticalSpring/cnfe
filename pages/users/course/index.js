@@ -178,48 +178,18 @@ const settings = {
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-const fetchChapterAndItemCount = async (courseId) => {
-  try {
-    const chaptersResponse = await axios.get(`${baseURL}/chapters/course/${courseId}`);
-    const chapters = chaptersResponse.data?.data || [];
-    const chapterCount = chapters.length;
-
-    const lessonPromises = chapters.map((chapter) =>
-      axios.get(`${baseURL}/lessons/chapter/${chapter.id}`)
-    );
-
-    const lessonResponses = await Promise.all(lessonPromises);
-    const itemCount = lessonResponses.reduce((total, response) => total + response.data.data.length, 0);
-
-    return { chapterCount, itemCount };
-  } catch (error) {
-    console.error(`Error fetching chapter and lesson count for course ${courseId}:`, error);
-    return { chapterCount: 0, itemCount: 0 };
-  }
-};
-
 const fetchCoursesByType = async (type) => {
   try {
     const response = await axios.get(`${baseURL}/courses/getByType`, { params: { type, page: 1 } });
-    const courses = response.data?.data?.data || [];
-
-    const coursesWithCounts = await Promise.all(
-      courses.map(async (course) => {
-        const counts = await fetchChapterAndItemCount(course.id);
-        return {
-          ...course,
-          chapters: counts.chapterCount,
-          items: counts.itemCount,
-        };
-      })
-    );
-
-    return coursesWithCounts;
+    const courseData = response.data?.data?.data || []; 
+    return courseData;
   } catch (error) {
     console.error(`Error fetching ${type} courses:`, error);
     return [];
   }
 };
+
+
 
 const Explore = () => {
   const [learnCourses, setLearnCourses] = useState([]);
@@ -258,8 +228,8 @@ const Explore = () => {
                 <CardDescription>{course.description || "No description available"}</CardDescription>
               </ContentContainer>
               <StatsContainer>
-                <StatItem>Chapters: {course.chapters || '0'}</StatItem>
-                <StatItem>Items: {course.items || '0'}</StatItem>
+                <StatItem>Chapters: {course.chapterCount || '0'}</StatItem>
+                <StatItem>Items: {course.itemCount || '0'}</StatItem>
               </StatsContainer>
             </SlideCard>
           </Link>
