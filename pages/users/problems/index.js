@@ -121,8 +121,8 @@ const Index = () => {
   const [totalProblems, setTotalProblems] = useState(0);
   const [topics, setTopics] = useState([]);
   const [isDifficultyLoaded, setIsDifficultyLoaded] = useState(false);
-  const [selectedTopic, setSelectedTopic] = useState(null); // Track the selected topic
-  const [companyIdFilter, setCompanyIdFilter] = useState(null); // Thêm filter theo công ty
+  const [selectedTopic, setSelectedTopic] = useState(null);
+  const [companyIdFilter, setCompanyIdFilter] = useState(null);
 
   const tagMenu = (
     <TagDropdownContainer>
@@ -144,7 +144,6 @@ const Index = () => {
               onClick={() => handleTopicChange(topic.id)}
               style={{
                 borderColor: selectedTopic === topic.id ? "orange" : "default",
-                borderWidth: selectedTopic === topic.id ? "2px" : "1px",
                 borderStyle: selectedTopic === topic.id ? "solid" : "none",
               }}
             >
@@ -182,7 +181,9 @@ const Index = () => {
       key: "title",
       render: (text, record) => (
         <Link href={`/users/problems/${record.key}`} passHref>
-          <span style={{ cursor: "pointer", color: "blue" }}>{text}</span>
+          <span style={{ cursor: "pointer", color: "blue" }}>
+            {record.id}. {text}
+          </span>
         </Link>
       ),
     },
@@ -228,19 +229,15 @@ const Index = () => {
       let response;
 
       if (companyId) {
-        // Nếu có companyId, gọi API getSearchByCompanies
         response = await userAPI.getSearchByCompanies(companyId);
       } else if (!difficultyId && !topicId && !title) {
-        // Nếu không có bất kỳ bộ lọc nào khác, gọi API getAllProblemsByPage
         response = await userAPI.getAllProblemsByPage(page, size);
       } else if (difficultyId || topicId) {
-        // Nếu có bộ lọc difficultyId hoặc topicId, gọi API getSearchProblemByDifficultyAndTopic
         response = await userAPI.getSearchProblemByDifficultyAndTopic(
           difficultyId,
           topicId
         );
       } else if (title) {
-        // Nếu chỉ có title, gọi API getSearchProblemByTitle
         response = await userAPI.getSearchProblemByTitle(title);
       }
 
@@ -249,6 +246,7 @@ const Index = () => {
 
       const formattedData = problemsData.map((problem) => ({
         key: problem.id,
+        id: problem.id,
         title: problem.title,
         acceptance: problem.acceptance_rate || "none",
         difficulty: difficultyLabels[problem.difficultyId] || "Unknown",
@@ -303,7 +301,7 @@ const Index = () => {
         difficultyId,
         searchText,
         selectedTopic,
-        companyIdFilter // Thêm companyIdFilter vào nếu bạn muốn tự động áp dụng bộ lọc công ty
+        companyIdFilter
       );
     }
   }, [
@@ -313,7 +311,7 @@ const Index = () => {
     selectedDifficulty,
     searchText,
     selectedTopic,
-    companyIdFilter, // Thêm vào nếu cần
+    companyIdFilter,
   ]);
 
   const handlePageChange = (page, size) => {

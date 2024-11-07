@@ -91,7 +91,7 @@ const ProblemCount = styled.div`
 const Sidebar = ({ onCompanyFilter }) => {
   const [searchText, setSearchText] = useState("");
   const [companies, setCompanies] = useState([]);
-  const [selectedCompany, setSelectedCompany] = useState(null); // Trạng thái lưu trữ công ty đã chọn
+  const [selectedCompany, setSelectedCompany] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -122,7 +122,7 @@ const Sidebar = ({ onCompanyFilter }) => {
   const handleCompanySelect = (companyId) => {
     const newSelectedCompany = selectedCompany === companyId ? null : companyId;
     setSelectedCompany(newSelectedCompany);
-    onCompanyFilter(newSelectedCompany); // Gọi hàm lọc với companyId hoặc null nếu bỏ chọn
+    onCompanyFilter(newSelectedCompany);
   };
 
   return (
@@ -152,7 +152,6 @@ const Sidebar = ({ onCompanyFilter }) => {
                 style={{
                   borderColor:
                     selectedCompany === company.id ? "orange" : "default",
-                  borderWidth: selectedCompany === company.id ? "2px" : "1px",
                   borderStyle:
                     selectedCompany === company.id ? "solid" : "none",
                 }}
