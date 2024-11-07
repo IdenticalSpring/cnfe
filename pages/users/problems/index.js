@@ -221,15 +221,15 @@ const Index = () => {
     try {
       let response;
 
-      if (difficultyId || topicId) {
+      if (!difficultyId && !topicId && !title) {
+        response = await userAPI.getAllProblemsByPage(page, size);
+      } else if (difficultyId || topicId) {
         response = await userAPI.getSearchProblemByDifficultyAndTopic(
           difficultyId,
           topicId
         );
       } else if (title) {
         response = await userAPI.getSearchProblemByTitle(title);
-      } else {
-        response = await userAPI.getAllProblemsByPage(page, size);
       }
 
       const problemsData = response?.data?.data || [];
