@@ -70,14 +70,12 @@ const CompanyTag = styled(Tag)`
   width: fit-content;
   cursor: pointer;
   transition: all 0.3s ease;
-
+  &:hover {
+    color: var(--link-hover-color);
+  }
   @media (max-width: 768px) {
     font-size: 12px;
     padding: 4px 8px;
-  }
-
-  &:hover {
-    border-color: var(--link-hover-color);
   }
 `;
 
