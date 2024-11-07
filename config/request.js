@@ -6,7 +6,7 @@ export const request = axios.create({
   headers: {
     "Content-Type": "application/json;charset=UTF-8",
   },
-  baseURL: `${baseURL}`,
+  baseURL: ` ${baseURL}`,
   timeout: 50000,
 });
 
@@ -16,18 +16,21 @@ request.defaults.paramsSerializer = {
   },
 };
 
-request.interceptors.request.use((config) => {
-  const token = Cookies.get('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  } else {
-    console.warn("Token không tồn tại");
+request.interceptors.request.use(
+  (config) => {
+    const token = Cookies.get("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      console.warn("Token không tồn tại");
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+);
 
 export const getToken = () => {
-  return Cookies.get('token');
+  return Cookies.get("token");
 };
