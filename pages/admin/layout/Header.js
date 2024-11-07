@@ -1,70 +1,82 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { Menu, Dropdown } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
-import Cookies from 'js-cookie';
-import { jwtDecode } from 'jwt-decode';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { Dropdown } from "antd";
+import { DownOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 const HeaderContainer = styled.div`
-    display: flex;
-    justify-content: end;
-    align-items: center;
-    padding: 16px;
-    background-color: #f0f2f5;
-    border-bottom: 1px solid #d9d9d9;
-    width: calc(100% - 200px);
-    margin-left: 200px;
-    box-sizing: border-box;
-    position: fixed;
-    top: 0;
-    z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: #f0f2f5;
+  width: ${(props) => (props.collapsed ? "calc(100% - 80px)" : "calc(100% - 200px)")};
+  margin-left: ${(props) => (props.collapsed ? "80px" : "200px")};
+  box-sizing: border-box;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  position: fixed;
+  top: 0;
+  z-index: 1;
+  transition: width 0.3s ease, margin-left 0.3s ease;
 `;
 
 const AccountName = styled.div`
-    font-size: 16px;
-    font-weight: 600;
-    margin-right: 20px;
-    color: #333;
-    cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  margin-right: 20px;
+  color: #333;
+  cursor: pointer;
 
-    &:hover {
-        color: #ff9900;
-    }
+  &:hover {
+    color: #ff9900;
+  }
 `;
 
-const Header = () => {
-    const [displayName, setDisplayName] = useState('Người Dùng');
+const ToggleSidebarButton = styled.div`
+  cursor: pointer;
+  font-size: 20px;
+  color: #333;
 
-    useEffect(() => {
-        const token = Cookies.get('token');
-        if (token) {
-            try {
-                const decoded = jwtDecode(token);
-                setDisplayName(decoded.username || 'Người Dùng');
-            } catch (error) {
-                console.error('Lỗi khi giải mã token:', error);
-            }
-        }
-    }, []);
+  &:hover {
+    color: #ff9900;
+  }
+`;
 
-    const menuItems = [
-        {
-            key: '1',
-            label: <a href="/logout">Logout</a>,
-        },
-    ];
+const Header = ({ toggleSidebar, collapsed }) => {
+  const [displayName, setDisplayName] = useState("Người Dùng");
 
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setDisplayName(decoded.username || "Người Dùng");
+      } catch (error) {
+        console.error("Lỗi khi giải mã token:", error);
+      }
+    }
+  }, []);
 
+  const menuItems = [
+    {
+      key: "1",
+      label: <a href="/logout">Đăng Xuất</a>,
+    },
+  ];
 
-    return (
-        <HeaderContainer>
-            <Dropdown menu={{ items: menuItems }}>
-                <AccountName>
-                    {displayName} <DownOutlined />
-                </AccountName>
-            </Dropdown>
-        </HeaderContainer>
-    );
+  return (
+    <HeaderContainer collapsed={collapsed}>
+      <ToggleSidebarButton onClick={toggleSidebar}>
+        <MenuUnfoldOutlined />
+      </ToggleSidebarButton>
+      <Dropdown menu={{ items: menuItems }}>
+        <AccountName>
+          {displayName} <DownOutlined />
+        </AccountName>
+      </Dropdown>
+    </HeaderContainer>
+  );
 };
 
 export default Header;

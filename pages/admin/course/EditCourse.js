@@ -5,10 +5,12 @@ import { useRouter } from "next/router";
 import { PlusOutlined } from "@ant-design/icons";
 import DefaultLayout from "/pages/admin/layout/DefaultLayout";
 import { adminAPI } from "service/admin";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
+// Styled components
 const Container = styled.div`
-  max-width: 600px;
-  margin: auto;
+  margin: 0 10px 10px 10px;
   padding-top: 60px;
   background-color: #ffffff;
   border-radius: 8px;
@@ -34,11 +36,28 @@ const StyledButton = styled(Button)`
   }
 `;
 
+const CKEditorContainer = styled.div`
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  padding: 10px;
+  min-height: 200px;
+  background-color: #f9f9f9;
+
+  .ck-editor__editable {
+    min-height: 200px;
+  }
+
+  .ck-toolbar {
+    background-color: #e6f7ff;
+  }
+`;
+
 const EditCourse = ({ courseId }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [fileList, setFileList] = useState([]);
+  const [description, setDescription] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -58,8 +77,8 @@ const EditCourse = ({ courseId }) => {
         const { data } = response;
         form.setFieldsValue({
           name: data.title,
-          description: data.description,
         });
+        setDescription(data.description);
 
         if (data.imageUrl) {
           setFileList([
@@ -89,7 +108,7 @@ const EditCourse = ({ courseId }) => {
     setLoading(true);
     const formData = new FormData();
     formData.append("title", values.name);
-    formData.append("description", values.description);
+    formData.append("description", description);
 
     if (fileList.length > 0) {
       if (fileList[0].originFileObj) {
@@ -117,10 +136,8 @@ const EditCourse = ({ courseId }) => {
           return;
         }
 
-        // Chỉ append file khi có file mới
         formData.append("image", fileList[0].originFileObj);
       } else if (fileList[0].url) {
-        // Nếu không có file mới, gửi URL ảnh cũ
         formData.append("imageUrl", fileList[0].url);
       }
     }
@@ -153,14 +170,6 @@ const EditCourse = ({ courseId }) => {
     setFileList(validFileList);
   };
 
-  const validateSpecialChars = (_, value) => {
-    const regex = /^[a-zA-Z0-9\s]*$/;
-    if (value && !regex.test(value)) {
-      return Promise.reject("Không được chứa ký tự đặc biệt.");
-    }
-    return Promise.resolve();
-  };
-
   return (
     <DefaultLayout>
       <Container>
@@ -172,28 +181,26 @@ const EditCourse = ({ courseId }) => {
             <Form.Item
               label="Tên khóa học"
               name="name"
-              rules={[
-                { required: true, message: "Vui lòng nhập tên khóa học" },
-                { validator: validateSpecialChars },
-              ]}
+              rules={[{ required: true, message: "Vui lòng nhập tên khóa học" }]}
               hasFeedback
             >
               <Input placeholder="Nhập tên khóa học..." />
             </Form.Item>
 
-            <Form.Item
-              label="Mô tả"
-              name="description"
-              rules={[
-                { required: true, message: "Vui lòng nhập mô tả khóa học" },
-                { validator: validateSpecialChars },
-              ]}
-              hasFeedback
-            >
-              <Input.TextArea
-                rows={4}
-                placeholder="Nhập mô tả cho khóa học..."
-              />
+            <Form.Item label="Mô tả" hasFeedback>
+              <CKEditorContainer>
+                <CKEditor
+                  editor={ClassicEditor}
+                  data={description}
+                  onChange={(event, editor) => {
+                    const data = editor.getData();
+                    setDescription(data);
+                  }}
+                  config={{
+                    placeholder: "Nhập mô tả cho khóa học...",
+                  }}
+                />
+              </CKEditorContainer>
             </Form.Item>
 
             <Form.Item label="Hình ảnh">

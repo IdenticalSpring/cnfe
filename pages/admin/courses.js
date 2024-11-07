@@ -8,6 +8,10 @@ import { ArrowRightOutlined } from "@ant-design/icons";
 const TableCourses = lazy(() => import("./component/table/TableCourse"));
 const ButtonCustom = lazy(() => import("components/button/Button"));
 
+const TableContainer = styled.div`
+  margin: 0 20px;
+`;
+
 const Title_Head = styled.h1`
   font-size: 32px;
   font-weight: 600;
@@ -24,7 +28,7 @@ const Title_Head = styled.h1`
 `;
 
 const ContentWrapper = styled.div`
-  padding-top: 60px;
+  padding-top: 70px;
 `;
 
 const ButtonContainer = styled.div`
@@ -39,26 +43,28 @@ const Courses = () => {
 
   return (
     <DefaultLayout>
-      <Suspense fallback={<Skeleton active paragraph={{ rows: 5 }} />}>
-        <ContentWrapper>
-          <Title_Head>
-            Quản lí khóa học <ArrowRightOutlined className="icon" />{" "}
-          </Title_Head>
+      <TableContainer>
+        <Suspense fallback={<Skeleton active paragraph={{ rows: 5 }} />}>
+          <ContentWrapper>
+            <Title_Head>
+              Quản lí khóa học <ArrowRightOutlined className="icon" />{" "}
+            </Title_Head>
 
-          <ButtonContainer>
-            <ButtonCustom
-              bgColor="var(--success-color)"
-              color="#fff"
-              type="button"
-              onClick={handleCreateCourse}
-            >
-              Tạo khóa học
-            </ButtonCustom>
-          </ButtonContainer>
+            <ButtonContainer>
+              <ButtonCustom
+                bgColor="var(--success-color)"
+                color="#fff"
+                type="button"
+                onClick={handleCreateCourse}
+              >
+                Tạo khóa học
+              </ButtonCustom>
+            </ButtonContainer>
 
-          <TableCourses />
-        </ContentWrapper>
-      </Suspense>
+            <TableCourses />
+          </ContentWrapper>
+        </Suspense>
+      </TableContainer>
     </DefaultLayout>
   );
 };

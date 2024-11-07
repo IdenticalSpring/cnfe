@@ -6,10 +6,6 @@ import { adminAPI } from "service/admin";
 import { useRouter } from "next/router";
 import ButtonCustom from "components/button/Button";
 
-const TableContainer = styled.div`
-  margin-right: 20px;
-`;
-
 const StyledTable = styled(Table)`
   .ant-table-thead > tr > th {
     background-color: var(--orange-color);
@@ -75,22 +71,36 @@ const TableCourse = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchAllCourses = async () => {
       setLoading(true);
       try {
-        const courses = await adminAPI.gelAllCourse();
-        if (courses?.statusCode === 200 || courses?.statusCode === 201) {
-          const formattedData = courses?.data?.map((course, index) => ({
-            key: index + 1,
-            id: course?.id,
-            title: course?.title,
-            description: course?.description,
-            img: course?.imageUrl,
-            createAt: formatDate(course?.createdAt),
-            updateAt: formatDate(course?.updatedAt),
-          }));
-          setData(formattedData);
+        let allCourses = [];
+        let currentPage = 1;
+        let totalPages = 1;
+
+        while (currentPage <= totalPages) {
+          const response = await adminAPI.getAllCourseByPage(currentPage);
+          
+          if (response?.statusCode === 200 || response?.statusCode === 201) {
+            totalPages = response?.data?.totalPages || 1;
+            const formattedData = response?.data?.data?.map(
+              (course, index) => ({
+                key: `${currentPage}-${index + 1}`,
+                id: course?.id,
+                title: course?.title,
+                description: course?.description,
+                img: course?.imageUrl,
+                createAt: formatDate(course?.createdAt),
+                updateAt: formatDate(course?.updatedAt),
+              })
+            );
+            allCourses = [...allCourses, ...formattedData];
+          } else {
+            throw new Error("Không thể lấy dữ liệu khóa học.");
+          }
+          currentPage += 1;
         }
+        setData(allCourses);
       } catch (error) {
         notification.error({
           message: "Lỗi",
@@ -103,7 +113,7 @@ const TableCourse = () => {
       }
     };
 
-    fetchCourses();
+    fetchAllCourses();
   }, []);
 
   const formatDate = (dateString) => {
@@ -274,15 +284,11 @@ const TableCourse = () => {
   };
 
   return (
-    <TableContainer>
+    <>
       {loading ? (
         <Skeleton active paragraph={{ rows: 5 }} />
       ) : (
-        <StyledTable
-          columns={columns}
-          dataSource={data}
-          pagination={{ pageSize: 5 }}
-        />
+        <StyledTable columns={columns} dataSource={data} />
       )}
       <Modal
         title={<ModalTitle>Xóa thông tin</ModalTitle>}
@@ -297,7 +303,11 @@ const TableCourse = () => {
           </WarningText>
         </ModalContent>
         <ButtonContainer>
-          <ButtonCustom onClick={handleDelete} bgColor="#FF4D4F" hoverColor="#FF7875">
+          <ButtonCustom
+            onClick={handleDelete}
+            bgColor="#FF4D4F"
+            hoverColor="#FF7875"
+          >
             Đồng ý
           </ButtonCustom>
           <ButtonCustom onClick={handleCancel} bgColor="#f0f0f0" color="#000">
@@ -305,7 +315,7 @@ const TableCourse = () => {
           </ButtonCustom>
         </ButtonContainer>
       </Modal>
-    </TableContainer>
+    </>
   );
 };
 

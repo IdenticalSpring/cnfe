@@ -3,8 +3,10 @@ import styled from "styled-components";
 import DefaultLayout from "/pages/admin/layout/DefaultLayout";
 import { adminAPI } from "service/admin";
 import { notification, Spin } from "antd";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useRouter } from "next/router";
-import { CloseCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, CheckCircleOutlined } from "@ant-design/icons";
 
 const Container = styled.div`
   margin: 0 auto;
@@ -24,37 +26,27 @@ const Form = styled.form`
 
 const Input = styled.input`
   padding: 10px;
-  border: 1px solid ${({ hasError, isValid }) => (hasError ? "red" : isValid ? "green" : "#ccc")};
+  border: 1px solid
+    ${({ hasError, isValid }) =>
+      hasError ? "red" : isValid ? "green" : "#ccc"};
   border-radius: 5px;
   font-size: 1rem;
   transition: border-color 0.3s;
 
   &:focus {
     outline: none;
-    border-color: ${({ hasError, isValid }) => (hasError ? "red" : isValid ? "green" : "#80bdff")};
+    border-color: ${({ hasError, isValid }) =>
+      hasError ? "red" : isValid ? "green" : "#80bdff"};
   }
 `;
 
 const ErrorMessage = styled.span`
-  color: ${({ isValid }) => (isValid ? "green" : "red")}; // Thay đổi màu sắc ở đây
+  color: ${({ isValid }) => (isValid ? "green" : "red")};
   font-size: 0.875rem;
   margin-top: -10px;
   margin-bottom: 10px;
   display: flex;
   align-items: center;
-`;
-
-const TextArea = styled.textarea`
-  padding: 10px;
-  border: 1px solid ${({ hasError, isValid }) => (hasError ? "red" : isValid ? "green" : "#ccc")};
-  border-radius: 5px;
-  font-size: 1rem;
-  transition: border-color 0.3s;
-
-  &:focus {
-    outline: none;
-    border-color: ${({ hasError, isValid }) => (hasError ? "red" : isValid ? "green" : "#80bdff")};
-  }
 `;
 
 const ButtonContainer = styled.div`
@@ -184,16 +176,18 @@ const CreateCourse = () => {
             </ErrorMessage>
           )}
 
-          <TextArea
-            placeholder="Mô tả"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            onBlur={validateFields}
-            required
-            rows="4"
-            hasError={!!errors.description}
-            isValid={isValid.description}
+          <CKEditor
+            editor={ClassicEditor}
+            data={description}
+            onChange={(event, editor) => {
+              const data = editor.getData();
+              setDescription(data);
+            }}
+            config={{
+              placeholder: "Nhập mô tả cho khóa học...",
+            }}
           />
+
           {errors.description && (
             <ErrorMessage isValid={false}>
               <CloseCircleOutlined style={{ marginRight: 8 }} />
@@ -216,8 +210,7 @@ const CreateCourse = () => {
 
           <ButtonContainer>
             <Button type="submit" className="submit" disabled={loading}>
-              {loading && <Spin size="small" />}
-              Tạo
+              {loading ? <Spin size="small" /> : "Tạo"}
             </Button>
           </ButtonContainer>
         </Form>
