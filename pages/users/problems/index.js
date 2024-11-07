@@ -123,46 +123,6 @@ const Index = () => {
   const [isDifficultyLoaded, setIsDifficultyLoaded] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState(null); // Track the selected topic
 
-  const handleSearch = debounce((value) => {
-    setSearchText(value);
-    setCurrentPage(1);
-
-    const difficultyId = Object.keys(difficultyLabels).find(
-      (key) => difficultyLabels[key] === selectedDifficulty
-    );
-    fetchProblems(1, pageSize, difficultyId, value);
-  }, 300);
-
-  const handlePageChange = (page, size) => {
-    const difficultyId = Object.keys(difficultyLabels).find(
-      (key) => difficultyLabels[key] === selectedDifficulty
-    );
-    setCurrentPage(page);
-    setPageSize(size || pageSize);
-    fetchProblems(page, size, difficultyId, searchText);
-  };
-
-  const handleDifficultyChange = (difficulty) => {
-    const difficultyId = Object.keys(difficultyLabels).find(
-      (key) => difficultyLabels[key] === difficulty
-    );
-    setSelectedDifficulty(difficulty);
-    setCurrentPage(1);
-    fetchProblems(1, pageSize, difficultyId, searchText, selectedTopic);
-  };
-
-  const handleTopicChange = (topicId) => {
-    const newTopic = selectedTopic === topicId ? null : topicId;
-    setSelectedTopic(newTopic);
-    setCurrentPage(1);
-
-    const difficultyId = Object.keys(difficultyLabels).find(
-      (key) => difficultyLabels[key] === selectedDifficulty
-    );
-
-    fetchProblems(1, pageSize, difficultyId, searchText, newTopic);
-  };
-
   const tagMenu = (
     <TagDropdownContainer>
       <Input
@@ -249,6 +209,48 @@ const Index = () => {
     },
   ];
 
+  const fetchProblems = async (
+    page = 1,
+    size = pageSize,
+    difficultyId = null,
+    title = "",
+    topicId = null
+  ) => {
+    setLoading(true);
+
+    try {
+      let response;
+
+      if (!difficultyId && !topicId && !title) {
+        response = await userAPI.getAllProblemsByPage(page, size);
+      } else if (difficultyId || topicId) {
+        response = await userAPI.getSearchProblemByDifficultyAndTopic(
+          difficultyId,
+          topicId
+        );
+      } else if (title) {
+        response = await userAPI.getSearchProblemByTitle(title);
+      }
+
+      const problemsData = response?.data?.data || [];
+      const totalItems = response?.data?.totalItems || 0;
+
+      const formattedData = problemsData.map((problem) => ({
+        key: problem.id,
+        title: problem.title,
+        acceptance: problem.acceptance_rate || "none",
+        difficulty: difficultyLabels[problem.difficultyId] || "Unknown",
+      }));
+
+      setAllProblems(formattedData);
+      setTotalProblems(totalItems);
+    } catch (error) {
+      console.error("Error fetching problems:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const fetchDifficulties = async () => {
       try {
@@ -277,46 +279,47 @@ const Index = () => {
     fetchTopics();
   }, []);
 
-  const fetchProblems = async (
-    page = 1,
-    size = pageSize,
-    difficultyId = null,
-    title = "",
-    topicId = null
-  ) => {
-    setLoading(true);
-
-    try {
-      let response;
-
-      if (difficultyId || topicId) {
-        response = await userAPI.getSearchProblemByDifficultyAndTopic(
-          difficultyId,
-          topicId
-        );
-      } else if (title) {
-        response = await userAPI.getSearchProblemByTitle(title);
-      } else {
-        response = await userAPI.getAllProblemsByPage(page, size);
-      }
-
-      const problemsData = response?.data?.data || [];
-      const totalItems = response?.data?.totalItems || 0;
-
-      const formattedData = problemsData.map((problem) => ({
-        key: problem.id,
-        title: problem.title,
-        acceptance: problem.acceptance_rate || "none",
-        difficulty: difficultyLabels[problem.difficultyId] || "Unknown",
-      }));
-
-      setAllProblems(formattedData);
-      setTotalProblems(totalItems);
-    } catch (error) {
-      console.error("Error fetching problems:", error);
-    } finally {
-      setLoading(false);
+  // useEffect này để tải danh sách vấn đề khi có tìm kiếm hoặc lọc
+  useEffect(() => {
+    if (isDifficultyLoaded) {
+      const difficultyId = Object.keys(difficultyLabels).find(
+        (key) => difficultyLabels[key] === selectedDifficulty
+      );
+      fetchProblems(
+        currentPage,
+        pageSize,
+        difficultyId,
+        searchText,
+        selectedTopic
+      );
     }
+  }, [
+    isDifficultyLoaded,
+    currentPage,
+    pageSize,
+    selectedDifficulty,
+    searchText,
+    selectedTopic,
+  ]);
+
+  const handlePageChange = (page, size) => {
+    setCurrentPage(page);
+    setPageSize(size || pageSize);
+  };
+
+  const handleSearch = debounce((value) => {
+    setSearchText(value);
+    setCurrentPage(1);
+  }, 300);
+
+  const handleDifficultyChange = (difficulty) => {
+    setSelectedDifficulty(difficulty);
+    setCurrentPage(1);
+  };
+
+  const handleTopicChange = (topicId) => {
+    setSelectedTopic(topicId === selectedTopic ? null : topicId);
+    setCurrentPage(1);
   };
 
   return (
