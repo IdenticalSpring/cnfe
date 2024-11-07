@@ -4,6 +4,7 @@ import DefaultLayout from '@/layout/DefaultLayout';
 import axios from 'axios';
 import styled from 'styled-components';
 
+// Styled components
 const PageWrapper = styled.div`
   min-height: 100vh;
 `;
@@ -22,19 +23,19 @@ const HeaderSection = styled.div`
 `;
 
 const BackButton = styled.button`
-  background: rgba(0, 0, 0, 0.4); /* Lớp phủ đen mờ */
+  background: rgba(0, 0, 0, 0.4);
   border: none;
   color: white;
   display: flex;
   align-items: center;
-  font-size: 18px; /* Tăng kích thước font */
-  padding: 8px 12px; /* Thêm khoảng đệm cho nút */
-  border-radius: 8px; /* Bo góc cho nút */
+  font-size: 18px;
+  padding: 8px 12px;
+  border-radius: 8px;
   cursor: pointer;
   transition: background 0.3s ease;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.6); /* Hiệu ứng khi hover */
+    background: rgba(0, 0, 0, 0.6);
   }
 
   &::before {
@@ -42,7 +43,6 @@ const BackButton = styled.button`
     margin-right: 8px;
   }
 `;
-
 
 const HeaderContent = styled.div`
   display: flex;
@@ -55,14 +55,14 @@ const CourseTitle = styled.h1`
   font-size: 32px;
   font-weight: bold;
   margin: 0;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8); /* Thêm viền đen cho chữ */
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
 `;
 
 const CoursePrice = styled.div`
   color: white;
   font-size: 24px;
   font-weight: 600;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8); /* Thêm viền đen cho chữ */
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
 `;
 
 const FavoriteButton = styled.button`
@@ -90,7 +90,7 @@ const FavoriteButton = styled.button`
 const OverviewText = styled.div`
   color: rgba(255, 255, 255, 0.9);
   font-size: 16px;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8); /* Thêm viền đen cho chữ */
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
 `;
 
 const MainContent = styled.div`
@@ -109,18 +109,62 @@ const ContentWrapper = styled.div`
 `;
 
 const Sidebar = styled.div`
-  width: 256px;
-  flex-shrink: 0;
+  width: 280px;
+  background-color: #f9fafb;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+`;
+
+const ContentTitle = styled.h2`
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 16px;
+`;
+
+const ChapterItem = styled.div`
+  margin-bottom: 12px;
+  padding: 8px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background-color: #e6f7ff;
+  }
+`;
+
+const ChapterTitle = styled.h3`
+  font-size: 16px;
+  font-weight: 500;
+  color: #0070f3;
+  margin: 0;
+`;
+
+const LessonList = styled.ul`
+  list-style: none;
+  padding-left: 16px;
+  margin-top: 8px;
+`;
+
+const LessonItem = styled.li`
+  color: #555;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #0070f3;
+  }
 `;
 
 const MainContentArea = styled.div`
   flex: 1;
-`;
-
-const ContentTitle = styled.h2`
-  font-size: 24px;
-  font-weight: 600;
-  margin: 0;
 `;
 
 const ContentText = styled.div`
@@ -133,54 +177,117 @@ const ContentText = styled.div`
 `;
 
 const CourseDetail = () => {
-    const [course, setCourse] = useState(null);
-    const router = useRouter();
-    const { id } = router.query;
+  const [course, setCourse] = useState(null);
+  const [chapters, setChapters] = useState([]);
+  const [selectedLesson, setSelectedLesson] = useState(null);
+  const router = useRouter();
+  const { id } = router.query;
 
-    useEffect(() => {
-        if (id) {
-            axios
-                .get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/courses/${id}`)
-                .then((response) => setCourse(response.data.data))
-                .catch((error) => console.error('Error fetching course details:', error));
-        }
-    }, [id]);
+  // Lấy thông tin khóa học
+  useEffect(() => {
+    if (id) {
+      axios
+        .get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/courses/${id}`)
+        .then((response) => setCourse(response.data.data))
+        .catch((error) => console.error('Error fetching course details:', error));
+    }
+  }, [id]);
 
-    if (!course) return <div>Loading...</div>;
+  // Lấy danh sách chương và bài học trong mỗi chương
+  useEffect(() => {
+    if (id) {
+      axios
+        .get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/chapters/course/${id}`, {
+          headers: {
+            Authorization: `Bearer YOUR_TOKEN_HERE`, // Thay bằng token của bạn nếu cần
+          },
+        })
+        .then((response) => {
+          const { data } = response.data;
+          if (Array.isArray(data)) {
+            const fetchLessonsForChapters = data.map((chapter) =>
+              axios
+                .get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/lessons/chapter/${chapter.id}`)
+                .then((res) => ({
+                  ...chapter,
+                  lessons: res.data.data,
+                }))
+            );
+            Promise.all(fetchLessonsForChapters).then((chaptersWithLessons) => {
+              setChapters(chaptersWithLessons);
+            });
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching chapters and lessons:', error);
+          setChapters([]);
+        });
+    }
+  }, [id]);
 
-    return (
-        <DefaultLayout>
-            <PageWrapper>
-                <HeaderSection imageUrl={course.imageUrl}>
-                    <BackButton onClick={() => router.push('/users/course')}>
-                        Back to Explore
-                    </BackButton>
+  const fetchLessonDetails = (lessonId) => {
+    axios
+      .get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/lessons/${lessonId}`)
+      .then((response) => {
+        setSelectedLesson(response.data.data);
+      })
+      .catch((error) => console.error('Error fetching lesson details:', error));
+  };
 
-                    <HeaderContent>
-                        <CourseTitle>{course.title}</CourseTitle>
-                        <CoursePrice>$89.99</CoursePrice> {/* Cập nhật giá động nếu cần */}
-                        {course.description && <OverviewText>{course.description}</OverviewText>}
-                        <FavoriteButton>Favorite</FavoriteButton>
-                    </HeaderContent>
-                </HeaderSection>
+  if (!course) return <div>Loading...</div>;
 
-                <MainContent>
-                    <ContentWrapper>
-                        <Sidebar>
-                          
-                        </Sidebar>
+  return (
+    <DefaultLayout>
+      <PageWrapper>
+        <HeaderSection imageUrl={course.imageUrl}>
+          <BackButton onClick={() => router.push('/users/course')}>
+            Back to Explore
+          </BackButton>
+          <HeaderContent>
+            <CourseTitle>{course.title}</CourseTitle>
+            <CoursePrice>${course.price || 89.99}</CoursePrice>
+            {course.description && <OverviewText>{course.description}</OverviewText>}
+            <FavoriteButton>Favorite</FavoriteButton>
+          </HeaderContent>
+        </HeaderSection>
 
-                        <MainContentArea>
-                            <ContentTitle>Introduction</ContentTitle>
-                            <ContentText>
-                        
-                            </ContentText>
-                        </MainContentArea>
-                    </ContentWrapper>
-                </MainContent>
-            </PageWrapper>
-        </DefaultLayout>
-    );
+        <MainContent>
+          <ContentWrapper>
+            <Sidebar>
+              <ContentTitle>Course Contents</ContentTitle>
+              {Array.isArray(chapters) && chapters.map((chapter) => (
+                <ChapterItem key={chapter.id}>
+                  <ChapterTitle>{chapter.title}</ChapterTitle>
+                  <LessonList>
+                    {Array.isArray(chapter.lessons) && chapter.lessons.map((lesson) => (
+                      <LessonItem key={lesson.id} onClick={() => fetchLessonDetails(lesson.id)}>
+                        {lesson.title}
+                      </LessonItem>
+                    ))}
+                  </LessonList>
+                </ChapterItem>
+              ))}
+            </Sidebar>
+
+            <MainContentArea>
+              {selectedLesson ? (
+                <div>
+                  <ContentTitle>{selectedLesson.title}</ContentTitle>
+                  <ContentText>
+                    <p>{selectedLesson.content.replace(/\\n/g, '\n')}</p>
+                  </ContentText>
+                </div>
+              ) : (
+                <ContentText>
+                  <p>Welcome to the course! Here you will find a range of lessons and challenges to improve your skills.</p>
+                </ContentText>
+              )}
+            </MainContentArea>
+          </ContentWrapper>
+        </MainContent>
+      </PageWrapper>
+    </DefaultLayout>
+  );
 };
 
 export default CourseDetail;
