@@ -181,7 +181,8 @@ const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const fetchCoursesByType = async (type) => {
   try {
     const response = await axios.get(`${baseURL}/courses/getByType`, { params: { type, page: 1 } });
-    return response.data?.data?.data || []; 
+    const courseData = response.data?.data?.data || []; 
+    return courseData;
   } catch (error) {
     console.error(`Error fetching ${type} courses:`, error);
     return [];
@@ -227,8 +228,8 @@ const Explore = () => {
                 <CardDescription>{course.description || "No description available"}</CardDescription>
               </ContentContainer>
               <StatsContainer>
-                <StatItem>Chapters: {course.chapters || '0'}</StatItem>
-                <StatItem>Items: {course.items || '0'}</StatItem>
+                <StatItem>Chapters: {course.chapterCount || '0'}</StatItem>
+                <StatItem>Items: {course.itemCount || '0'}</StatItem>
               </StatsContainer>
             </SlideCard>
           </Link>
@@ -236,7 +237,6 @@ const Explore = () => {
       </Slider>
     );
   };
-
 
   return (
     <DefaultLayout>
