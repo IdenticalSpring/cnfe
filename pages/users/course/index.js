@@ -1,11 +1,9 @@
 import DefaultLayout from '@/layout/DefaultLayout';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import Slider from 'react-slick';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import axios from 'axios';
 import Link from 'next/link';
+import { userAPI } from '@/service/user';
+import { Skeleton } from 'antd';
 
 const PageWrapper = styled.div`
   padding: 40px 60px;
@@ -64,8 +62,20 @@ const SectionTitle = styled.h2`
   }
 `;
 
+const SlideContainer = styled.div`
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding-bottom: 20px;
+  scroll-behavior: smooth;
+
+  &::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for better design */
+  }
+`;
+
 const SlideCard = styled.div`
-  margin: 10px;
+  min-width: 300px;
   border-radius: 12px;
   overflow: hidden;
   height: 400px;
@@ -150,76 +160,52 @@ const PlaceholderText = styled.div`
   padding: 20px;
 `;
 
-const SliderWrapper = styled.div`
-  margin-bottom: 50px;
-
-  .slick-prev, .slick-next {
-    z-index: 1;
-    &:before {
-      color: #0073E6;
-      font-size: 24px;
-    }
-  }
-`;
-
-const settings = {
-  dots: false,
-  infinite: false,
-  speed: 500,
-  slidesToShow: 4,
-  slidesToScroll: 1,
-  swipeToSlide: true,
-  responsive: [
-    { breakpoint: 1440, settings: { slidesToShow: 3 } },
-    { breakpoint: 1024, settings: { slidesToShow: 2 } },
-    { breakpoint: 768, settings: { slidesToShow: 1 } }
-  ]
-};
-
-const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-const fetchCoursesByType = async (type) => {
-  try {
-    const response = await axios.get(`${baseURL}/courses/getByType`, { params: { type, page: 1 } });
-    const courseData = response.data?.data?.data || []; 
-    return courseData;
-  } catch (error) {
-    console.error(`Error fetching ${type} courses:`, error);
-    return [];
-  }
-};
-
-
-
 const Explore = () => {
   const [learnCourses, setLearnCourses] = useState([]);
   const [featuredCourses, setFeaturedCourses] = useState([]);
   const [interviewCourses, setInterviewCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadCourses = async () => {
-      const learn = await fetchCoursesByType('learn');
-      const featured = await fetchCoursesByType('featured');
-      const interview = await fetchCoursesByType('interview');
+      setLoading(true);
+      try {
+        const learn = await userAPI.fetchCoursesByType('learn');
+        const featured = await userAPI.fetchCoursesByType('featured');
+        const interview = await userAPI.fetchCoursesByType('interview');
 
-      setLearnCourses(learn);
-      setFeaturedCourses(featured);
-      setInterviewCourses(interview);
+        setLearnCourses(learn);
+        setFeaturedCourses(featured);
+        setInterviewCourses(interview);
+      } catch (error) {
+        console.error("Error loading courses:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadCourses();
   }, []);
 
+  const renderSkeletons = () => (
+    <SlideContainer>
+      {[...Array(4)].map((_, index) => (
+        <Skeleton active key={index} paragraph={{ rows: 4 }} />
+      ))}
+    </SlideContainer>
+  );
+
   const renderCourses = (courses, type) => {
+    if (loading) return renderSkeletons();
     if (!Array.isArray(courses) || courses.length === 0) {
       return <PlaceholderText>No {type} courses available.</PlaceholderText>;
     }
 
     return (
-      <Slider {...settings}>
+      <SlideContainer>
         {courses.map((course, index) => (
           <Link key={course.id} href={`/users/course/${course.id}`} passHref>
-            <SlideCard key={course.id} background={index % 2 === 0 ? '#e6f3ff' : '#f9f0ff'}>
+            <SlideCard background={index % 2 === 0 ? '#e6f3ff' : '#f9f0ff'}>
               <ImageContainer>
                 <SlideImage src={course.imageUrl || "/api/placeholder/400/225"} alt={course.title} />
               </ImageContainer>
@@ -234,7 +220,7 @@ const Explore = () => {
             </SlideCard>
           </Link>
         ))}
-      </Slider>
+      </SlideContainer>
     );
   };
 
@@ -247,19 +233,13 @@ const Explore = () => {
         </Title>
 
         <SectionTitle>Learn Courses</SectionTitle>
-        <SliderWrapper>
-          {renderCourses(learnCourses, "learn")}
-        </SliderWrapper>
+        {renderCourses(learnCourses, "learn")}
 
         <SectionTitle>Featured Courses</SectionTitle>
-        <SliderWrapper>
-          {renderCourses(featuredCourses, "featured")}
-        </SliderWrapper>
+        {renderCourses(featuredCourses, "featured")}
 
         <SectionTitle>Interview Courses</SectionTitle>
-        <SliderWrapper>
-          {renderCourses(interviewCourses, "interview")}
-        </SliderWrapper>
+        {renderCourses(interviewCourses, "interview")}
       </PageWrapper>
     </DefaultLayout>
   );
