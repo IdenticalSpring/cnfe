@@ -5,14 +5,17 @@ import { DownOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
-const HeaderContainer = styled.div`
+// Kiểm tra thuộc tính collapsed khi truyền vào styled-components
+const HeaderContainer = styled.div.withConfig({
+  shouldForwardProp: (prop) => prop !== "collapsed" // Chỉ cho phép props khác ngoài 'collapsed'
+})`
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 16px;
   background-color: #f0f2f5;
-  width: ${(props) => (props.collapsed ? "calc(100% - 80px)" : "calc(100% - 200px)")};
-  margin-left: ${(props) => (props.collapsed ? "80px" : "200px")};
+  width: ${(props) => (props.$collapsed ? "calc(100% - 80px)" : "calc(100% - 200px)")};
+  margin-left: ${(props) => (props.$collapsed ? "80px" : "200px")};
   box-sizing: border-box;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   position: fixed;
@@ -66,7 +69,7 @@ const Header = ({ toggleSidebar, collapsed }) => {
   ];
 
   return (
-    <HeaderContainer collapsed={collapsed}>
+    <HeaderContainer $collapsed={collapsed !== undefined ? collapsed : false}>
       <ToggleSidebarButton onClick={toggleSidebar}>
         <MenuUnfoldOutlined />
       </ToggleSidebarButton>

@@ -15,6 +15,7 @@ export const Container = styled.div`
   box-sizing: border-box;
   z-index: 1000;
   background-color: var(--background-color);
+  overflow-x: auto; /* Cho phép cuộn ngang */
 `;
 
 export const Nav = styled.nav`
@@ -27,9 +28,6 @@ export const Nav = styled.nav`
   max-height: 30px;
   box-sizing: border-box;
   z-index: 1000;
-  @media (max-width: 749px) {
-    padding: calc(5px + 0.5vw) calc(10px + 1vw);
-  }
 `;
 
 export const LogoWrapper = styled.div`
@@ -38,22 +36,33 @@ export const LogoWrapper = styled.div`
   height: 40px;
 `;
 
+export const Title = styled.span`
+  font-family: cursive;
+  font-size: calc(0.9rem + 0.3vw);
+  font-weight: ${({ theme }) => theme.typography.h1.fontWeight};
+  color: var(--text-secondary-color);
+  cursor: pointer;
+
+  &:active {
+    color: red;
+    transform: translateY(1px);
+  }
+
+  @media (max-width: 900px) {
+    /* Thay đổi kích thước chữ khi nhỏ hơn 900px */
+    font-size: 0.9rem;
+  }
+`;
+
 export const Logo = styled.img`
   height: auto;
   width: 100%;
   max-height: 30px;
   cursor: pointer;
-`;
 
-export const Title = styled.span`
-  font-family: cursive;
-  font-size: calc(1rem + 0.5vw);
-  font-weight: ${({ theme }) => theme.typography.h1.fontWeight};
-  color: var(--text-secondary-color);
-  cursor: pointer;
-  &:active {
-    color: red;
-    transform: translateY(1px);
+  @media (max-width: 900px) {
+    /* Giảm kích thước logo khi nhỏ hơn 900px */
+    max-height: 20px;
   }
 `;
 
@@ -63,10 +72,16 @@ export const LinkWrapper = styled.div`
   align-items: center;
   box-sizing: border-box;
   cursor: pointer;
+  flex-wrap: wrap; /* Cho phép các link đổ xuống dòng khi cần */
+
+  @media (max-width: 749px) {
+    gap: ${({ theme }) => theme.spacing.small};
+  }
 `;
 
 const StyledLink = styled.a`
-  color: ${({ $isActive }) => $isActive ? "#DD0000" : "var(--text-secondary-color)"};
+  color: ${({ $isActive }) =>
+    $isActive ? "#DD0000" : "var(--text-secondary-color)"};
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
@@ -77,11 +92,15 @@ const StyledLink = styled.a`
   &:hover {
     color: var(--text-primary-color);
     background-color: rgba(0, 0, 0, 0.05);
-    border-radius: 100px;
   }
 
   &:active {
     transform: translateY(1px);
+  }
+
+  @media (max-width: 900px) {
+    padding: 5px 10px; /* Giảm khoảng đệm trên màn hình nhỏ */
+    font-size: 0.9rem; /* Giảm kích thước chữ */
   }
 `;
 
@@ -118,11 +137,7 @@ export const Header = () => {
     },
     {
       key: "logout",
-      label: (
-        <span onClick={handleLogout}>
-          Log out
-        </span>
-      ),
+      label: <span onClick={handleLogout}>Log out</span>,
     },
   ];
 
@@ -139,8 +154,8 @@ export const Header = () => {
           <Link href="/" passHref legacyBehavior>
             <StyledLink $isActive={router.pathname === "/"}>Home</StyledLink>
           </Link>
-          <Link href="/users/explore" passHref legacyBehavior>
-            <StyledLink $isActive={router.pathname === "/users/explore"}>
+          <Link href="/users/course" passHref legacyBehavior>
+            <StyledLink $isActive={router.pathname === "/users/course"}>
               Explore
             </StyledLink>
           </Link>

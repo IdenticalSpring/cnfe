@@ -1,12 +1,12 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 const TestCaseSection = styled.div`
   background-color: #ffffff;
   padding: 20px;
   height: 100%;
   overflow: auto;
-     border: 1px solid #ddd;
+  border: 1px solid #ddd;
   border-radius: 8px;
 `;
 

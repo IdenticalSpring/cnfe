@@ -150,7 +150,6 @@ const CreateProblem = () => {
         router.push("/admin/problem");
       }
     } catch (error) {
-      console.log("🚀 ~ handleSubmit ~ error:", error);
       notification.error({
         message: "Tạo bài tập thất bại",
         description: "Đã có lỗi xảy ra khi tạo bài tập. Vui lòng thử lại!",
