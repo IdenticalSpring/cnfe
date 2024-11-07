@@ -4,8 +4,8 @@ import styled from 'styled-components';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import axios from 'axios';
 import Link from 'next/link';
+import { userAPI } from '@/service/user';
 
 const PageWrapper = styled.div`
   padding: 40px 60px;
@@ -175,22 +175,6 @@ const settings = {
     { breakpoint: 768, settings: { slidesToShow: 1 } }
   ]
 };
-
-const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-const fetchCoursesByType = async (type) => {
-  try {
-    const response = await axios.get(`${baseURL}/courses/getByType`, { params: { type, page: 1 } });
-    const courseData = response.data?.data?.data || []; 
-    return courseData;
-  } catch (error) {
-    console.error(`Error fetching ${type} courses:`, error);
-    return [];
-  }
-};
-
-
-
 const Explore = () => {
   const [learnCourses, setLearnCourses] = useState([]);
   const [featuredCourses, setFeaturedCourses] = useState([]);
@@ -198,13 +182,17 @@ const Explore = () => {
 
   useEffect(() => {
     const loadCourses = async () => {
-      const learn = await fetchCoursesByType('learn');
-      const featured = await fetchCoursesByType('featured');
-      const interview = await fetchCoursesByType('interview');
+      try {
+        const learn = await userAPI.fetchCoursesByType('learn');
+        const featured = await userAPI.fetchCoursesByType('featured');
+        const interview = await userAPI.fetchCoursesByType('interview');
 
-      setLearnCourses(learn);
-      setFeaturedCourses(featured);
-      setInterviewCourses(interview);
+        setLearnCourses(learn);
+        setFeaturedCourses(featured);
+        setInterviewCourses(interview);
+      } catch (error) {
+        console.error("Error loading courses:", error);
+      }
     };
 
     loadCourses();

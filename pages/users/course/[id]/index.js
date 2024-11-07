@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import DefaultLayout from '@/layout/DefaultLayout';
-import axios from 'axios';
 import styled from 'styled-components';
 import { BookOutlined, PlayCircleOutlined, MessageOutlined, ShareAltOutlined } from '@ant-design/icons';
+import { userAPI } from '@/service/user';
 
 const CoursePrice = styled.div`
   color: white;
@@ -340,45 +340,24 @@ const CourseDetail = () => {
 
   useEffect(() => {
     if (id) {
-      axios
-        .get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/courses/${id}`)
-        .then((response) => setCourse(response.data.data))
+      userAPI.getCourseById(id)
+        .then(setCourse)
         .catch((error) => console.error('Error fetching course details:', error));
     }
   }, [id]);
 
   useEffect(() => {
     if (id) {
-      axios
-        .get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/chapters/course/${id}`)
-        .then((response) => {
-          const { data } = response.data;
-          if (Array.isArray(data)) {
-            const fetchLessonsForChapters = data.map((chapter) =>
-              axios
-                .get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/lessons/chapter/${chapter.id}`)
-                .then((res) => ({
-                  ...chapter,
-                  lessons: res.data.data,
-                }))
-            );
-            Promise.all(fetchLessonsForChapters).then((chaptersWithLessons) => {
-              setChapters(chaptersWithLessons);
-            });
-          }
-        })
-        .catch((error) => {
-          console.error('Error fetching chapters and lessons:', error);
-          setChapters([]);
-        });
+      userAPI.getChaptersAndLessonsByCourseId(id)
+        .then(setChapters)
+        .catch((error) => console.error('Error fetching chapters and lessons:', error));
     }
   }, [id]);
 
   const fetchLessonDetails = (lessonId) => {
-    axios
-      .get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/lessons/${lessonId}`)
-      .then((response) => {
-        setSelectedLesson(response.data.data);
+    userAPI.getLessonById(lessonId)
+      .then((lesson) => {
+        setSelectedLesson(lesson);
         setActiveTab('content');
       })
       .catch((error) => console.error('Error fetching lesson details:', error));
