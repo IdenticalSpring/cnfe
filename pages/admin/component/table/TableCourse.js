@@ -165,13 +165,7 @@ const TableCourse = () => {
       key: "img",
       width: 150,
       render: (text, record) => (
-        <Image
-          src={record.img}
-          alt={record.title}
-          width={50}
-          height={50}
-          layout="fixed" // hoặc "intrinsic" nếu bạn muốn kích thước tự động
-        />
+        <img src={record.img} alt={record.title} width="50" />
       ),
     },
     {

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Input, Tag, Skeleton } from "antd";
 import SearchIcon from "@mui/icons-material/Search";
 import { userAPI } from "service/user";
-import CustomCalendar from "./CustomCalendar"; // Import CustomCalendar
+import CustomCalendar from "./CustomCalendar";
 
 const SidebarContainer = styled.div`
   flex: 2;
@@ -14,7 +14,6 @@ const SidebarContainer = styled.div`
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
-  /* Responsive styles */
   @media (max-width: 768px) {
     padding: 15px;
     margin: 0;
@@ -28,7 +27,6 @@ const ContentBox = styled.div`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
 
-  /* Responsive styles */
   @media (max-width: 768px) {
     padding: 15px;
   }
@@ -55,7 +53,6 @@ const CompanyTagList = styled.div`
   max-height: 400px;
   overflow-y: auto;
 
-  /* Responsive styles */
   @media (max-width: 768px) {
     gap: 8px;
     max-height: 300px;
@@ -64,30 +61,52 @@ const CompanyTagList = styled.div`
 
 const CompanyTag = styled(Tag)`
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   font-size: 14px;
   padding: 4px 10px;
   background-color: #f0f0f0;
   border-radius: 8px;
+  width: fit-content;
+  cursor: pointer;
+  transition: all 0.3s ease;
 
-  /* Responsive font size and padding */
   @media (max-width: 768px) {
     font-size: 12px;
     padding: 4px 8px;
   }
+
+  &:hover {
+    border-color: var(--link-hover-color);
+  }
 `;
 
-const Sidebar = () => {
+const ProblemCount = styled.div`
+  background-color: var(--orange-color);
+  color: #ffffff;
+  font-size: 12px;
+  padding: 0px 6px;
+  border-radius: 6px;
+  margin-left: 4px;
+`;
+
+const Sidebar = ({ onCompanyFilter }) => {
   const [searchText, setSearchText] = useState("");
   const [companies, setCompanies] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState(null); // Trạng thái lưu trữ công ty đã chọn
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await userAPI.getAllCompanies();
-        setCompanies(response.data);
+        const response = await userAPI.getCompanyProblemCounts();
+        const data = response?.data;
+
+        if (Array.isArray(data)) {
+          setCompanies(data);
+        } else {
+          console.error("Expected an array but received:", data);
+        }
       } catch (error) {
         console.error("Error fetching companies:", error);
       } finally {
@@ -98,11 +117,15 @@ const Sidebar = () => {
     fetchCompanies();
   }, []);
 
-  const filteredCompanies = Array.isArray(companies)
-    ? companies.filter((company) =>
-        company.name.toLowerCase().includes(searchText.toLowerCase())
-      )
-    : [];
+  const filteredCompanies = companies.filter((company) =>
+    company.name.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  const handleCompanySelect = (companyId) => {
+    const newSelectedCompany = selectedCompany === companyId ? null : companyId;
+    setSelectedCompany(newSelectedCompany);
+    onCompanyFilter(newSelectedCompany); // Gọi hàm lọc với companyId hoặc null nếu bỏ chọn
+  };
 
   return (
     <SidebarContainer>
@@ -125,7 +148,20 @@ const Sidebar = () => {
         ) : (
           <CompanyTagList>
             {filteredCompanies.map((company) => (
-              <CompanyTag key={company.id}>{company.name}</CompanyTag>
+              <CompanyTag
+                key={company.id}
+                onClick={() => handleCompanySelect(company.id)}
+                style={{
+                  borderColor:
+                    selectedCompany === company.id ? "orange" : "default",
+                  borderWidth: selectedCompany === company.id ? "2px" : "1px",
+                  borderStyle:
+                    selectedCompany === company.id ? "solid" : "none",
+                }}
+              >
+                {company.name}
+                <ProblemCount>{company.problemCount}</ProblemCount>
+              </CompanyTag>
             ))}
           </CompanyTagList>
         )}

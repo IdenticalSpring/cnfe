@@ -9,8 +9,6 @@ import {
 } from "@ant-design/icons";
 import { userAPI } from "service/user"; // Import API
 
-const { Item } = Menu;
-
 const DescriptionContainer = styled.div`
   height: 100vh;
   display: flex;
@@ -73,6 +71,30 @@ const Description = ({ id, title, description }) => {
     if (id) fetchProblemDetails();
   }, [id]);
 
+  // Tạo items cho Menu thay vì sử dụng Menu.Item trực tiếp
+  const menuItems = [
+    {
+      key: "description",
+      icon: <FileTextOutlined />,
+      label: "Description",
+    },
+    {
+      key: "submissions",
+      icon: <ReloadOutlined />,
+      label: "Submissions",
+    },
+    {
+      key: "editorial",
+      icon: <BookOutlined />,
+      label: "Editorial",
+    },
+    {
+      key: "solutions",
+      icon: <ExperimentOutlined />,
+      label: "Solutions",
+    },
+  ];
+
   return (
     <DescriptionContainer>
       <ProblemHeader>
@@ -80,20 +102,8 @@ const Description = ({ id, title, description }) => {
           mode="horizontal"
           defaultSelectedKeys={["description"]}
           style={{ borderBottom: "none" }}
-        >
-          <Item key="description" icon={<FileTextOutlined />}>
-            Description
-          </Item>
-          <Item key="submissions" icon={<ReloadOutlined />}>
-            Submissions
-          </Item>
-          <Item key="editorial" icon={<BookOutlined />}>
-            Editorial
-          </Item>
-          <Item key="solutions" icon={<ExperimentOutlined />}>
-            Solutions
-          </Item>
-        </Menu>
+          items={menuItems} // Sử dụng items thay cho children
+        />
       </ProblemHeader>
       <ProblemContent>
         <h2>
@@ -106,7 +116,7 @@ const Description = ({ id, title, description }) => {
 
         <TagContainer>
           {loading ? (
-            <Skeleton.Button active size="small" style={{ width: 80 }} />
+            <Skeleton.Button active size="small" style={{ width: 60 }} />
           ) : (
             <Tag
               color={

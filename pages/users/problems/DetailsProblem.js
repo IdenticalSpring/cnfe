@@ -10,7 +10,6 @@ import Description from "../components/problems-details/description";
 import CodeEditorComponent from "../components/problems-details/code";
 import TestCaseComponent from "../components/problems-details/test-case";
 import { userAPI } from "service/user"; // Import the API function here
-import Loading from "../components/Loading"; // Import Loading component
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -111,7 +110,6 @@ const DetailProblem = ({ problemId }) => {
       <GlobalStyle />
       <Header style={{ zIndex: 3 }} />
       <PageWrapper>
-        {loading}{" "}
         <div style={{ display: "flex", height: "100%", width: "100%" }}>
           <ResizableBox
             width={400}

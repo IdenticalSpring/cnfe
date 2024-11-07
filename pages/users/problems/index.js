@@ -7,7 +7,7 @@ import DefaultLayout from "@/layout/DefaultLayout";
 import Link from "next/link";
 import { userAPI } from "service/user";
 import debounce from "lodash.debounce";
-import SidebarProblem from "../components/sidebar-problem/SidebarProblem";
+import Sidebar from "../components/sidebar-problem/SidebarProblem";
 
 const PageContainer = styled.div`
   display: flex;
@@ -122,6 +122,7 @@ const Index = () => {
   const [topics, setTopics] = useState([]);
   const [isDifficultyLoaded, setIsDifficultyLoaded] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState(null); // Track the selected topic
+  const [companyIdFilter, setCompanyIdFilter] = useState(null); // Thêm filter theo công ty
 
   const tagMenu = (
     <TagDropdownContainer>
@@ -209,26 +210,37 @@ const Index = () => {
     },
   ];
 
+  const handleCompanyFilter = async (companyId) => {
+    fetchProblems(currentPage, pageSize, null, "", null, companyId);
+  };
+
   const fetchProblems = async (
     page = 1,
     size = pageSize,
     difficultyId = null,
     title = "",
-    topicId = null
+    topicId = null,
+    companyId = null // Thêm companyId làm tham số tùy chọn
   ) => {
     setLoading(true);
 
     try {
       let response;
 
-      if (!difficultyId && !topicId && !title) {
+      if (companyId) {
+        // Nếu có companyId, gọi API getSearchByCompanies
+        response = await userAPI.getSearchByCompanies(companyId);
+      } else if (!difficultyId && !topicId && !title) {
+        // Nếu không có bất kỳ bộ lọc nào khác, gọi API getAllProblemsByPage
         response = await userAPI.getAllProblemsByPage(page, size);
       } else if (difficultyId || topicId) {
+        // Nếu có bộ lọc difficultyId hoặc topicId, gọi API getSearchProblemByDifficultyAndTopic
         response = await userAPI.getSearchProblemByDifficultyAndTopic(
           difficultyId,
           topicId
         );
       } else if (title) {
+        // Nếu chỉ có title, gọi API getSearchProblemByTitle
         response = await userAPI.getSearchProblemByTitle(title);
       }
 
@@ -290,7 +302,8 @@ const Index = () => {
         pageSize,
         difficultyId,
         searchText,
-        selectedTopic
+        selectedTopic,
+        companyIdFilter // Thêm companyIdFilter vào nếu bạn muốn tự động áp dụng bộ lọc công ty
       );
     }
   }, [
@@ -300,6 +313,7 @@ const Index = () => {
     selectedDifficulty,
     searchText,
     selectedTopic,
+    companyIdFilter, // Thêm vào nếu cần
   ]);
 
   const handlePageChange = (page, size) => {
@@ -373,7 +387,7 @@ const Index = () => {
             />
           )}
         </ProblemListContainer>
-        <SidebarProblem />
+        <Sidebar onCompanyFilter={handleCompanyFilter} />
       </PageContainer>
     </DefaultLayout>
   );

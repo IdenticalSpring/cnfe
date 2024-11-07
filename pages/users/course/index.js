@@ -1,11 +1,11 @@
-import DefaultLayout from '@/layout/DefaultLayout';
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import Slider from 'react-slick';
+import DefaultLayout from "@/layout/DefaultLayout";
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import axios from 'axios';
-import Link from 'next/link';
+import axios from "axios";
+import Link from "next/link";
 
 const PageWrapper = styled.div`
   padding: 40px 60px;
@@ -27,20 +27,20 @@ const WelcomeText = styled.div`
 const ExploreText = styled.div`
   font-size: 52px;
   font-weight: 700;
-  color: #0073E6;
+  color: #0073e6;
   position: relative;
   display: inline-block;
   margin-top: 10px;
 
   &:after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -10px;
     left: 50%;
     transform: translateX(-50%);
     width: 80px;
     height: 4px;
-    background: #0073E6;
+    background: #0073e6;
     border-radius: 2px;
   }
 `;
@@ -53,10 +53,10 @@ const SectionTitle = styled.h2`
   position: relative;
 
   &:before {
-    content: '';
+    content: "";
     width: 6px;
     height: 100%;
-    background: #0073E6;
+    background: #0073e6;
     position: absolute;
     left: -20px;
     top: 0;
@@ -71,7 +71,7 @@ const SlideCard = styled.div`
   height: 400px;
   display: flex;
   flex-direction: column;
-  background: ${props => props.background || '#e6f3ff'};
+  background: ${(props) => props.background || "#e6f3ff"};
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 
@@ -153,10 +153,11 @@ const PlaceholderText = styled.div`
 const SliderWrapper = styled.div`
   margin-bottom: 50px;
 
-  .slick-prev, .slick-next {
+  .slick-prev,
+  .slick-next {
     z-index: 1;
     &:before {
-      color: #0073E6;
+      color: #0073e6;
       font-size: 24px;
     }
   }
@@ -172,23 +173,23 @@ const settings = {
   responsive: [
     { breakpoint: 1440, settings: { slidesToShow: 3 } },
     { breakpoint: 1024, settings: { slidesToShow: 2 } },
-    { breakpoint: 768, settings: { slidesToShow: 1 } }
-  ]
+    { breakpoint: 768, settings: { slidesToShow: 1 } },
+  ],
 };
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const fetchCoursesByType = async (type) => {
   try {
-    const response = await axios.get(`${baseURL}/courses/getByType`, { params: { type, page: 1 } });
-    return response.data?.data?.data || []; 
+    const response = await axios.get(`${baseURL}/courses/getByType`, {
+      params: { type, page: 1 },
+    });
+    return response.data?.data?.data || [];
   } catch (error) {
     console.error(`Error fetching ${type} courses:`, error);
     return [];
   }
 };
-
-
 
 const Explore = () => {
   const [learnCourses, setLearnCourses] = useState([]);
@@ -197,9 +198,9 @@ const Explore = () => {
 
   useEffect(() => {
     const loadCourses = async () => {
-      const learn = await fetchCoursesByType('learn');
-      const featured = await fetchCoursesByType('featured');
-      const interview = await fetchCoursesByType('interview');
+      const learn = await fetchCoursesByType("learn");
+      const featured = await fetchCoursesByType("featured");
+      const interview = await fetchCoursesByType("interview");
 
       setLearnCourses(learn);
       setFeaturedCourses(featured);
@@ -218,17 +219,25 @@ const Explore = () => {
       <Slider {...settings}>
         {courses.map((course, index) => (
           <Link key={course.id} href={`/users/course/${course.id}`} passHref>
-            <SlideCard key={course.id} background={index % 2 === 0 ? '#e6f3ff' : '#f9f0ff'}>
+            <SlideCard
+              key={course.id}
+              background={index % 2 === 0 ? "#e6f3ff" : "#f9f0ff"}
+            >
               <ImageContainer>
-                <SlideImage src={course.imageUrl || "/api/placeholder/400/225"} alt={course.title} />
+                <SlideImage
+                  src={course.imageUrl || "/api/placeholder/400/225"}
+                  alt={course.title}
+                />
               </ImageContainer>
               <ContentContainer>
                 <CardTitle>{course.title}</CardTitle>
-                <CardDescription>{course.description || "No description available"}</CardDescription>
+                <CardDescription>
+                  {course.description || "No description available"}
+                </CardDescription>
               </ContentContainer>
               <StatsContainer>
-                <StatItem>Chapters: {course.chapters || '0'}</StatItem>
-                <StatItem>Items: {course.items || '0'}</StatItem>
+                <StatItem>Chapters: {course.chapters || "0"}</StatItem>
+                <StatItem>Items: {course.items || "0"}</StatItem>
               </StatsContainer>
             </SlideCard>
           </Link>
@@ -236,7 +245,6 @@ const Explore = () => {
       </Slider>
     );
   };
-
 
   return (
     <DefaultLayout>
@@ -247,9 +255,7 @@ const Explore = () => {
         </Title>
 
         <SectionTitle>Learn Courses</SectionTitle>
-        <SliderWrapper>
-          {renderCourses(learnCourses, "learn")}
-        </SliderWrapper>
+        <SliderWrapper>{renderCourses(learnCourses, "learn")}</SliderWrapper>
 
         <SectionTitle>Featured Courses</SectionTitle>
         <SliderWrapper>

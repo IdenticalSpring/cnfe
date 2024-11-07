@@ -59,4 +59,8 @@ export const userAPI = {
     );
     return response.data;
   },
+  getCompanyProblemCounts: async () => {
+    const response = await request.get(`companies/with-problem-count`);
+    return response.data;
+  },
 };
