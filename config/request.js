@@ -1,7 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import QueryString from "qs";
-
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 export const request = axios.create({
   headers: {
