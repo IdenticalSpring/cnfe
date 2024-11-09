@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { adminAPI } from "service/admin";
 import { Form, Input, Select, Button, notification, Spin } from "antd";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import Editor from "components/textEditor/Editor";
 import DefaultLayout from "/pages/admin/layout/DefaultLayout";
 import styled from "styled-components";
+import { useRouter } from "next/router";
 
 const { Option } = Select;
 
@@ -35,29 +35,30 @@ const StyledButton = styled(Button)`
   }
 `;
 
-const CKEditorContainer = styled.div`
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  padding: 10px;
-  min-height: 200px;
-  background-color: #f9f9f9;
-
-  .ck-editor__editable {
-    min-height: 200px;
-  }
-
-  .ck-toolbar {
-    background-color: #e6f7ff;
-  }
-`;
-
 const EditProblem = ({ problemId }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(true);
   const [problem, setProblem] = useState(null);
   const [difficulties, setDifficulties] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const result = await adminAPI.getAllCourse();
+        setCourses(result?.data);
+      } catch (error) {
+        notification.error({
+          message: "Lỗi khi lấy danh sách khóa học",
+          description:
+            "Không thể tải danh sách khóa học. Vui lòng thử lại sau!",
+          placement: "bottomRight",
+          duration: 2,
+        });
+      }
+    };
+
     const fetchProblemDetails = async () => {
       setLoading(true);
       try {
@@ -71,8 +72,7 @@ const EditProblem = ({ problemId }) => {
             description: response?.data?.description,
             difficultyId: response?.data?.difficultyId,
             courseId: response?.data?.courseId || "",
-            accepted: response?.data?.accepted || 0,
-            status: response?.data?.status || "",
+            accepted: response?.data?.accepted || "",
             submissions: response?.data?.submissions || "",
             likes: response?.data?.likes || 0,
             dislikes: response?.data?.dislikes || 0,
@@ -93,23 +93,32 @@ const EditProblem = ({ problemId }) => {
       }
     };
 
-    if (problemId) fetchProblemDetails();
+    if (problemId) fetchProblemDetails(), fetchCourses();
   }, [problemId, form]);
 
   const handleSubmit = async (values) => {
-    const formData = new FormData();
-    for (const key in values) {
-      if (values.hasOwnProperty(key)) {
-        formData.append(key, values[key]);
-      }
-    }
+    const dataToSend = {
+      title: values.title,
+      description: values.description,
+      difficultyId: values.difficultyId,
+      courseId: values.courseId || 0,
+      likes: Number(values.likes) || 0,
+      dislikes: Number(values.dislikes) || 0,
+      rating: Number(values.rating) || 0,
+      acceptance_rate: Number(values.acceptance_rate) || 0,
+    };
+
+    console.log("🚀 ~ handleSubmit ~ dataToSend:", dataToSend);
+
     try {
-      await adminAPI.updateProblem(problemId, values);
+      await adminAPI.updateProblem(problemId, dataToSend);
       notification.success({
         message: "Thành công",
         description: "Đã cập nhật bài toán thành công!",
       });
+      router.push("/admin/problem/");
     } catch (error) {
+      console.log("🚀 ~ handleSubmit ~ error:", error);
       notification.error({
         message: "Lỗi",
         description: "Cập nhật bài toán không thành công.",
@@ -138,20 +147,13 @@ const EditProblem = ({ problemId }) => {
               name="description"
               rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
             >
-              <CKEditorContainer>
-                <CKEditor
-                  editor={ClassicEditor}
-                  data={problem?.description}
-                  onChange={(event, editor) => {
-                    const data = editor.getData();
-                    form.setFieldsValue({ description: data });
-                  }}
-                  onBlur={(event, editor) => {
-                    const data = editor.getData();
-                    form.setFieldsValue({ description: data });
-                  }}
-                />
-              </CKEditorContainer>
+              <Editor
+                value={form.getFieldValue("description") || ""}
+                onChange={(content) =>
+                  form.setFieldsValue({ description: content })
+                }
+                placeholder="Nhập nội dung mô tả..."
+              />
             </Form.Item>
 
             <Form.Item
@@ -168,16 +170,26 @@ const EditProblem = ({ problemId }) => {
               </Select>
             </Form.Item>
 
+            <Form.Item
+              label="Khóa học"
+              name="courseId"
+              rules={[{ required: true, message: "Vui lòng chọn khóa học" }]}
+            >
+              <Select>
+                {courses.map((course) => (
+                  <Option key={course.id} value={course.id}>
+                    {course.title}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+
             <Form.Item label="Accepted" name="accepted">
               <Input type="number" />
             </Form.Item>
 
             <Form.Item label="Submissions" name="submissions">
               <Input type="number" />
-            </Form.Item>
-
-            <Form.Item label="Trạng thái" name="status">
-              <Input />
             </Form.Item>
 
             <Form.Item label="Likes" name="likes">

@@ -141,13 +141,6 @@ const Login = () => {
         });
       }
     } else {
-      console.log('Login failed');
-      notification.error({
-        message: 'Error',
-        description: result.message || 'Đăng nhập thất bại!',
-        placement: 'bottomRight',
-        duration: 3,
-      });
     }
   };
 

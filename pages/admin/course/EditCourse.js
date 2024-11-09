@@ -5,8 +5,7 @@ import { useRouter } from "next/router";
 import { PlusOutlined } from "@ant-design/icons";
 import DefaultLayout from "/pages/admin/layout/DefaultLayout";
 import { adminAPI } from "service/admin";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import Editor from "components/textEditor/Editor";
 
 // Styled components
 const Container = styled.div`
@@ -33,22 +32,6 @@ const StyledButton = styled(Button)`
   }
   &:focus {
     background-color: #40a9ff;
-  }
-`;
-
-const CKEditorContainer = styled.div`
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  padding: 10px;
-  min-height: 200px;
-  background-color: #f9f9f9;
-
-  .ck-editor__editable {
-    min-height: 200px;
-  }
-
-  .ck-toolbar {
-    background-color: #e6f7ff;
   }
 `;
 
@@ -188,19 +171,11 @@ const EditCourse = ({ courseId }) => {
             </Form.Item>
 
             <Form.Item label="Mô tả" hasFeedback>
-              <CKEditorContainer>
-                <CKEditor
-                  editor={ClassicEditor}
-                  data={description}
-                  onChange={(event, editor) => {
-                    const data = editor.getData();
-                    setDescription(data);
-                  }}
-                  config={{
-                    placeholder: "Nhập mô tả cho khóa học...",
-                  }}
-                />
-              </CKEditorContainer>
+              <Editor
+                value={description}
+                onChange={(newContent) => setDescription(newContent)}
+                placeholder="Nhập mô tả cho khóa học..."
+              />
             </Form.Item>
 
             <Form.Item label="Hình ảnh">

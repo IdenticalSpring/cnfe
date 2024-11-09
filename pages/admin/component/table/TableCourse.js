@@ -81,7 +81,7 @@ const TableCourse = () => {
 
         while (currentPage <= totalPages) {
           const response = await adminAPI.getAllCourseByPage(currentPage);
-          
+
           if (response?.statusCode === 200 || response?.statusCode === 201) {
             totalPages = response?.data?.totalPages || 1;
             const formattedData = response?.data?.data?.map(
@@ -180,7 +180,6 @@ const TableCourse = () => {
           alt={record.title}
           width={50}
           height={50}
-          layout="fixed" // hoặc "intrinsic" nếu bạn muốn kích thước tự động
         />
       ),
     },

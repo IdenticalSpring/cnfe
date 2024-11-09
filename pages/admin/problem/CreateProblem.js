@@ -3,9 +3,8 @@ import styled from "styled-components";
 import DefaultLayout from "/pages/admin/layout/DefaultLayout";
 import { adminAPI } from "service/admin";
 import { notification, Spin, Select } from "antd";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useRouter } from "next/router";
+import Editor from "components/textEditor/Editor";
 
 const { Option } = Select;
 
@@ -78,11 +77,11 @@ const Button = styled.button`
 const CreateProblem = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [difficulty, setDifficulty] = useState(""); // Giá trị độ khó người dùng chọn
-  const [difficultyId, setDifficultyId] = useState(""); // ID của độ khó
-  const [courseId, setCourseId] = useState(""); // ID khóa học
-  const [courseOptions, setCourseOptions] = useState([]); // Danh sách khóa học
-  const [difficultyOptions, setDifficultyOptions] = useState([]); // Các độ khó
+  const [difficulty, setDifficulty] = useState("");
+  const [difficultyId, setDifficultyId] = useState("");
+  const [courseId, setCourseId] = useState("");
+  const [courseOptions, setCourseOptions] = useState([]);
+  const [difficultyOptions, setDifficultyOptions] = useState([]);
   const [likes, setLikes] = useState("");
   const [dislikes, setDislikes] = useState("");
   const [rating, setRating] = useState("");
@@ -130,12 +129,12 @@ const CreateProblem = () => {
     const formData = {
       title,
       description,
-      difficultyId: difficultyId,
-      courseId: courseId,
-      like: Number(likes),
-      dislike: Number(dislikes),
+      difficultyId,
+      courseId,
+      likes: Number(likes),
+      dislikes: Number(dislikes),
       rating: Number(rating),
-      acceptanceRate: Number(acceptanceRate),
+      acceptance_rate: Number(acceptanceRate),
     };
 
     try {
@@ -177,14 +176,11 @@ const CreateProblem = () => {
           />
 
           <Label htmlFor="description">Mô tả</Label>
-          <EditorContainer>
-            <CKEditor
-              editor={ClassicEditor}
-              data={description}
-              onChange={(event, editor) => setDescription(editor.getData())}
-              config={{ placeholder: "Nhập mô tả cho bài tập..." }}
-            />
-          </EditorContainer>
+          <Editor
+            value={description}
+            onChange={setDescription}
+            placeholder="Nhập mô tả bài tập"
+          />
 
           <Label htmlFor="difficulty">Độ khó</Label>
           <Select
@@ -208,9 +204,6 @@ const CreateProblem = () => {
                 {difficulty?.name}
               </Option>
             ))}
-            <Option value="" disabled>
-              Chọn độ khó
-            </Option>
           </Select>
 
           <Label htmlFor="courseId">Khóa học</Label>
@@ -225,9 +218,6 @@ const CreateProblem = () => {
             }
             required
           >
-            <Option value="" disabled>
-              Chọn khóa học
-            </Option>
             {courseOptions.map((course) => (
               <Option key={course.id} value={course.id}>
                 {course?.title}

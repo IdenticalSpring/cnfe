@@ -56,9 +56,9 @@ export const adminAPI = {
     return response.data;
   },
   updateProblem: async (id, data) => {
-    const response = await request.patch(`/admin/courses/${id}`, data, {
+    const response = await request.patch(`/admin/problem/update/${id}`, data, {
       headers: {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
       },
     });
     return response.data;

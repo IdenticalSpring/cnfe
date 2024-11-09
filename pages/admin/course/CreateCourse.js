@@ -3,10 +3,8 @@ import styled from "styled-components";
 import DefaultLayout from "/pages/admin/layout/DefaultLayout";
 import { adminAPI } from "service/admin";
 import { notification, Spin } from "antd";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { useRouter } from "next/router";
-import { CloseCircleOutlined, CheckCircleOutlined } from "@ant-design/icons";
+import Editor from "components/textEditor/Editor";
 
 const Container = styled.div`
   margin: 0 auto;
@@ -26,27 +24,15 @@ const Form = styled.form`
 
 const Input = styled.input`
   padding: 10px;
-  border: 1px solid
-    ${({ hasError, isValid }) =>
-      hasError ? "red" : isValid ? "green" : "#ccc"};
+  border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 1rem;
   transition: border-color 0.3s;
 
   &:focus {
     outline: none;
-    border-color: ${({ hasError, isValid }) =>
-      hasError ? "red" : isValid ? "green" : "#80bdff"};
+    border-color: #80bdff;
   }
-`;
-
-const ErrorMessage = styled.span`
-  color: ${({ isValid }) => (isValid ? "green" : "red")};
-  font-size: 0.875rem;
-  margin-top: -10px;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
 `;
 
 const ButtonContainer = styled.div`
@@ -66,14 +52,11 @@ const Button = styled.button`
   align-items: center;
   justify-content: center;
   gap: 8px;
+  background-color: var(--success-color);
+  color: white;
 
-  &.submit {
-    background-color: var(--success-color);
-    color: white;
-
-    &:hover {
-      opacity: 0.8;
-    }
+  &:hover {
+    opacity: 0.8;
   }
 `;
 
@@ -82,42 +65,14 @@ const CreateCourse = () => {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({ title: "", description: "" });
-  const [isValid, setIsValid] = useState({ title: false, description: false });
   const router = useRouter();
 
   const handleImageChange = (event) => {
     setImage(event.target.files[0]);
   };
 
-  const validateFields = () => {
-    let tempErrors = { title: "", description: "" };
-    let isValid = true;
-
-    if (!title) {
-      tempErrors.title = "Vui lòng nhập tiêu đề.";
-      isValid = false;
-      setIsValid((prev) => ({ ...prev, title: false }));
-    } else {
-      setIsValid((prev) => ({ ...prev, title: true }));
-    }
-
-    if (!description) {
-      tempErrors.description = "Vui lòng nhập mô tả.";
-      isValid = false;
-      setIsValid((prev) => ({ ...prev, description: false }));
-    } else {
-      setIsValid((prev) => ({ ...prev, description: true }));
-    }
-
-    setErrors(tempErrors);
-    return isValid;
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    if (!validateFields()) return;
 
     setLoading(true);
     const formData = new FormData();
@@ -158,48 +113,14 @@ const CreateCourse = () => {
             placeholder="Tiêu đề"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            onBlur={validateFields}
             required
-            hasError={!!errors.title}
-            isValid={isValid.title}
-          />
-          {errors.title && (
-            <ErrorMessage isValid={false}>
-              <CloseCircleOutlined style={{ marginRight: 8 }} />
-              {errors.title}
-            </ErrorMessage>
-          )}
-          {isValid.title && (
-            <ErrorMessage isValid={true}>
-              <CheckCircleOutlined style={{ marginRight: 8, color: "green" }} />
-              {"Tiêu đề hợp lệ."}
-            </ErrorMessage>
-          )}
-
-          <CKEditor
-            editor={ClassicEditor}
-            data={description}
-            onChange={(event, editor) => {
-              const data = editor.getData();
-              setDescription(data);
-            }}
-            config={{
-              placeholder: "Nhập mô tả cho khóa học...",
-            }}
           />
 
-          {errors.description && (
-            <ErrorMessage isValid={false}>
-              <CloseCircleOutlined style={{ marginRight: 8 }} />
-              {errors.description}
-            </ErrorMessage>
-          )}
-          {isValid.description && (
-            <ErrorMessage isValid={true}>
-              <CheckCircleOutlined style={{ marginRight: 8, color: "green" }} />
-              {"Mô tả hợp lệ."}
-            </ErrorMessage>
-          )}
+          <Editor
+            value={description}
+            onChange={(content) => setDescription(content)}
+            placeholder="Nhập mô tả cho khóa học..."
+          />
 
           <Input
             type="file"
@@ -209,7 +130,7 @@ const CreateCourse = () => {
           />
 
           <ButtonContainer>
-            <Button type="submit" className="submit" disabled={loading}>
+            <Button type="submit" disabled={loading}>
               {loading ? <Spin size="small" /> : "Tạo"}
             </Button>
           </ButtonContainer>

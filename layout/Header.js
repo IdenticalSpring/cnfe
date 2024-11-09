@@ -2,9 +2,10 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
-import { Menu, Dropdown } from "antd";
+import { Dropdown } from "antd";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import { logoutUser } from "service/auth-api";
 
 export const Container = styled.div`
   padding: ${({ theme }) => theme.spacing.small};
@@ -15,7 +16,7 @@ export const Container = styled.div`
   box-sizing: border-box;
   z-index: 1000;
   background-color: var(--background-color);
-  overflow-x: auto; /* Cho phép cuộn ngang */
+  overflow-x: auto;
 `;
 
 export const Nav = styled.nav`
@@ -49,7 +50,6 @@ export const Title = styled.span`
   }
 
   @media (max-width: 900px) {
-    /* Thay đổi kích thước chữ khi nhỏ hơn 900px */
     font-size: 0.9rem;
   }
 `;
@@ -61,7 +61,6 @@ export const Logo = styled.img`
   cursor: pointer;
 
   @media (max-width: 900px) {
-    /* Giảm kích thước logo khi nhỏ hơn 900px */
     max-height: 20px;
   }
 `;
@@ -72,7 +71,7 @@ export const LinkWrapper = styled.div`
   align-items: center;
   box-sizing: border-box;
   cursor: pointer;
-  flex-wrap: wrap; /* Cho phép các link đổ xuống dòng khi cần */
+  flex-wrap: wrap;
 
   @media (max-width: 749px) {
     gap: ${({ theme }) => theme.spacing.small};
@@ -99,8 +98,8 @@ const StyledLink = styled.a`
   }
 
   @media (max-width: 900px) {
-    padding: 5px 10px; /* Giảm khoảng đệm trên màn hình nhỏ */
-    font-size: 0.9rem; /* Giảm kích thước chữ */
+    padding: 5px 10px;
+    font-size: 0.9rem;
   }
 `;
 
@@ -120,10 +119,14 @@ export const Header = () => {
     }
   }, []);
 
-  const handleLogout = () => {
-    Cookies.remove("token");
-    setUsername(null);
-    router.push("/auth/login");
+  const handleLogout = async () => {
+    const result = await logoutUser(router);
+    if (!result.success) {
+      Modal.error({
+        title: "Lỗi",
+        content: result.message || "Có lỗi xảy ra khi đăng xuất.",
+      });
+    }
   };
 
   const menuItems = [

@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Dropdown } from "antd";
+import { Dropdown, Modal } from "antd";
 import { DownOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
+import { useRouter } from "next/router";
+import { logoutUser } from "service/auth-api";
 
-// Kiểm tra thuộc tính collapsed khi truyền vào styled-components
 const HeaderContainer = styled.div.withConfig({
-  shouldForwardProp: (prop) => prop !== "collapsed" // Chỉ cho phép props khác ngoài 'collapsed'
+  shouldForwardProp: (prop) => prop !== "collapsed",
 })`
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 16px;
   background-color: #f0f2f5;
-  width: ${(props) => (props.$collapsed ? "calc(100% - 80px)" : "calc(100% - 200px)")};
+  width: ${(props) =>
+    props.$collapsed ? "calc(100% - 80px)" : "calc(100% - 200px)"};
   margin-left: ${(props) => (props.$collapsed ? "80px" : "200px")};
   box-sizing: border-box;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
@@ -48,6 +50,7 @@ const ToggleSidebarButton = styled.div`
 
 const Header = ({ toggleSidebar, collapsed }) => {
   const [displayName, setDisplayName] = useState("Người Dùng");
+  const router = useRouter();
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -61,10 +64,19 @@ const Header = ({ toggleSidebar, collapsed }) => {
     }
   }, []);
 
+  const handleLogout = async () => {
+    const result = await logoutUser(router);
+    if (!result.success) {
+      Modal.error({
+        title: "Lỗi",
+        content: result.message || "Có lỗi xảy ra khi đăng xuất.",
+      });
+    }
+  };
   const menuItems = [
     {
       key: "1",
-      label: <a href="/logout">Đăng Xuất</a>,
+      label: <div onClick={handleLogout}>Đăng Xuất</div>,
     },
   ];
 
