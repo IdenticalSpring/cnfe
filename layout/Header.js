@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { useRouter } from "next/router";
 import { Menu, Dropdown } from "antd";
 import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 
 export const Container = styled.div`
   padding: ${({ theme }) => theme.spacing.small};
@@ -15,7 +14,7 @@ export const Container = styled.div`
   box-sizing: border-box;
   z-index: 1000;
   background-color: var(--background-color);
-  overflow-x: auto; /* Cho phép cuộn ngang */
+  overflow-x: auto;
 `;
 
 export const Nav = styled.nav`
@@ -49,7 +48,6 @@ export const Title = styled.span`
   }
 
   @media (max-width: 900px) {
-    /* Thay đổi kích thước chữ khi nhỏ hơn 900px */
     font-size: 0.9rem;
   }
 `;
@@ -61,7 +59,6 @@ export const Logo = styled.img`
   cursor: pointer;
 
   @media (max-width: 900px) {
-    /* Giảm kích thước logo khi nhỏ hơn 900px */
     max-height: 20px;
   }
 `;
@@ -72,7 +69,7 @@ export const LinkWrapper = styled.div`
   align-items: center;
   box-sizing: border-box;
   cursor: pointer;
-  flex-wrap: wrap; /* Cho phép các link đổ xuống dòng khi cần */
+  flex-wrap: wrap;
 
   @media (max-width: 749px) {
     gap: ${({ theme }) => theme.spacing.small};
@@ -80,8 +77,7 @@ export const LinkWrapper = styled.div`
 `;
 
 const StyledLink = styled.a`
-  color: ${({ $isActive }) =>
-    $isActive ? "#DD0000" : "var(--text-secondary-color)"};
+  color: ${({ $isActive }) => ($isActive ? "#DD0000" : "var(--text-secondary-color)")};
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
@@ -99,8 +95,8 @@ const StyledLink = styled.a`
   }
 
   @media (max-width: 900px) {
-    padding: 5px 10px; /* Giảm khoảng đệm trên màn hình nhỏ */
-    font-size: 0.9rem; /* Giảm kích thước chữ */
+    padding: 5px 10px;
+    font-size: 0.9rem;
   }
 `;
 
@@ -109,19 +105,18 @@ export const Header = () => {
   const [username, setUsername] = useState(null);
 
   useEffect(() => {
-    const token = Cookies.get("token");
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        setUsername(decoded.username);
-      } catch (error) {
-        console.error("Error decoding token", error);
-      }
+    // Lấy username từ sessionStorage khi trang được tải
+    const storedUsername = sessionStorage.getItem("userName");
+    if (storedUsername) {
+      setUsername(storedUsername);
     }
   }, []);
 
   const handleLogout = () => {
     Cookies.remove("token");
+    sessionStorage.removeItem("userName");
+    sessionStorage.removeItem("userId");
+    sessionStorage.removeItem("userRole");
     setUsername(null);
     router.push("/auth/login");
   };
@@ -155,19 +150,13 @@ export const Header = () => {
             <StyledLink $isActive={router.pathname === "/"}>Home</StyledLink>
           </Link>
           <Link href="/users/course" passHref legacyBehavior>
-            <StyledLink $isActive={router.pathname === "/users/course"}>
-              Explore
-            </StyledLink>
+            <StyledLink $isActive={router.pathname === "/users/course"}>Explore</StyledLink>
           </Link>
           <Link href="/users/problems" passHref legacyBehavior>
-            <StyledLink $isActive={router.pathname === "/users/problems"}>
-              Problem
-            </StyledLink>
+            <StyledLink $isActive={router.pathname === "/users/problems"}>Problem</StyledLink>
           </Link>
           <Link href="/users/developer" passHref legacyBehavior>
-            <StyledLink $isActive={router.pathname === "/users/developer"}>
-              Developer
-            </StyledLink>
+            <StyledLink $isActive={router.pathname === "/users/developer"}>Developer</StyledLink>
           </Link>
           {username ? (
             <Dropdown menu={{ items: menuItems }}>
@@ -175,9 +164,7 @@ export const Header = () => {
             </Dropdown>
           ) : (
             <Link href="/auth/login" passHref legacyBehavior>
-              <StyledLink $isActive={router.pathname === "/auth/login"}>
-                Sign in
-              </StyledLink>
+              <StyledLink $isActive={router.pathname === "/auth/login"}>Sign in</StyledLink>
             </Link>
           )}
         </LinkWrapper>
