@@ -2,10 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import DefaultLayout from '@/layout/DefaultLayout';
 import styled from 'styled-components';
-import { BookOutlined, PlayCircleOutlined, MessageOutlined, ShareAltOutlined } from '@ant-design/icons';
+import {
+  MenuBook as BookOutlined,
+  PlayCircle as PlayCircleOutlined,
+  Message as MessageOutlined,
+  Share as ShareAltOutlined
+} from '@mui/icons-material';
 import { userAPI } from '@/service/user';
 import { Modal, Skeleton, notification, message } from 'antd';
 import PurchaseCourse from './purchase';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const CoursePrice = styled.div`
   color: white;
@@ -138,7 +144,7 @@ const HeaderContainer = styled.div`
 `;
 
 const BackButton = styled.button`
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.6); /* Màu nền đậm hơn */
   border: none;
   color: white;
   display: flex;
@@ -148,15 +154,11 @@ const BackButton = styled.button`
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.8);
     transform: translateX(-4px);
-  }
-
-  &::before {
-    content: "←";
-    margin-right: 8px;
   }
 `;
 
@@ -426,7 +428,10 @@ const CourseDetail = () => {
           <>
             <HeaderSection $bgImage={course?.imageUrl}>
               <HeaderContainer>
-                <BackButton onClick={() => router.push('/users/course')}>Back to Explore</BackButton>
+                  <BackButton onClick={() => router.push('/users/course')}>
+                    <ArrowBackIcon style={{ marginRight: '8px' }} />
+                    Back to Explore
+                  </BackButton>
                 <HeaderContent>
                   <CourseTitle>{course?.title}</CourseTitle>
                   <CourseStats>

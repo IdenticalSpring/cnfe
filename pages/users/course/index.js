@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { userAPI } from '@/service/user';
 import { Skeleton } from 'antd';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 const PageWrapper = styled.div`
   padding: 40px 60px;
@@ -188,36 +189,42 @@ const PlayButton = styled.div`
   z-index: 10;
   cursor: pointer;
 
-  &::after {
-    content: '▶';
-    font-size: 16px;
-    color: white;
+  &:hover {
+    transform: scale(1.1);
   }
 `;
 
+const CourseStats = styled.div`
+  display: flex;
+  padding: 12px 20px;
+  justify-content: space-around;
+  align-items: center;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+`;
 
 const StatGroup = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 4px;
 `;
 
 const StatLabel = styled.div`
   color: #6b7280;
-  font-size: 14px;
-`;
-const CourseStats = styled.div`
-  display: flex;
-  padding: 4px 16px;
-  justify-content: space-between;
-  background: white;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
 `;
 
 const StatValue = styled.div`
   color: #111827;
-  font-size: 18px; /* Giảm font-size để phần này nhỏ gọn hơn */
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
 `;
+
+
+
 
 const Progress = styled.div`
   position: absolute;
@@ -332,7 +339,9 @@ const Explore = () => {
                     <CourseTitle>{course.title}</CourseTitle>
                   </CourseOverlay>
                   <Link href={`/users/course/${course.id}`} passHref>
-                    <PlayButton />
+                    <PlayButton>
+                      <PlayArrowIcon style={{ color: 'white', fontSize: '20px' }} />
+                    </PlayButton>
                   </Link>
                 </CourseHeader>
                 <CourseStats>
