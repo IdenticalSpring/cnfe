@@ -5,8 +5,10 @@ import { IconButton, InputAdornment, TextField } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import DefaultLayout from '@/layout/DefaultLayout';
-import { loginUser } from '@/service/auth-api'; 
+import { loginUser } from '@/service/auth-api';
 import { notification } from 'antd';
+import { useRouter } from 'next/router';
+import { jwtDecode } from 'jwt-decode';
 
 const StyledLink = styled.a`
   text-decoration: none;
@@ -86,17 +88,15 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
-  
-
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
   };
-
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
@@ -105,19 +105,42 @@ const Login = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-   
     const payload = {
-      username, 
+      username,
       password,
     };
 
-
-    // Gọi hàm loginUser từ service
     const result = await loginUser(payload);
 
     if (result.success) {
-      // Chuyển hướng hoặc thực hiện logic tiếp theo sau khi đăng nhập thành công
-      console.log('Login successful:', result.data);
+      const token = result.data.access_token;
+
+      try {
+        const decodedToken = jwtDecode(token);
+        const role = decodedToken.role;
+
+        if (role === 'admin') {
+          router.push('/admin/dashboard');
+        } else if (role === 'user') {
+          router.push('/');
+        } else {
+          notification.error({
+            message: 'Error',
+            description: 'Vai trò không hợp lệ!',
+            placement: 'bottomRight',
+            duration: 3,
+          });
+        }
+      } catch (error) {
+        console.error('JWT Decode Error:', error);
+        notification.error({
+          message: 'Error',
+          description: 'Token không hợp lệ!',
+          placement: 'bottomRight',
+          duration: 3,
+        });
+      }
+    } else {
     }
   };
 
@@ -131,11 +154,11 @@ const Login = () => {
 
           <Title>Login</Title>
           <StyledTextField
-            label="Username" 
+            label="Username"
             variant="outlined"
             type="text"
             value={username}
-            onChange={handleUsernameChange} 
+            onChange={handleUsernameChange}
             required
           />
 
@@ -163,7 +186,7 @@ const Login = () => {
             <Link href="/" passHref legacyBehavior>
               <StyledLink>Forgot Password?</StyledLink>
             </Link>
-            <Link href="./signup" passHref legacyBehavior>
+            <Link href="/auth/signup" passHref legacyBehavior>
               <StyledLink>Sign Up</StyledLink>
             </Link>
           </ButtonGroup>

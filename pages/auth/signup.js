@@ -5,7 +5,7 @@ import { IconButton, InputAdornment, TextField } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import DefaultLayout from '@/layout/DefaultLayout';
-import { registerUser } from '@/service/auth-api'; 
+import { registerUser } from '@/service/auth-api';
 import { notification } from 'antd';
 
 const StyledLink = styled.a`
@@ -106,6 +106,7 @@ const PasswordField = memo(({ label, value, onChange, showPassword, handleClickS
     }}
   />
 ));
+PasswordField.displayName = 'PasswordField';
 
 const EmailField = memo(({ value, onChange, name }) => (
   <TextField
@@ -120,6 +121,7 @@ const EmailField = memo(({ value, onChange, name }) => (
     margin="normal"
   />
 ));
+EmailField.displayName = 'EmailField'; // Thêm displayName
 
 const TextFieldComponent = memo(({ label, value, onChange, name }) => (
   <TextField
@@ -134,6 +136,7 @@ const TextFieldComponent = memo(({ label, value, onChange, name }) => (
     margin="normal"
   />
 ));
+TextFieldComponent.displayName = 'TextFieldComponent'; // Thêm displayName
 
 const Signup = () => {
   const [state, setState] = useState({
