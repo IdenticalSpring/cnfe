@@ -4,7 +4,9 @@ import DefaultLayout from '@/layout/DefaultLayout';
 import styled from 'styled-components';
 import { BookOutlined, PlayCircleOutlined, MessageOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { userAPI } from '@/service/user';
-import { Skeleton } from 'antd';
+import { Modal, Skeleton } from 'antd';
+import PurchaseCourse from './purchase';
+import { notification } from 'antd';
 
 const CoursePrice = styled.div`
   color: white;
@@ -330,9 +332,9 @@ const CourseDetail = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [openChapters, setOpenChapters] = useState({});
   const [loading, setLoading] = useState(true);
+  const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false); 
   const router = useRouter();
-  const { id } = router.query;
-
+  const { id, status, message } = router.query
   const toggleChapter = (chapterId) => {
     setOpenChapters((prev) => ({
       ...prev,
@@ -353,14 +355,29 @@ const CourseDetail = () => {
       });
     }
   }, [id]);
-
-  const fetchLessonDetails = (lessonId) => {
-    userAPI.getLessonById(lessonId)
+  useEffect(() => {
+    if (status && message) {
+      notification[status === 'completed' ? 'success' : 'warning']({
+        message: 'Payment Status',
+        description: message,
+      });
+    }
+  }, [status, message]);
+  const fetchLessonDetails = (courseId, lessonId) => {
+    userAPI.getLessonById(courseId, lessonId)
       .then((lesson) => {
         setSelectedLesson(lesson);
         setActiveTab('content');
       })
       .catch((error) => console.error('Error fetching lesson details:', error));
+  };
+
+  const showPurchaseModal = () => {
+    setIsPurchaseModalOpen(true);
+  };
+
+  const closePurchaseModal = () => {
+    setIsPurchaseModalOpen(false);
   };
 
   return (
@@ -390,7 +407,9 @@ const CourseDetail = () => {
                     </StatItem>
                   </CourseStats>
                   <ActionButtons>
-                    <PrimaryButton>Start Learning</PrimaryButton>
+                    <PrimaryButton onClick={showPurchaseModal}> {/* Mở modal khi nhấn nút */}
+                      Start Learning
+                    </PrimaryButton>
                     <SecondaryButton>
                       <ShareAltOutlined style={{ fontSize: '16px' }} />
                       Share
@@ -421,10 +440,11 @@ const CourseDetail = () => {
                       </ChapterHeader>
                       <LessonList $open={openChapters[chapter.id]}>
                         {chapter.lessons?.map((lesson) => (
-                          <LessonItem key={lesson.id} onClick={() => fetchLessonDetails(lesson.id)}>
+                          <LessonItem key={lesson.id} onClick={() => fetchLessonDetails(id, lesson.id)}>
                             {lesson.title}
                           </LessonItem>
                         ))}
+
                       </LessonList>
                     </div>
                   ))}
@@ -465,6 +485,16 @@ const CourseDetail = () => {
                 </ContentCard>
               </ContentGrid>
             </MainContent>
+
+            {/* Modal cho việc mua khóa học */}
+              <Modal
+                title="Purchase Course"
+                open={isPurchaseModalOpen}
+                onCancel={closePurchaseModal}
+                footer={null}
+              >
+                <PurchaseCourse onClose={closePurchaseModal} />
+              </Modal>
           </>
         )}
       </PageWrapper>
