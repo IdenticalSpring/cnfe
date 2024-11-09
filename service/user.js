@@ -1,4 +1,5 @@
 import { request } from "config/request";
+import { requestNoTK } from "config/requestNoTK";
 
 export const userAPI = {
   getAllEx: async () => {
@@ -99,7 +100,7 @@ export const userAPI = {
   },
 fetchCoursesByType: async (type) => {
     try {
-      const response = await request.get(`/courses/getByType`, { params: { type, page: 1 } });
+      const response = await requestNoTK.get(`/courses/getByType`, { params: { type, page: 1 } }, { noToken: true });
       return response.data?.data?.data || [];
     } catch (error) {
       console.error(`Error fetching ${type} courses:`, error);

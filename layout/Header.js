@@ -2,8 +2,10 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
-import { Menu, Dropdown } from "antd";
+import { Dropdown } from "antd";
 import Cookies from "js-cookie";
+import { logoutUser } from "service/auth-api";
+
 
 export const Container = styled.div`
   padding: ${({ theme }) => theme.spacing.small};
@@ -112,12 +114,19 @@ export const Header = () => {
     }
   }, []);
 
+
   const handleLogout = () => {
     Cookies.remove("token");
     sessionStorage.removeItem("userName");
     sessionStorage.removeItem("userId");
     sessionStorage.removeItem("userRole");
     setUsername(null);
+    if (!result.success) {
+      Modal.error({
+        title: "Lỗi",
+        content: result.message || "Có lỗi xảy ra khi đăng xuất.",
+      });
+    }
     router.push("/auth/login");
   };
 
