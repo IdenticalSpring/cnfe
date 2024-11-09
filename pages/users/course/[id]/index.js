@@ -4,9 +4,8 @@ import DefaultLayout from '@/layout/DefaultLayout';
 import styled from 'styled-components';
 import { BookOutlined, PlayCircleOutlined, MessageOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { userAPI } from '@/service/user';
-import { Modal, Skeleton } from 'antd';
+import { Modal, Skeleton, notification, message } from 'antd';
 import PurchaseCourse from './purchase';
-import { notification } from 'antd';
 
 const CoursePrice = styled.div`
   color: white;
@@ -240,6 +239,7 @@ const ContentGrid = styled.div`
   gap: 24px;
   margin-top: 40px; 
   margin-bottom: 32px;
+  min-height: calc(100vh - 400px); 
 `;
 
 const NavCard = styled.div`
@@ -324,6 +324,25 @@ const DiscussionHeader = styled.div`
   align-items: center;
   margin-bottom: 16px;
 `;
+const PurchaseMessageContainer = styled.div`
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 400px); // Chiều cao bằng với ContentGrid
+`;
+const PurchaseMessage = styled.div`
+  padding: 50px;
+  background-color: #ffe6e6;
+  color: #d9534f;
+  font-weight: bold;
+  font-size: 28px;
+  text-align: center;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+`;
 
 const CourseDetail = () => {
   const [course, setCourse] = useState(null);
@@ -332,44 +351,44 @@ const CourseDetail = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [openChapters, setOpenChapters] = useState({});
   const [loading, setLoading] = useState(true);
-  const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false); 
+  const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
+  const [hasPurchased, setHasPurchased] = useState(false);
+
   const router = useRouter();
-  const { id, status, message } = router.query
+  const { id, status, message: statusMessage } = router.query;
+
+  useEffect(() => {
+    const userId = sessionStorage.getItem('userId');
+
+    if (id && userId) {
+      setLoading(true);
+      Promise.all([
+        userAPI.getCourseById(id).then(setCourse),
+        userAPI.getChaptersAndLessonsByCourseId(id).then(setChapters),
+        userAPI.getPurchaseStatus(userId, id).then((response) => {
+          const purchaseStatus = response?.data?.hasPurchased;
+          setHasPurchased(purchaseStatus);
+        })
+      ])
+        .catch((error) => console.error('Error fetching data:', error))
+        .finally(() => setLoading(false));
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (status && statusMessage) {
+      notification[status === 'completed' ? 'success' : 'warning']({
+        message: 'Payment Status',
+        description: statusMessage,
+      });
+    }
+  }, [status, statusMessage]);
+
   const toggleChapter = (chapterId) => {
     setOpenChapters((prev) => ({
       ...prev,
       [chapterId]: !prev[chapterId],
     }));
-  };
-
-  useEffect(() => {
-    if (id) {
-      setLoading(true);
-      Promise.all([
-        userAPI.getCourseById(id).then(setCourse),
-        userAPI.getChaptersAndLessonsByCourseId(id).then(setChapters)
-      ]).catch((error) => {
-        console.error('Error fetching data:', error);
-      }).finally(() => {
-        setLoading(false);
-      });
-    }
-  }, [id]);
-  useEffect(() => {
-    if (status && message) {
-      notification[status === 'completed' ? 'success' : 'warning']({
-        message: 'Payment Status',
-        description: message,
-      });
-    }
-  }, [status, message]);
-  const fetchLessonDetails = (courseId, lessonId) => {
-    userAPI.getLessonById(courseId, lessonId)
-      .then((lesson) => {
-        setSelectedLesson(lesson);
-        setActiveTab('content');
-      })
-      .catch((error) => console.error('Error fetching lesson details:', error));
   };
 
   const showPurchaseModal = () => {
@@ -380,6 +399,24 @@ const CourseDetail = () => {
     setIsPurchaseModalOpen(false);
   };
 
+  const fetchLessonDetails = (courseId, lessonId) => {
+    userAPI.getLessonById(courseId, lessonId)
+      .then((lesson) => {
+        setSelectedLesson(lesson);
+        setActiveTab('content');
+      })
+      .catch((error) => console.error('Error fetching lesson details:', error));
+  };
+
+  const handleShare = () => {
+    const courseUrl = `${window.location.origin}/users/course/${id}`;
+    navigator.clipboard.writeText(courseUrl).then(() => {
+      message.success("Course URL copied to clipboard!");
+    }).catch(() => {
+      message.error("Failed to copy URL. Please try again.");
+    });
+  };
+
   return (
     <DefaultLayout>
       <PageWrapper>
@@ -387,11 +424,11 @@ const CourseDetail = () => {
           <Skeleton active paragraph={{ rows: 10 }} />
         ) : (
           <>
-            <HeaderSection $bgImage={course.imageUrl}>
+            <HeaderSection $bgImage={course?.imageUrl}>
               <HeaderContainer>
                 <BackButton onClick={() => router.push('/users/course')}>Back to Explore</BackButton>
                 <HeaderContent>
-                  <CourseTitle>{course.title}</CourseTitle>
+                  <CourseTitle>{course?.title}</CourseTitle>
                   <CourseStats>
                     <StatItem>
                       <BookOutlined style={{ fontSize: '16px' }} />
@@ -401,16 +438,14 @@ const CourseDetail = () => {
                       <PlayCircleOutlined style={{ fontSize: '16px' }} />
                       {chapters.reduce((acc, chapter) => acc + (chapter.lessons?.length || 0), 0)} Lessons
                     </StatItem>
-                    <StatItem>
-                      <MessageOutlined style={{ fontSize: '16px' }} />
-                      24 Discussions
-                    </StatItem>
                   </CourseStats>
                   <ActionButtons>
-                    <PrimaryButton onClick={showPurchaseModal}> {/* Mở modal khi nhấn nút */}
-                      Start Learning
-                    </PrimaryButton>
-                    <SecondaryButton>
+                    {!hasPurchased && (
+                      <PrimaryButton onClick={showPurchaseModal}>
+                        Start Learning
+                      </PrimaryButton>
+                    )}
+                    <SecondaryButton onClick={handleShare}>
                       <ShareAltOutlined style={{ fontSize: '16px' }} />
                       Share
                     </SecondaryButton>
@@ -421,80 +456,72 @@ const CourseDetail = () => {
 
             <MainContent>
               <ContentGrid>
-                <NavCard>
-                  <NavItem $active={activeTab === 'overview'} onClick={() => setActiveTab('overview')}>
-                    <BookOutlined style={{ fontSize: '20px' }} />
-                    Overview
-                  </NavItem>
+                {!hasPurchased ? (
+                  <PurchaseMessageContainer>
+                    <PurchaseMessage>
+                      Please purchase the course to access all content.
+                    </PurchaseMessage>
+                  </PurchaseMessageContainer>
+                ) : (
+                  <>
+                    <NavCard>
+                      <NavItem $active={activeTab === 'overview'} onClick={() => setActiveTab('overview')}>
+                        <BookOutlined style={{ fontSize: '20px' }} />
+                        Overview
+                      </NavItem>
 
-                  <NavItem $active={activeTab === 'content'}>
-                    <PlayCircleOutlined style={{ fontSize: '20px' }} />
-                    Course Content
-                  </NavItem>
+                      <NavItem $active={activeTab === 'content'}>
+                        <PlayCircleOutlined style={{ fontSize: '20px' }} />
+                        Course Content
+                      </NavItem>
 
-                  {chapters.map((chapter) => (
-                    <div key={chapter.id}>
-                      <ChapterHeader onClick={() => toggleChapter(chapter.id)}>
-                        <ChapterTitle>{chapter.title}</ChapterTitle>
-                        <span>{openChapters[chapter.id] ? '−' : '+'}</span>
-                      </ChapterHeader>
-                      <LessonList $open={openChapters[chapter.id]}>
-                        {chapter.lessons?.map((lesson) => (
-                          <LessonItem key={lesson.id} onClick={() => fetchLessonDetails(id, lesson.id)}>
-                            {lesson.title}
-                          </LessonItem>
-                        ))}
+                      {chapters.map((chapter) => (
+                        <div key={chapter.id}>
+                          <ChapterHeader onClick={() => toggleChapter(chapter.id)}>
+                            <ChapterTitle>{chapter.title}</ChapterTitle>
+                            <span>{openChapters[chapter.id] ? '−' : '+'}</span>
+                          </ChapterHeader>
+                          <LessonList $open={openChapters[chapter.id]}>
+                            {chapter.lessons?.map((lesson) => (
+                              <LessonItem key={lesson.id} onClick={() => fetchLessonDetails(id, lesson.id)}>
+                                {lesson.title}
+                              </LessonItem>
+                            ))}
+                          </LessonList>
+                        </div>
+                      ))}
+                    </NavCard>
 
-                      </LessonList>
-                    </div>
-                  ))}
+                    <ContentCard>
+                      <TabContent $active={activeTab === 'overview'}>
+                        <h2>Course Overview</h2>
+                        <p>{course?.description}</p>
+                      </TabContent>
 
-                  <NavItem
-                    $active={activeTab === 'discussion'}
-                    onClick={() => setActiveTab('discussion')}
-                    style={{ marginTop: '20px' }}
-                  >
-                    <MessageOutlined style={{ fontSize: '20px' }} />
-                    Discussion
-                  </NavItem>
-                </NavCard>
-
-                <ContentCard>
-                  <TabContent $active={activeTab === 'overview'}>
-                    <h2>Course Overview</h2>
-                    <p>{course.description}</p>
-                  </TabContent>
-
-                  <TabContent $active={activeTab === 'content'}>
-                    {selectedLesson ? (
-                      <div>
-                        <h3>{selectedLesson.title}</h3>
-                        <p>{selectedLesson.content}</p>
-                      </div>
-                    ) : (
-                      <p>Select a lesson to view its content.</p>
-                    )}
-                  </TabContent>
-
-                  <TabContent $active={activeTab === 'discussion'}>
-                    <DiscussionHeader>
-                      <h2>Discussion Forum</h2>
-                      <PrimaryButton>New Discussion</PrimaryButton>
-                    </DiscussionHeader>
-                  </TabContent>
-                </ContentCard>
+                      <TabContent $active={activeTab === 'content'}>
+                        {selectedLesson ? (
+                          <div>
+                            <h3>{selectedLesson.title}</h3>
+                            <p>{selectedLesson.content}</p>
+                          </div>
+                        ) : (
+                          <p>Select a lesson to view its content.</p>
+                        )}
+                      </TabContent>
+                    </ContentCard>
+                  </>
+                )}
               </ContentGrid>
             </MainContent>
 
-            {/* Modal cho việc mua khóa học */}
-              <Modal
-                title="Purchase Course"
-                open={isPurchaseModalOpen}
-                onCancel={closePurchaseModal}
-                footer={null}
-              >
-                <PurchaseCourse onClose={closePurchaseModal} />
-              </Modal>
+            <Modal
+              title="Purchase Course"
+              open={isPurchaseModalOpen}
+              onCancel={closePurchaseModal}
+              footer={null}
+            >
+              <PurchaseCourse onClose={closePurchaseModal} />
+            </Modal>
           </>
         )}
       </PageWrapper>

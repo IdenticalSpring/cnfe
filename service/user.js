@@ -110,13 +110,7 @@ fetchCoursesByType: async (type) => {
     try {
       const response = await request.post('/orders', orderData);
       return response.data;
-    } catch (error) {
-      if (error.response) {
-        console.error("Error response data:", error.response.data);
-        console.error("Error status:", error.response.status);
-      } else {
-        console.error("Error purchasing course:", error.message);
-      }
+    } catch (error) {    
       alert("Có lỗi xảy ra khi mua khóa học. Vui lòng thử lại sau.");
     }
 
@@ -128,5 +122,15 @@ fetchCoursesByType: async (type) => {
   getAllCoupons: async () => {
     const response = await request.get('/coupons');
     return response.data;
+  },
+  getPurchaseStatus: async (userId, courseId) => {
+    try {
+      const response = await request.get(`/orders/check-purchase-status/${userId}/${courseId}`);
+      console.log("Response from check-purchase-status API:", response.data); 
+      return response.data;
+    } catch (error) {
+      console.error("Error checking purchase status:", error);
+      throw error;
+    }
   },
 };

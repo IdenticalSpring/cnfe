@@ -45,14 +45,22 @@ const PurchaseCourse = ({ onClose }) => {
 
     const handlePurchase = async () => {
         try {
+            const userId = sessionStorage.getItem('userId'); // Retrieve userId from sessionStorage
+            if (!userId) {
+                message.error("User not logged in. Please log in to continue.");
+                return;
+            }
+
             const orderData = {
-                userId: 1,
+                userId: parseInt(userId, 10),
                 courseId: parseInt(id, 10),
                 discountId: discountCode ? parseInt(discountCode, 10) : undefined,
                 paymentStatus: 'pending',
             };
+
             const response = await userAPI.createOrder(orderData);
             const checkoutUrl = response.data?.checkoutUrl;
+
             if (checkoutUrl) {
                 window.location.href = checkoutUrl;
             } else {
