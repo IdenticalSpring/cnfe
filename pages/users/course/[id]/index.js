@@ -12,6 +12,7 @@ import { userAPI } from '@/service/user';
 import { Modal, Skeleton, notification, message } from 'antd';
 import PurchaseCourse from './purchase';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ShareIcon from '@mui/icons-material/Share';
 
 const CoursePrice = styled.div`
   color: white;
@@ -213,12 +214,13 @@ const SecondaryButton = styled.button`
   background: rgba(255, 255, 255, 0.2);
   color: white;
   border: none;
-  padding: 12px 24px;
+  padding: 8px 20px; 
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center; 
   gap: 8px;
   transition: all 0.3s ease;
 
@@ -226,6 +228,7 @@ const SecondaryButton = styled.button`
     background: rgba(255, 255, 255, 0.3);
   }
 `;
+
 
 const MainContent = styled.div`
   max-width: 1200px;
@@ -451,7 +454,7 @@ const CourseDetail = () => {
                       </PrimaryButton>
                     )}
                     <SecondaryButton onClick={handleShare}>
-                      <ShareAltOutlined style={{ fontSize: '16px' }} />
+                        <ShareIcon style={{ fontSize: '16px' }} />
                       Share
                     </SecondaryButton>
                   </ActionButtons>
