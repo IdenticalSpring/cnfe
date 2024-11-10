@@ -7,7 +7,7 @@ import {
   BookOutlined,
   ExperimentOutlined,
 } from "@ant-design/icons";
-import { userAPI } from "service/user"; // Import API
+import { userAPI } from "service/user";
 
 const { Item } = Menu;
 
@@ -33,7 +33,7 @@ const ProblemContent = styled.div`
   overflow-y: auto;
 `;
 
-const ProblemDescription = styled.p`
+const ProblemDescription = styled.div`
   font-size: 16px;
   line-height: 1.6;
   margin-top: 8px;
@@ -132,7 +132,9 @@ const Description = ({ id, title, description }) => {
             Hint
           </Tag>
         </TagContainer>
-        <ProblemDescription>{description}</ProblemDescription>
+        <ProblemDescription
+          dangerouslySetInnerHTML={{ __html: description }}
+        />
       </ProblemContent>
     </DescriptionContainer>
   );
