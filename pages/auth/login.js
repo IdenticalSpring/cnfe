@@ -1,3 +1,4 @@
+// Login Component
 import React, { useState } from 'react';
 import Link from 'next/link';
 import styled from 'styled-components';
@@ -9,6 +10,8 @@ import { loginUser } from '@/service/auth-api';
 import { notification } from 'antd';
 import { useRouter } from 'next/router';
 import { jwtDecode } from 'jwt-decode';
+import ActivateAccountModal from './active-account';
+import axios from 'axios';
 
 const StyledLink = styled.a`
   text-decoration: none;
@@ -88,6 +91,8 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [userId, setUserId] = useState(null); // Lưu userId cho modal
   const router = useRouter();
 
   const handleClickShowPassword = () => {
@@ -112,17 +117,15 @@ const Login = () => {
       const token = result.data.access_token;
 
       try {
-        const decodedToken = jwtDecode(token);  
-        const userId = decodedToken.sub; 
+        const decodedToken = jwtDecode(token);
+        const userId = decodedToken.sub;
         const userName = decodedToken.username;
         const userRole = decodedToken.role;
 
-        
         sessionStorage.setItem('userId', userId);
         sessionStorage.setItem('userName', userName);
         sessionStorage.setItem('userRole', userRole);
 
-        
         if (userRole === 'admin') {
           router.push('/admin/dashboard');
         } else if (userRole === 'user') {
@@ -130,7 +133,7 @@ const Login = () => {
         } else {
           notification.error({
             message: 'Error',
-            description: 'Vai trò không hợp lệ!',
+            description: 'Invalid role!',
             placement: 'bottomRight',
             duration: 3,
           });
@@ -139,7 +142,23 @@ const Login = () => {
         console.error('JWT Decode Error:', error);
         notification.error({
           message: 'Error',
-          description: 'Token không hợp lệ!',
+          description: 'Invalid token!',
+          placement: 'bottomRight',
+          duration: 3,
+        });
+      }
+    } else if (result.message === 'The account has not been activated.') {
+      try {
+        const userIdResult = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/get-user-id?username=${username}`
+        );
+        setUserId(userIdResult.data.data.userId);
+        setModalVisible(true);
+      } catch (error) {
+        console.error("Error fetching user ID:", error);
+        notification.error({
+          message: 'Error',
+          description: 'Failed to fetch user ID for activation!',
           placement: 'bottomRight',
           duration: 3,
         });
@@ -147,14 +166,12 @@ const Login = () => {
     } else {
       notification.error({
         message: 'Error',
-        description: result.message || 'Đăng nhập thất bại!',
+        description: result.message || 'Login failed!',
         placement: 'bottomRight',
         duration: 3,
       });
-
     }
   };
-
 
   return (
     <DefaultLayout>
@@ -202,6 +219,12 @@ const Login = () => {
               <StyledLink>Sign Up</StyledLink>
             </Link>
           </ButtonGroup>
+
+          <ActivateAccountModal
+            visible={isModalVisible}
+            onClose={() => setModalVisible(false)}
+            userId={userId} 
+          />
         </FormWrapper>
       </Container>
     </DefaultLayout>
