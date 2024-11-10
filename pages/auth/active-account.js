@@ -54,7 +54,7 @@ const ActivateAccountModal = ({ visible, onClose, userId, initialEmail }) => {
             footer={null}
         >
             <ContentWrapper>
-                <Title>Welcome! Let's activate your account</Title>
+              <Title>Welcome! Let&apos;s activate your account</Title>
                 <Description>
                     Please enter the activation code sent to your email address.
                     Check your spam folder if you don't see it in your inbox.
