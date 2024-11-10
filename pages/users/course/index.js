@@ -4,7 +4,8 @@ import styled from 'styled-components';
 import Link from 'next/link';
 import { userAPI } from '@/service/user';
 import { Skeleton } from 'antd';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 
 const PageWrapper = styled.div`
