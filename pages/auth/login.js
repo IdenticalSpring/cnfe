@@ -12,6 +12,8 @@ import { useRouter } from 'next/router';
 import { jwtDecode } from 'jwt-decode';
 import ActivateAccountModal from './active-account';
 import axios from 'axios';
+import ForgotPassword from './forgot-password';
+import ResetPassword from './reset-password';
 
 const StyledLink = styled.a`
   text-decoration: none;
@@ -80,21 +82,61 @@ const ButtonGroup = styled.div`
   justify-content: space-between;
   margin-top: 30px;
 
-  a {
+  a, button {
+    color: #1890ff;
+    font-size: 14px;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+
     &:hover {
       color: red;
     }
   }
 `;
 
+const LinkButton = styled.button`
+  background: none;
+  border: none;
+  color: #1890ff;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  font-size: 14px;
+
+  &:hover {
+    color: red;
+  }
+`;
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
-  const [userId, setUserId] = useState(null); // Lưu userId cho modal
+  const [userId, setUserId] = useState(null); 
   const router = useRouter();
+  const [isForgotPasswordVisible, setForgotPasswordVisible] = useState(false);
+  const [isResetPasswordVisible, setResetPasswordVisible] = useState(false);
+  const [emailForReset, setEmailForReset] = useState('');
 
+  const openForgotPassword = () => {
+    setForgotPasswordVisible(true);
+  };
+
+  const closeForgotPassword = () => {
+    setForgotPasswordVisible(false);
+  };
+
+  const openResetPassword = (email) => {
+    setEmailForReset(email);
+    setResetPasswordVisible(true);
+  };
+
+  const closeResetPassword = () => {
+    setResetPasswordVisible(false);
+  };
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -212,13 +254,31 @@ const Login = () => {
             Login
           </LoginButton>
           <ButtonGroup>
-            <Link href="/" passHref legacyBehavior>
-              <StyledLink>Forgot Password?</StyledLink>
-            </Link>
+            <LinkButton onClick={openForgotPassword}>Forgot Password</LinkButton>
+
+            {/* Modal quên mật khẩu */}
+            <ForgotPassword
+              open={isForgotPasswordVisible}
+              onClose={closeForgotPassword}
+              onEmailSubmitted={(email) => {
+                setEmailForReset(email);
+                closeForgotPassword();
+                openResetPassword(email);
+              }}
+            />
+
+            {/* Modal đặt lại mật khẩu */}
+            <ResetPassword
+              open={isResetPasswordVisible}
+              onClose={closeResetPassword}
+              email={emailForReset}
+            />
+
             <Link href="/auth/signup" passHref legacyBehavior>
               <StyledLink>Sign Up</StyledLink>
             </Link>
           </ButtonGroup>
+
 
           <ActivateAccountModal
             visible={isModalVisible}

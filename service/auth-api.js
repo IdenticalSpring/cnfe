@@ -185,3 +185,34 @@ export const resendActivationCode = async (email) => {
         return { success: false };
     }
 };
+export const retryPassword = async (email) => {
+    const url = `${baseURL}/auth/retry-password`;
+
+    try {
+        const response = await axios.post(url, { email }, {
+            headers: { 'Content-Type': 'application/json' },
+        });
+        return { success: true };
+    } catch (error) {
+        return { success: false, message: error.response?.data?.message };
+    }
+};
+
+// Hàm đặt lại mật khẩu
+export const resetPassword = async ({ email, code, password, confirmPassword }) => {
+    const url = `${baseURL}/auth/change-password`;
+
+    try {
+        const response = await axios.post(url, {
+            email,
+            code,
+            password,
+            confirmPassword,
+        }, {
+            headers: { 'Content-Type': 'application/json' },
+        });
+        return { success: true };
+    } catch (error) {
+        return { success: false, message: error.response?.data?.message };
+    }
+};
