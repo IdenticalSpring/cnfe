@@ -138,7 +138,7 @@ export const logoutUser = async (router) => {
                 title: 'Đăng xuất thành công',
                 content: 'Bạn đã đăng xuất thành công. Bấm OK để tiếp tục.',
                 onOk: () => {
-                    router.push('/auth/login'); // Redirect after logout
+                    router.push('/auth/login'); 
                 },
             });
             return { success: true };
@@ -149,5 +149,70 @@ export const logoutUser = async (router) => {
             content: error.response?.data?.message || 'Có lỗi xảy ra. Vui lòng thử lại sau.',
         });
         return { success: false, message: error.response?.data?.message || 'Có lỗi xảy ra. Vui lòng thử lại sau.' };
+    }
+};
+export const checkActivationCode = async (payload) => {
+    const url = `${baseURL}/auth/check-code`;
+    try {
+        const response = await axios.post(url, payload);
+        notification.success({
+            message: 'Success',
+            description: response.data.message || 'Account activated successfully!',
+        });
+        return { success: true };
+    } catch (error) {
+        notification.error({
+            message: 'Error',
+            description: error.response?.data?.message || 'Activation failed',
+        });
+        return { success: false };
+    }
+};
+export const resendActivationCode = async (email) => {
+    const url = `${baseURL}/auth/retry-active`;
+    try {
+        const response = await axios.post(url, { email });
+        notification.success({
+            message: 'Code Sent',
+            description: response.data.message || 'Activation code sent to your email!',
+        });
+        return { success: true };
+    } catch (error) {
+        notification.error({
+            message: 'Error',
+            description: error.response?.data?.message || 'Failed to send activation code',
+        });
+        return { success: false };
+    }
+};
+export const retryPassword = async (email) => {
+    const url = `${baseURL}/auth/retry-password`;
+
+    try {
+        const response = await axios.post(url, { email }, {
+            headers: { 'Content-Type': 'application/json' },
+        });
+        return { success: true };
+    } catch (error) {
+        return { success: false, message: error.response?.data?.message };
+    }
+};
+
+// Hàm đặt lại mật khẩu
+export const resetPassword = async ({ email, code, password, confirmPassword }) => {
+    const url = `${baseURL}/auth/change-password`;
+
+    try {
+        const response = await axios.post(url, {
+            email,
+            code,
+            password,
+            confirmPassword,
+        }, {
+            headers: { 'Content-Type': 'application/json' },
+        });
+        return { success: true };
+    } catch (error) {
+        return { success: false, message: error.response?.data?.message };
     }
 };
