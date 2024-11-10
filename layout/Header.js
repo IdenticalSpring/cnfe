@@ -115,19 +115,14 @@ export const Header = () => {
   }, []);
 
 
-  const handleLogout = () => {
-    Cookies.remove("token");
-    sessionStorage.removeItem("userName");
-    sessionStorage.removeItem("userId");
-    sessionStorage.removeItem("userRole");
-    setUsername(null);
-    if (!result.success) {
-      Modal.error({
-        title: "Lỗi",
-        content: result.message || "Có lỗi xảy ra khi đăng xuất.",
-      });
+  const handleLogout = async () => {
+    const result = await logoutUser(router); 
+    if (result.success) {
+      sessionStorage.removeItem("userName");
+      sessionStorage.removeItem("userId");
+      sessionStorage.removeItem("userRole");
+      setUsername(null);
     }
-    router.push("/auth/login");
   };
 
   const menuItems = [

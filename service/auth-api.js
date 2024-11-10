@@ -138,14 +138,12 @@ export const logoutUser = async (router) => {
                 title: 'Đăng xuất thành công',
                 content: 'Bạn đã đăng xuất thành công. Bấm OK để tiếp tục.',
                 onOk: () => {
-                    router.push('/auth/login');
+                    router.push('/auth/login'); // Redirect after logout
                 },
             });
             return { success: true };
-        } else {
         }
     } catch (error) {
-        console.error('Lỗi đăng xuất:', error);
         Modal.error({
             title: 'Lỗi',
             content: error.response?.data?.message || 'Có lỗi xảy ra. Vui lòng thử lại sau.',
