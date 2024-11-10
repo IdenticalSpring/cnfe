@@ -1,6 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import { BookOutlined, PlayCircleOutlined, ChevronRight } from '@mui/icons-material'; // Import thêm icon
+import BookOutlined from '@mui/icons-material/BookOutlined';
+import PlayCircleOutlined from '@mui/icons-material/PlayCircleOutlined';
+import ChevronRight from '@mui/icons-material/ChevronRight';
+
 
 const NavCard = ({ activeTab, setActiveTab, chapters, toggleChapter, openChapters, fetchLessonDetails }) => (
     <StyledNavCard>
@@ -13,7 +16,7 @@ const NavCard = ({ activeTab, setActiveTab, chapters, toggleChapter, openChapter
             Course Content
         </NavItem>
 
-        {chapters.map((chapter) => (
+        {chapters && chapters.map((chapter) => (
             <div key={chapter.id}>
                 <ChapterHeader onClick={() => toggleChapter(chapter.id)}>
                     <ChapterTitle>{chapter.title}</ChapterTitle>
