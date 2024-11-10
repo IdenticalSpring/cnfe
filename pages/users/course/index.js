@@ -313,7 +313,7 @@ const Explore = () => {
       <SectionTitle>{title}</SectionTitle>
       <SlideContainer>
         <NavigationButton direction="prev" onClick={() => scroll(ref, 'prev')}>
-          <ChevronLeft size={24} />
+          <ChevronLeftIcon size={24} />
         </NavigationButton>
 
         <SlideWrapper
@@ -362,7 +362,7 @@ const Explore = () => {
         </SlideWrapper>
 
         <NavigationButton direction="next" onClick={() => scroll(ref, 'next')}>
-          <ChevronRight size={24} />
+          <ChevronRightIcon size={24} />
         </NavigationButton>
       </SlideContainer>
     </>
