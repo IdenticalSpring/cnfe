@@ -105,23 +105,27 @@ const Login = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const payload = {
-      username,
-      password,
-    };
-
+    const payload = { username, password };
     const result = await loginUser(payload);
 
     if (result.success) {
       const token = result.data.access_token;
 
       try {
-        const decodedToken = jwtDecode(token);
-        const role = decodedToken.role;
+        const decodedToken = jwtDecode(token);  
+        const userId = decodedToken.sub; 
+        const userName = decodedToken.username;
+        const userRole = decodedToken.role;
 
-        if (role === 'admin') {
+        
+        sessionStorage.setItem('userId', userId);
+        sessionStorage.setItem('userName', userName);
+        sessionStorage.setItem('userRole', userRole);
+
+        
+        if (userRole === 'admin') {
           router.push('/admin/dashboard');
-        } else if (role === 'user') {
+        } else if (userRole === 'user') {
           router.push('/');
         } else {
           notification.error({
@@ -141,8 +145,16 @@ const Login = () => {
         });
       }
     } else {
+      notification.error({
+        message: 'Error',
+        description: result.message || 'Đăng nhập thất bại!',
+        placement: 'bottomRight',
+        duration: 3,
+      });
+
     }
   };
+
 
   return (
     <DefaultLayout>

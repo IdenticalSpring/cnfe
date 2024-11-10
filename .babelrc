@@ -7,8 +7,16 @@
             "styled-components",
             {
                 "ssr": true,
-                "displayName": true,
-                "preprocess": false
+                "displayName": true
+            }
+        ],
+        [
+            "transform-imports",
+            {
+                "@mui/icons-material": {
+                    "transform": "@mui/icons-material/${member}",
+                    "preventFullImport": true
+                }
             }
         ]
     ]
