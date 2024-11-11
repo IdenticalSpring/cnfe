@@ -1,3 +1,4 @@
+import { patch } from "@mui/material";
 import { request } from "config/request";
 
 export const userAPI = {
@@ -76,7 +77,9 @@ export const userAPI = {
 
       const chaptersWithLessons = await Promise.all(
         chapters.map(async (chapter) => {
-          const lessonsResponse = await request.get(`/lessons/chapter/${chapter.id}`);
+          const lessonsResponse = await request.get(
+            `/lessons/chapter/${chapter.id}`
+          );
           return { ...chapter, lessons: lessonsResponse.data.data };
         })
       );
@@ -99,11 +102,75 @@ export const userAPI = {
   },
   fetchCoursesByType: async (type) => {
     try {
-      const response = await request.get(`/courses/getByType`, { params: { type, page: 1 } });
+      const response = await request.get(`/courses/getByType`, {
+        params: { type, page: 1 },
+      });
       return response.data?.data?.data || [];
     } catch (error) {
       console.error(`Error fetching ${type} courses:`, error);
       throw error;
     }
-  }
+  },
+  getCategories: async () => {
+    try {
+      const response = await request.get("/categories");
+      return response.data.data; // Trả về dữ liệu từ API
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      throw error;
+    }
+  },
+
+  getAllTags: async () => {
+    try {
+      const response = await request.get("/tags");
+      console.log(response.data);
+      return response.data.data; // Trả về dữ liệu từ API
+    } catch (error) {
+      console.error("Error fetching tags:", error);
+      throw error;
+    }
+  },
+  getAllDiscussions: async (page) => {
+    try {
+      const response = await request.get(`/discuss/getpaginated?page=${page}`);
+      return response.data.data;
+    } catch (error) {
+      console.error("Error fetching discussions:", error);
+      throw error;
+    }
+  },
+
+  createDiscussion: async (id, data) => {
+    try {
+      const response = await request.post(`/discuss/${id}`, data); // Use dynamic ID in URL
+      return response.data;
+    } catch (error) {
+      console.error("Error posting discussion:", error);
+      throw error;
+    }
+  },
+
+  getDiscussionByID: async (id) => {
+    try {
+      const response = await request.get(`/discuss/getOne${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Lỗi khi lấy chi tiết thảo luận:", error);
+      throw error;
+    }
+  },
+
+  upvoteDiscussion: async (id) => {
+    try {
+      const response = await request.patch(`/discuss/${id}/upvote`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  },
 };

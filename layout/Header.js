@@ -164,9 +164,9 @@ export const Header = () => {
               Problem
             </StyledLink>
           </Link>
-          <Link href="/users/developer" passHref legacyBehavior>
-            <StyledLink $isActive={router.pathname === "/users/developer"}>
-              Developer
+          <Link href="/users/discussions" passHref legacyBehavior>
+            <StyledLink $isActive={router.pathname === "/users/discussions"}>
+              Discussion
             </StyledLink>
           </Link>
           {username ? (
