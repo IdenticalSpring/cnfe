@@ -1,4 +1,5 @@
 import { request } from "config/request";
+import { requestNoTK } from "config/requestNoTK";
 
 export const userAPI = {
   getAllEx: async () => {
@@ -62,5 +63,86 @@ export const userAPI = {
   getCompanyProblemCounts: async () => {
     const response = await request.get(`companies/with-problem-count`);
     return response.data;
+  },
+  getCourseById: async (id) => {
+    try {
+      const response = await request.get(`/courses/${id}`);
+      return response.data.data;
+    } catch (error) {
+      console.error("Error fetching course details:", error);
+      throw error;
+    }
+  },
+
+  getChaptersAndLessonsByCourseId: async (courseId) => {
+    try {
+      const response = await request.get(`/chapters/course/${courseId}`);
+      const chapters = response.data.data;
+
+      const chaptersWithLessons = await Promise.all(
+        chapters.map(async (chapter) => {
+          const lessonsResponse = await request.get(
+            `/lessons/chapter/${chapter.id}/${courseId}`
+          );
+          return { ...chapter, lessons: lessonsResponse.data.data };
+        })
+      );
+
+      return chaptersWithLessons;
+    } catch (error) {
+      console.error("Error fetching chapters and lessons:", error);
+      throw error;
+    }
+  },
+
+  getLessonById: async (courseId, lessonId) => {
+    try {
+      const response = await request.get(`/lessons/${courseId}/${lessonId}`);
+      return response.data.data;
+    } catch (error) {
+      console.error("Error fetching lesson details:", error);
+      throw error;
+    }
+  },
+  fetchCoursesByType: async (type) => {
+    try {
+      const response = await requestNoTK.get(
+        `/courses/getByType`,
+        { params: { type, page: 1 } },
+        { noToken: true }
+      );
+      return response.data?.data?.data || [];
+    } catch (error) {
+      console.error(`Error fetching ${type} courses:`, error);
+      throw error;
+    }
+  },
+  createOrder: async (orderData) => {
+    try {
+      const response = await request.post("/orders", orderData);
+      return response.data;
+    } catch (error) {
+      alert("Có lỗi xảy ra khi mua khóa học. Vui lòng thử lại sau.");
+    }
+  },
+  getCouponByCode: async (code) => {
+    const response = await request.get(`/coupons/code/${code}`);
+    return response.data;
+  },
+  getAllCoupons: async () => {
+    const response = await request.get("/coupons");
+    return response.data;
+  },
+  getPurchaseStatus: async (userId, courseId) => {
+    try {
+      const response = await request.get(
+        `/orders/check-purchase-status/${userId}/${courseId}`
+      );
+      console.log("Response from check-purchase-status API:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error checking purchase status:", error);
+      throw error;
+    }
   },
 };

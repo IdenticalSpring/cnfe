@@ -1,6 +1,6 @@
 import React from "react";
 import { Layout, Menu } from "antd";
-import { DashboardOutlined, TeamOutlined, ReadOutlined, SolutionOutlined, FormOutlined } from "@ant-design/icons";
+import { DashboardOutlined, TeamOutlined, ReadOutlined, SolutionOutlined, FormOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import { useRouter } from 'next/router';
 
@@ -11,10 +11,10 @@ const StyledSider = styled(Sider)`
   height: 100vh;
   position: fixed;
   left: 0;
-  width: 200px;
+  width: ${({ collapsed }) => (collapsed ? '80px' : '200px')};
   background-color: #E63946;
-  border-radius: 0 20px 0 0;
   overflow: hidden;
+  transition: width 0.3s;
 `;
 
 export const Title = styled.span`
@@ -33,7 +33,6 @@ export const LogoWrapper = styled.div`
 export const Logo = styled.img`
   height: 30px;
   width: auto;
-  margin-right: 10px;
 `;
 
 const LogoContainer = styled.div`
@@ -53,7 +52,7 @@ const StyledMenuItem = styled(Menu.Item)`
   color: ${(props) => (props.$isSelected ? "#fff" : "#000")} !important;
 `;
 
-const AdminSidebar = () => {
+const AdminSidebar = ({ collapsed }) => {
   const router = useRouter();
 
   const getSelectedKey = (pathname) => {
@@ -64,6 +63,7 @@ const AdminSidebar = () => {
     }
     if (pathname.includes('/admin/lessons')) return '/admin/lessons';
     if (pathname.includes('/admin/assignments')) return '/admin/assignments';
+    if (pathname.includes('/admin/problem') || pathname.includes('/admin/problem/CreateProblem')) return '/admin/problem';
     return '/admin/dashboard';
   };
 
@@ -74,10 +74,10 @@ const AdminSidebar = () => {
   };
 
   return (
-    <StyledSider>
+    <StyledSider collapsed={collapsed}>
       <LogoContainer>
         <Logo src="/assets/img/logo-nobg.png" alt="Logo" />
-        <Title>admin panel</Title>
+        {!collapsed && <Title>admin panel</Title>}
       </LogoContainer>
       <StyledMenu mode="inline" selectedKeys={[selectedKey]} onClick={handleMenuClick}>
         <StyledMenuItem key="/admin/dashboard" icon={<DashboardOutlined />} $isSelected={selectedKey === "/admin/dashboard"}>
@@ -94,6 +94,9 @@ const AdminSidebar = () => {
         </StyledMenuItem>
         <StyledMenuItem key="/admin/assignments" icon={<FormOutlined />} $isSelected={selectedKey === "/admin/assignments"}>
           Bài tập
+        </StyledMenuItem>
+        <StyledMenuItem key="/admin/problem" icon={<ExclamationCircleOutlined />} $isSelected={selectedKey === "/admin/problem"}>
+          Problem
         </StyledMenuItem>
       </StyledMenu>
     </StyledSider>

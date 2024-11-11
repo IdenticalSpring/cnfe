@@ -1,11 +1,12 @@
 import DefaultLayout from "@/layout/DefaultLayout";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import axios from "axios";
 import Link from "next/link";
+import { userAPI } from "@/service/user";
+import { Skeleton } from "antd";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
 const PageWrapper = styled.div`
   padding: 40px 60px;
@@ -51,201 +52,334 @@ const SectionTitle = styled.h2`
   margin: 50px 0 30px;
   font-weight: 600;
   position: relative;
+`;
 
-  &:before {
-    content: "";
-    width: 6px;
-    height: 100%;
-    background: #0073e6;
-    position: absolute;
-    left: -20px;
-    top: 0;
-    border-radius: 3px;
+const SlideContainer = styled.div`
+  display: flex;
+  position: relative;
+  padding: 20px 0;
+  margin: 0 20px;
+  align-items: center;
+`;
+
+const SlideWrapper = styled.div`
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  cursor: ${(props) => (props.isDragging ? "grabbing" : "grab")};
+  padding: 0 60px;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
   }
+
+  user-select: ${(props) => (props.isDragging ? "none" : "auto")};
+`;
+
+const NavigationButton = styled.button`
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  transition: all 0.3s ease;
+  color: #0073e6;
+  opacity: ${(props) => (props.disabled ? 0.5 : 1)};
+  pointer-events: ${(props) => (props.disabled ? "none" : "auto")};
+
+  &:hover {
+    background: #0073e6;
+    color: white;
+    box-shadow: 0 6px 16px rgba(0, 115, 230, 0.3);
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  &:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  ${(props) =>
+    props.direction === "prev"
+      ? `
+    left: 10px;
+  `
+      : `
+    right: 10px;
+  `}
 `;
 
 const SlideCard = styled.div`
-  margin: 10px;
-  border-radius: 12px;
+  min-width: 300px;
+  height: 280px;
+  background: white;
+  border-radius: 16px;
   overflow: hidden;
-  height: 400px;
+  position: relative;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
-  background: ${(props) => props.background || "#e6f3ff"};
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  cursor: pointer;
 
   &:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 24px rgba(0, 115, 230, 0.2);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   }
 `;
 
-const ImageContainer = styled.div`
+const CourseHeader = styled.div`
+  height: 200px;
   width: 100%;
-  height: 160px;
-  overflow: hidden;
   position: relative;
-  background: #f0f0f0;
+  overflow: hidden;
 `;
 
-const SlideImage = styled.img`
+const CourseOverlay = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+  color: white;
+  z-index: 2;
+`;
+
+const CourseTitle = styled.h3`
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.3;
+`;
+
+const CourseDescription = styled.p`
+  font-size: 14px;
+  margin: 4px 0 0;
+  line-height: 1.3;
+  opacity: 0.9;
+`;
+
+const CourseImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  position: absolute;
-  top: 0;
-  left: 0;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
+`;
 
-  ${SlideCard}:hover & {
-    transform: scale(1.05);
+const PlayButton = styled.div`
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  background: black;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  z-index: 10;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.1);
   }
 `;
 
-const ContentContainer = styled.div`
-  flex-grow: 1;
+const CourseStats = styled.div`
+  display: flex;
+  padding: 12px 20px;
+  justify-content: space-around;
+  align-items: center;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+`;
+
+const StatGroup = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  background-color: #fff;
+  align-items: center;
+  gap: 4px;
 `;
 
-const CardTitle = styled.div`
-  font-size: 20px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 10px;
-`;
-
-const CardDescription = styled.div`
-  font-size: 15px;
-  color: #595959;
-  flex-grow: 1;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-`;
-
-const StatsContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 15px;
-  background-color: #f8f9fb;
-  border-top: 1px solid #e0e0e0;
-  font-size: 14px;
-  color: #666;
-`;
-
-const StatItem = styled.div`
+const StatLabel = styled.div`
+  color: #6b7280;
+  font-size: 13px;
   font-weight: 500;
+  text-transform: uppercase;
 `;
 
-const PlaceholderText = styled.div`
-  font-size: 14px;
-  color: #b3b3b3;
-  text-align: center;
-  padding: 20px;
+const StatValue = styled.div`
+  color: #111827;
+  font-size: 18px;
+  font-weight: 700;
 `;
 
-const SliderWrapper = styled.div`
-  margin-bottom: 50px;
+const Progress = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #e5e7eb;
 
-  .slick-prev,
-  .slick-next {
-    z-index: 1;
-    &:before {
-      color: #0073e6;
-      font-size: 24px;
-    }
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: ${(props) => props.progress || "0%"};
+    background: #6366f1;
+    transition: width 0.3s ease;
   }
 `;
-
-const settings = {
-  dots: false,
-  infinite: false,
-  speed: 500,
-  slidesToShow: 4,
-  slidesToScroll: 1,
-  swipeToSlide: true,
-  responsive: [
-    { breakpoint: 1440, settings: { slidesToShow: 3 } },
-    { breakpoint: 1024, settings: { slidesToShow: 2 } },
-    { breakpoint: 768, settings: { slidesToShow: 1 } },
-  ],
-};
-
-const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-const fetchCoursesByType = async (type) => {
-  try {
-    const response = await axios.get(`${baseURL}/courses/getByType`, {
-      params: { type, page: 1 },
-    });
-    const courseData = response.data?.data?.data || [];
-    return courseData;
-  } catch (error) {
-    console.error(`Error fetching ${type} courses:`, error);
-    return [];
-  }
-};
 
 const Explore = () => {
   const [learnCourses, setLearnCourses] = useState([]);
   const [featuredCourses, setFeaturedCourses] = useState([]);
   const [interviewCourses, setInterviewCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const skeletonCount = 6;
+
+  // Tạo ref riêng cho mỗi danh mục
+  const learnRef = useRef(null);
+  const featuredRef = useRef(null);
+  const interviewRef = useRef(null);
 
   useEffect(() => {
     const loadCourses = async () => {
-      const learn = await fetchCoursesByType("learn");
-      const featured = await fetchCoursesByType("featured");
-      const interview = await fetchCoursesByType("interview");
-
-      setLearnCourses(learn);
-      setFeaturedCourses(featured);
-      setInterviewCourses(interview);
+      setLoading(true);
+      try {
+        const learn = await userAPI.fetchCoursesByType("learn");
+        const featured = await userAPI.fetchCoursesByType("featured");
+        const interview = await userAPI.fetchCoursesByType("interview");
+        setLearnCourses(learn);
+        setFeaturedCourses(featured);
+        setInterviewCourses(interview);
+      } catch (error) {
+        console.error("Error loading courses:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadCourses();
   }, []);
 
-  const renderCourses = (courses, type) => {
-    if (!Array.isArray(courses) || courses.length === 0) {
-      return <PlaceholderText>No {type} courses available.</PlaceholderText>;
-    }
-
-    return (
-      <Slider {...settings}>
-        {courses.map((course, index) => (
-          <Link key={course.id} href={`/users/course/${course.id}`} passHref>
-            <SlideCard
-              key={course.id}
-              background={index % 2 === 0 ? "#e6f3ff" : "#f9f0ff"}
-            >
-              <ImageContainer>
-                <SlideImage
-                  src={course.imageUrl || "/api/placeholder/400/225"}
-                  alt={course.title}
-                />
-              </ImageContainer>
-              <ContentContainer>
-                <CardTitle>{course.title}</CardTitle>
-                <CardDescription>
-                  {course.description || "No description available"}
-                </CardDescription>
-              </ContentContainer>
-              <StatsContainer>
-                <StatItem>Chapters: {course.chapterCount || "0"}</StatItem>
-                <StatItem>Items: {course.itemCount || "0"}</StatItem>
-              </StatsContainer>
-            </SlideCard>
-          </Link>
-        ))}
-      </Slider>
-    );
+  const handleMouseDown = (ref, e) => {
+    setIsDragging(true);
+    setStartX(e.pageX - ref.current.offsetLeft);
+    setScrollLeft(ref.current.scrollLeft);
   };
+
+  const handleMouseMove = (ref, e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - ref.current.offsetLeft;
+    const walk = (x - startX) * 1.5; // Tăng tốc độ
+    ref.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleMouseUpOrLeave = () => {
+    setIsDragging(false);
+  };
+
+  const scroll = (ref, direction) => {
+    const scrollAmount = direction === "next" ? 300 : -300;
+    ref.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+  };
+
+  const renderCourses = (courses, title, ref) => (
+    <>
+      <SectionTitle>{title}</SectionTitle>
+      <SlideContainer>
+        <NavigationButton direction="prev" onClick={() => scroll(ref, "prev")}>
+          <ChevronLeftIcon size={24} />
+        </NavigationButton>
+
+        <SlideWrapper
+          ref={ref}
+          onMouseDown={(e) => handleMouseDown(ref, e)}
+          onMouseMove={(e) => handleMouseMove(ref, e)}
+          onMouseUp={handleMouseUpOrLeave}
+          onMouseLeave={handleMouseUpOrLeave}
+        >
+          {loading
+            ? Array.from({ length: skeletonCount }).map((_, index) => (
+                <SlideCard key={index}>
+                  <Skeleton.Image
+                    style={{
+                      width: "100%",
+                      height: "200px",
+                      borderRadius: "16px",
+                    }}
+                  />
+                  <Skeleton
+                    active
+                    paragraph={{ rows: 1 }}
+                    title={false}
+                    style={{ padding: "16px" }}
+                  />
+                </SlideCard>
+              ))
+            : courses.map((course) => (
+                <SlideCard key={course.id}>
+                  <CourseHeader>
+                    <CourseImage
+                      src={course.imageUrl || "/api/placeholder/400/225"}
+                      alt={course.title}
+                    />
+                    <CourseOverlay>
+                      <CourseDescription>
+                        {course.description}
+                      </CourseDescription>
+                      <CourseTitle>{course.title}</CourseTitle>
+                    </CourseOverlay>
+                    <Link href={`/users/course/${course.id}`} passHref>
+                      <PlayButton>
+                        <PlayArrowIcon
+                          style={{ color: "white", fontSize: "20px" }}
+                        />
+                      </PlayButton>
+                    </Link>
+                  </CourseHeader>
+                  <CourseStats>
+                    <StatGroup>
+                      <StatLabel>Chapters</StatLabel>
+                      <StatValue>{course.chapterCount || "0"}</StatValue>
+                    </StatGroup>
+                    <StatGroup>
+                      <StatLabel>Items</StatLabel>
+                      <StatValue>{course.itemCount || "0"}</StatValue>
+                    </StatGroup>
+                  </CourseStats>
+                  <Progress progress={`${course.progress || 0}%`} />
+                </SlideCard>
+              ))}
+        </SlideWrapper>
+
+        <NavigationButton direction="next" onClick={() => scroll(ref, "next")}>
+          <ChevronRightIcon size={24} />
+        </NavigationButton>
+      </SlideContainer>
+    </>
+  );
 
   return (
     <DefaultLayout>
@@ -254,19 +388,9 @@ const Explore = () => {
           <WelcomeText>Welcome to</WelcomeText>
           <ExploreText>Master Coding Explore</ExploreText>
         </Title>
-
-        <SectionTitle>Learn Courses</SectionTitle>
-        <SliderWrapper>{renderCourses(learnCourses, "learn")}</SliderWrapper>
-
-        <SectionTitle>Featured Courses</SectionTitle>
-        <SliderWrapper>
-          {renderCourses(featuredCourses, "featured")}
-        </SliderWrapper>
-
-        <SectionTitle>Interview Courses</SectionTitle>
-        <SliderWrapper>
-          {renderCourses(interviewCourses, "interview")}
-        </SliderWrapper>
+        {renderCourses(learnCourses, "Learn Courses", learnRef)}
+        {renderCourses(featuredCourses, "Featured Courses", featuredRef)}
+        {renderCourses(interviewCourses, "Interview Courses", interviewRef)}
       </PageWrapper>
     </DefaultLayout>
   );
