@@ -1,44 +1,64 @@
-import React from 'react';
-import styled from 'styled-components';
-import BookOutlined from '@mui/icons-material/BookOutlined';
-import PlayCircleOutlined from '@mui/icons-material/PlayCircleOutlined';
-import ChevronRight from '@mui/icons-material/ChevronRight';
+import React from "react";
+import styled from "styled-components";
+import BookOutlined from "@mui/icons-material/BookOutlined";
+import PlayCircleOutlined from "@mui/icons-material/PlayCircleOutlined";
+import ChevronRight from "@mui/icons-material/ChevronRight";
 
+const NavCard = ({
+  activeTab,
+  setActiveTab,
+  chapters,
+  toggleChapter,
+  openChapters,
+  fetchLessonDetails,
+}) => (
+  <StyledNavCard>
+    <NavItem
+      $active={activeTab === "overview"}
+      onClick={() => setActiveTab("overview")}
+    >
+      <BookOutlined style={{ fontSize: "20px" }} />
+      Overview
+    </NavItem>
+    <NavItem
+      $active={activeTab === "content"}
+      onClick={() => setActiveTab("content")}
+    >
+      <PlayCircleOutlined style={{ fontSize: "20px" }} />
+      Course Content
+    </NavItem>
 
-const NavCard = ({ activeTab, setActiveTab, chapters, toggleChapter, openChapters, fetchLessonDetails }) => (
-    <StyledNavCard>
-        <NavItem $active={activeTab === 'overview'} onClick={() => setActiveTab('overview')}>
-            <BookOutlined style={{ fontSize: '20px' }} />
-            Overview
-        </NavItem>
-        <NavItem $active={activeTab === 'content'} onClick={() => setActiveTab('content')}>
-            <PlayCircleOutlined style={{ fontSize: '20px' }} />
-            Course Content
-        </NavItem>
-
-        {chapters && chapters.map((chapter) => (
-            <div key={chapter.id}>
-                <ChapterHeader onClick={() => toggleChapter(chapter.id)}>
-                    <ChapterTitle>{chapter.title}</ChapterTitle>
-                    <span>{openChapters[chapter.id] ? '−' : '+'}</span>
-                </ChapterHeader>
-                <LessonList $open={openChapters[chapter.id]}>
-                    {chapter.lessons?.map((lesson) => (
-                        <LessonItem
-                            key={lesson.id}
-                            onClick={() => {
-                                setActiveTab('content'); // Chuyển sang tab "content"
-                                fetchLessonDetails(chapter.id, lesson.id); // Lấy chi tiết bài học
-                            }}
-                        >
-                            <ChevronRight style={{ fontSize: '12px', color: '#999', marginRight: '8px' }} /> {/* Icon từ MUI */}
-                            {lesson.title}
-                        </LessonItem>
-                    ))}
-                </LessonList>
-            </div>
-        ))}
-    </StyledNavCard>
+    {chapters &&
+      chapters.map((chapter) => (
+        <div key={chapter.id}>
+          <ChapterHeader onClick={() => toggleChapter(chapter.id)}>
+            <ChapterTitle>{chapter.title}</ChapterTitle>
+            <span>{openChapters[chapter.id] ? "−" : "+"}</span>
+          </ChapterHeader>
+          <LessonList $open={openChapters[chapter.id]}>
+            {chapter.lessons?.map((lesson) => (
+              <LessonItem
+                key={lesson.id}
+                onClick={() => {
+                  setActiveTab("content"); // Chuyển sang tab "content"
+                  fetchLessonDetails(chapter.id, lesson.id); // Lấy chi tiết bài học
+                }}
+              >
+                <ChevronRight
+                  style={{
+                    fontSize: "12px",
+                    color: "#999",
+                    marginRight: "8px",
+                  }}
+                />{" "}
+                {/* Icon từ MUI */}
+                {lesson.title}
+              </LessonItem>
+            ))}
+          </LessonList>
+        </div>
+      ))}
+  </StyledNavCard>
 );
 
 export default NavCard;
@@ -50,17 +70,17 @@ const StyledNavCard = styled.div`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   padding: 16px;
-  height: 100%; 
-  flex-shrink: 0; 
+  height: 100%;
+  flex-shrink: 0;
 `;
 
 const NavItem = styled.div`
-  padding: 12px; 
+  padding: 12px;
   display: flex;
   align-items: center;
   gap: 8px;
-  color: ${({ $active }) => ($active ? '#0070f3' : '#666')};
-  background: ${({ $active }) => ($active ? '#f0f7ff' : 'transparent')};
+  color: ${({ $active }) => ($active ? "#0070f3" : "#666")};
+  background: ${({ $active }) => ($active ? "#f0f7ff" : "transparent")};
   cursor: pointer;
   transition: all 0.2s ease;
 
@@ -108,6 +128,5 @@ const LessonItem = styled.div`
 `;
 
 const LessonList = styled.div`
-  display: ${({ $open }) => ($open ? 'block' : 'none')};
+  display: ${({ $open }) => ($open ? "block" : "none")};
 `;
-

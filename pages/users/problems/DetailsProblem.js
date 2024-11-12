@@ -1,15 +1,10 @@
-import { useRouter } from "next/router";
-import React, { useState, useEffect } from "react";
-import { ResizableBox } from "react-resizable";
+import React, { useEffect, useState } from "react";
 import styled, { createGlobalStyle } from "styled-components";
-import { Tooltip } from "antd";
-import "react-resizable/css/styles.css";
 import Header from "./header";
-import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
 import Description from "../components/problems-details/description";
 import CodeEditorComponent from "../components/problems-details/code";
 import TestCaseComponent from "../components/problems-details/test-case";
-import { userAPI } from "service/user"; // Import the API function here
+import { userAPI } from "service/user";
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -20,58 +15,38 @@ const GlobalStyle = createGlobalStyle`
   
   html, body {
     height: 100%;
-    overflow: hidden;
   }
 
   #__next {
-    height: 100%;
-  }
-`;
-
-const StyledHandle = styled.div.withConfig({
-  shouldForwardProp: (prop) => prop !== "handleAxis",
-})`
-  width: 5px;
-  background-color: transparent;
-  cursor: col-resize;
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2;
-  &:hover {
-    background-color: orange;
-  }
-`;
-
-const StyledHandleHorizontal = styled.div.withConfig({
-  shouldForwardProp: (prop) => prop !== "handleAxis",
-})`
-  height: 5px;
-  background-color: transparent;
-  cursor: row-resize;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  &:hover {
-    background-color: orange;
+    min-height: 100%;
   }
 `;
 
 const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
   background-color: #f0f0f0;
-  overflow: hidden;
+`;
+
+const LayoutContainer = styled.div`
+  display: flex;
+  width: 100%;
+  min-height: 90vh;
+`;
+
+const DescriptionContainer = styled.div`
+  width: 40%;
+  height: 100%;
+  padding: 5px;
+`;
+
+const EditorContainer = styled.div`
+  width: 60%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
 const ContentContainer = styled.div`
@@ -80,7 +55,6 @@ const ContentContainer = styled.div`
   border-radius: 8px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   flex-grow: 1;
-  overflow: auto; // Đảm bảo rằng nội dung có thể cuộn nếu vượt quá kích thước
 `;
 
 const DetailProblem = ({ problemId }) => {
@@ -108,24 +82,15 @@ const DetailProblem = ({ problemId }) => {
   return (
     <>
       <GlobalStyle />
-      <Header style={{ zIndex: 3 }} />
+      <Header
+        style={{
+          width: "100%",
+          zIndex: 3,
+        }}
+      />
       <PageWrapper>
-        <div style={{ display: "flex", height: "100%", width: "100%" }}>
-          <ResizableBox
-            width={400}
-            height={Infinity}
-            minConstraints={[200, Infinity]}
-            maxConstraints={[800, Infinity]}
-            axis="x"
-            resizeHandles={["e"]}
-            handle={
-              <StyledHandle>
-                <HorizontalRuleIcon
-                  style={{ transform: "rotate(90deg)", color: "orange" }}
-                />
-              </StyledHandle>
-            }
-          >
+        <LayoutContainer>
+          <DescriptionContainer>
             <ContentContainer>
               <Description
                 id={problem?.id}
@@ -133,32 +98,16 @@ const DetailProblem = ({ problemId }) => {
                 description={problem?.description}
               />
             </ContentContainer>
-          </ResizableBox>
-          <div
-            style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}
-          >
-            <ResizableBox
-              width={Infinity}
-              height={400}
-              minConstraints={[Infinity, 200]}
-              maxConstraints={[Infinity, 600]}
-              axis="y"
-              resizeHandles={["s"]}
-              handle={
-                <StyledHandleHorizontal>
-                  <HorizontalRuleIcon style={{ color: "orange" }} />
-                </StyledHandleHorizontal>
-              }
-            >
-              <ContentContainer>
-                <CodeEditorComponent />
-              </ContentContainer>
-            </ResizableBox>
+          </DescriptionContainer>
+          <EditorContainer>
+            <ContentContainer>
+              <CodeEditorComponent />
+            </ContentContainer>
             <ContentContainer>
               <TestCaseComponent testCases={problem?.testCases} />
             </ContentContainer>
-          </div>
-        </div>
+          </EditorContainer>
+        </LayoutContainer>
       </PageWrapper>
     </>
   );

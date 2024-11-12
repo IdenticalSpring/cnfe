@@ -8,12 +8,11 @@ import CustomCalendar from "./CustomCalendar";
 const SidebarContainer = styled.div`
   flex: 2;
   margin-right: 100px;
-  padding: 20px;
+  padding: 5px 20px 20px 20px;
   background-color: var(--background-color);
   color: var(--text-primary-color);
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-
   @media (max-width: 768px) {
     padding: 15px;
     margin: 0;
@@ -63,7 +62,7 @@ const CompanyTag = styled(Tag)`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 14px;
+  font-size: 11px;
   padding: 4px 10px;
   background-color: #f0f0f0;
   border-radius: 8px;
@@ -82,7 +81,7 @@ const CompanyTag = styled(Tag)`
 const ProblemCount = styled.div`
   background-color: var(--orange-color);
   color: #ffffff;
-  font-size: 12px;
+  font-size: 10px;
   padding: 0px 6px;
   border-radius: 6px;
   margin-left: 4px;

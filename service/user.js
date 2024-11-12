@@ -15,6 +15,9 @@ export const userAPI = {
     const response = await request.get("/auth/profile");
     return response.data;
   },
+
+  // -----------------------------PROBLEM-----------------------------------
+
   getAllProblemsByPage: async (page) => {
     const response = await request.get(`/problems/paginated?page=${page}`);
     return response.data;
@@ -64,6 +67,16 @@ export const userAPI = {
     const response = await request.get(`companies/with-problem-count`);
     return response.data;
   },
+  getTopicProblem: async (id) => {
+    try {
+      const response = await request.get(`/problem-topics/${id}/topics`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching problem-topics:", error);
+      throw error;
+    }
+  },
+  // -----------------------------EXPLORE-----------------------------------
   getCourseById: async (id) => {
     try {
       const response = await request.get(`/courses/${id}`);

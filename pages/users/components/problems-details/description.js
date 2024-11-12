@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
-import { Menu, Tag, Skeleton } from "antd";
+import { Menu, Tag as AntTag, Skeleton, Collapse } from "antd";
 import {
   FileTextOutlined,
   ReloadOutlined,
@@ -16,8 +16,7 @@ const DescriptionContainer = styled.div`
 `;
 
 const ProblemHeader = styled.div`
-  position: sticky;
-  top: 0;
+  background-color: #f0f0f0;
   border-bottom: 1px solid #ddd;
   z-index: 100;
   .ant-menu-item-selected {
@@ -44,11 +43,89 @@ const TagContainer = styled.div`
   flex-wrap: wrap;
 `;
 
+const StyledTag = styled(({ clickable, ...props }) => <AntTag {...props} />)`
+  cursor: ${(props) => (props.clickable ? "pointer" : "default")};
+  transition: background-color 0.3s ease, color 0.3s ease;
+
+  &:hover {
+    background-color: ${(props) =>
+      props.clickable ? "var(--background-hover-color)" : "inherit"};
+  }
+`;
+
+const CollapseContainer = styled(Collapse)`
+  margin-top: 10px;
+
+  .ant-collapse-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .ant-collapse-arrow {
+    margin-left: auto;
+  }
+`;
+
 const Description = ({ id, title, description }) => {
   const [difficulty, setDifficulty] = useState("Unknown");
   const [loading, setLoading] = useState(true);
+  const [isTopicOpen, setIsTopicOpen] = useState(false);
+  const [isCompaniesOpen, setIsCompaniesOpen] = useState(false);
+  const [isHintOpen, setIsHintOpen] = useState(false);
+  const [topics, setTopics] = useState([]); // Khởi tạo state cho topics
+
+  const topicsRef = useRef(null);
+  const companiesRef = useRef(null);
+  const hintRef = useRef(null);
+
+  const companies = ["Google", "Amazon", "Facebook"];
+  const hints = ["Think about edge cases", "Use a hash map"];
+
+  const toggleTopicCollapse = () => setIsTopicOpen((prev) => !prev);
+  const toggleCompaniesCollapse = () => setIsCompaniesOpen((prev) => !prev);
+  const toggleHintCollapse = () => setIsHintOpen((prev) => !prev);
 
   useEffect(() => {
+    if (isTopicOpen) {
+      setTimeout(() => {
+        topicsRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
+  }, [isTopicOpen]);
+
+  useEffect(() => {
+    if (isCompaniesOpen) {
+      setTimeout(() => {
+        companiesRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
+  }, [isCompaniesOpen]);
+
+  useEffect(() => {
+    if (isHintOpen) {
+      setTimeout(() => {
+        hintRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+  }, [isHintOpen]);
+
+  useEffect(() => {
+    const fetchProblemTopics = async () => {
+      try {
+        const response = await userAPI.getTopicProblem(id);
+        setTopics(response.data || []);
+        console.log(response);
+      } catch (error) {
+        console.error("Error fetching topics:", error);
+      }
+    };
     const fetchProblemDetails = async () => {
       try {
         const difficultiesResponse = await userAPI.getDifficulties();
@@ -68,30 +145,70 @@ const Description = ({ id, title, description }) => {
       }
     };
 
-    if (id) fetchProblemDetails();
+    if (id) {
+      fetchProblemDetails();
+      fetchProblemTopics();
+    }
   }, [id]);
 
-  // Tạo items cho Menu thay vì sử dụng Menu.Item trực tiếp
   const menuItems = [
+    { key: "description", icon: <FileTextOutlined />, label: "Description" },
+    { key: "submissions", icon: <ReloadOutlined />, label: "Submissions" },
+    { key: "editorial", icon: <BookOutlined />, label: "Editorial" },
+    { key: "solutions", icon: <ExperimentOutlined />, label: "Solutions" },
+  ];
+
+  const topicItems = [
     {
-      key: "description",
-      icon: <FileTextOutlined />,
-      label: "Description",
+      key: "1",
+      label: "Topics",
+      children: (
+        <div>
+          {topics.map((topic, index) => (
+            <StyledTag key={index} color="default">
+              Topic ID: {topic.topicId}
+            </StyledTag>
+          ))}
+        </div>
+      ),
     },
+  ];
+
+  const companiesItems = [
     {
-      key: "submissions",
-      icon: <ReloadOutlined />,
-      label: "Submissions",
+      key: "2",
+      label: "Companies",
+      children: (
+        <div>
+          {companies.map((company, index) => (
+            <StyledTag
+              style={{
+                cursor: "default",
+                transition: "none",
+                backgroundColor: "inherit",
+              }}
+              key={index}
+              color="default"
+            >
+              {company}
+            </StyledTag>
+          ))}
+        </div>
+      ),
     },
+  ];
+
+  const hintItems = [
     {
-      key: "editorial",
-      icon: <BookOutlined />,
-      label: "Editorial",
-    },
-    {
-      key: "solutions",
-      icon: <ExperimentOutlined />,
-      label: "Solutions",
+      key: "3",
+      label: "Hint",
+      children: (
+        <div>
+          {hints.map((hint, index) => (
+            <p key={index}>{hint}</p>
+          ))}
+        </div>
+      ),
     },
   ];
 
@@ -102,7 +219,7 @@ const Description = ({ id, title, description }) => {
           mode="horizontal"
           defaultSelectedKeys={["description"]}
           style={{ borderBottom: "none" }}
-          items={menuItems} // Sử dụng items thay cho children
+          items={menuItems}
         />
       </ProblemHeader>
       <ProblemContent>
@@ -113,12 +230,16 @@ const Description = ({ id, title, description }) => {
             `${id}. ${title}`
           )}
         </h2>
-
         <TagContainer>
           {loading ? (
             <Skeleton.Button active size="small" style={{ width: 60 }} />
           ) : (
-            <Tag
+            <StyledTag
+              style={{
+                cursor: "default",
+                transition: "none",
+                backgroundColor: "inherit",
+              }}
               color={
                 difficulty === "Easy"
                   ? "green"
@@ -130,21 +251,47 @@ const Description = ({ id, title, description }) => {
               }
             >
               {difficulty}
-            </Tag>
+            </StyledTag>
           )}
-          <Tag icon={<FileTextOutlined />} color="default">
+          <StyledTag onClick={toggleTopicCollapse} clickable color="default">
             Topics
-          </Tag>
-          <Tag icon={<ReloadOutlined />} color="default">
+          </StyledTag>
+          <StyledTag
+            onClick={toggleCompaniesCollapse}
+            clickable
+            color="default"
+          >
             Companies
-          </Tag>
-          <Tag icon={<ExperimentOutlined />} color="default">
+          </StyledTag>
+          <StyledTag onClick={toggleHintCollapse} clickable color="default">
             Hint
-          </Tag>
+          </StyledTag>
         </TagContainer>
-        <ProblemDescription
-          dangerouslySetInnerHTML={{ __html: description }}
-        />
+        <ProblemDescription dangerouslySetInnerHTML={{ __html: description }} />
+
+        <div ref={topicsRef}>
+          <CollapseContainer
+            activeKey={isTopicOpen ? ["1"] : []}
+            onChange={(keys) => setIsTopicOpen(keys.includes("1"))}
+            items={topicItems}
+          />
+        </div>
+
+        <div ref={companiesRef}>
+          <CollapseContainer
+            activeKey={isCompaniesOpen ? ["2"] : []}
+            onChange={(keys) => setIsCompaniesOpen(keys.includes("2"))}
+            items={companiesItems}
+          />
+        </div>
+
+        <div ref={hintRef}>
+          <CollapseContainer
+            activeKey={isHintOpen ? ["3"] : []}
+            onChange={(keys) => setIsHintOpen(keys.includes("3"))}
+            items={hintItems}
+          />
+        </div>
       </ProblemContent>
     </DescriptionContainer>
   );
