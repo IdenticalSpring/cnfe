@@ -9,7 +9,7 @@ import DefaultLayout from "@/layout/DefaultLayout";
 import { loginUser } from "@/service/auth-api";
 import { notification } from "antd";
 import { useRouter } from "next/router";
-import jwtDecode from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 import { authAPI } from "@/service/auth-api";
 
 const StyledLink = styled.a`
@@ -135,13 +135,21 @@ const Login = () => {
     if (result.success) {
       const token = result.data.access_token;
       try {
-        const decodedToken = jwtDecode(token);
-        const role = decodedToken.role;
+        const decodedToken = jwtDecode(token);  
+        const userId = decodedToken.sub; 
+        const userName = decodedToken.username;
+        const userRole = decodedToken.role;
 
-        if (role === "admin") {
-          router.push("/admin/dashboard");
-        } else if (role === "user") {
-          router.push("/");
+        
+        sessionStorage.setItem('userId', userId);
+        sessionStorage.setItem('userName', userName);
+        sessionStorage.setItem('userRole', userRole);
+
+        
+        if (userRole === 'admin') {
+          router.push('/admin/dashboard');
+        } else if (userRole === 'user') {
+          router.push('/');
         } else {
           notification.error({
             message: "Error",
@@ -165,21 +173,12 @@ const Login = () => {
         placement: "bottomRight",
         duration: 3,
       });
+
     }
   };
 
-  const handleGoogleLogin = async () => {
-    // const result = await authAPI.loginWithGoogle();
-    // if (result.success) {
-    //   notification.success({
-    //     message: "Đăng nhập thành công",
-    //     description: "Bạn đã đăng nhập bằng Google thành công!",
-    //   });
-    //   return result.data;
-    // } else {
-    //   console.log('lỗi');
-    // }
-    console.log("gg");
+  const handleLogin = async (provider) => {
+    await authAPI.loginWithProvider(provider);
   };
 
   const handleGithubLogin = () => {
@@ -225,12 +224,12 @@ const Login = () => {
             Login
           </LoginButton>
 
-          <OAuthButton onClick={handleGoogleLogin}>
+          <OAuthButton onClick={() => handleLogin('google')}>
             <GoogleIconImage src="/assets/img/google.png" alt="Google Icon" />
             Login with Google
           </OAuthButton>
 
-          <OAuthButton onClick={handleGithubLogin}>
+          <OAuthButton onClick={() => handleLogin('github')}>
             <GitHubIcon />
             Login with GitHub
           </OAuthButton>

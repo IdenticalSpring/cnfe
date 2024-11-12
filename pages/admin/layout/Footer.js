@@ -1,12 +1,8 @@
 import styled from 'styled-components';
 
-// Giả sử Sidebar có chiều rộng là 200px
-const SidebarWidth = '200px';
-
-// Styled-components cho Footer
 const FooterContainer = styled.footer`
-  width: calc(100% - ${SidebarWidth});
-  margin-left: ${SidebarWidth};
+  width: ${(props) => (props.collapsed ? "calc(100% - 80px)" : "calc(100% - 200px)")};
+  margin-left: ${(props) => (props.collapsed ? "80px" : "200px")};
   padding: 16px;
   background-color: #f0f2f5;
   border-top: 1px solid #d9d9d9;
@@ -22,7 +18,7 @@ const FooterContainer = styled.footer`
 `;
 
 export const Logo = styled.img`
-  height: 24px; /* Giảm kích thước logo */
+  height: 24px;
   width: auto;
 `;
 
@@ -31,9 +27,9 @@ const FooterText = styled.span`
   color: #333;
 `;
 
-const Footer = () => {
+const Footer = ({ collapsed }) => {
   return (
-    <FooterContainer>
+    <FooterContainer collapsed={collapsed}>
       <Logo src="/assets/img/logo-nobg.png" alt="Logo" />
       <FooterText>© 2024 Admin Panel. All Rights Reserved.</FooterText>
     </FooterContainer>

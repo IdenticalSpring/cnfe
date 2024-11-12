@@ -6,6 +6,10 @@
   --text-secondary-color: #808080;
   --background-hover-color: #EEEEEE;
   --orange-color: #FF9900;
+  --success-color: #52c41a;
+  --table-header-color: #cecece;
+  --link-hover-color: #0D92F4;
+
 }
 
 .ant-tooltip-inner {

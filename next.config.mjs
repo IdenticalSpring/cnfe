@@ -4,6 +4,9 @@ const nextConfig = {
   compiler: {
     styledComponents: true, // Kích hoạt styled-components SWC transform
   },
+  images: {
+    domains: ['assets.leetcode.com', 'res.cloudinary.com'],
+  },
 };
 
 export default nextConfig;

@@ -1,38 +1,50 @@
-import styled from 'styled-components';
-import DefaultLayout from './layout/DefaultLayout';
-import TableAccount from './component/table/TableAccount';
-import { DoubleRightOutlined } from '@ant-design/icons';
+import React, { Suspense, lazy } from "react";
+import styled from "styled-components";
+import DefaultLayout from "./layout/DefaultLayout";
+import { ArrowRightOutlined } from "@ant-design/icons";
+import { Skeleton } from "antd";
+
+const TableContainer = styled.div`
+  margin: 0 20px;
+`;
 
 const Title_Head = styled.h1`
-    font-size: 32px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: #FF9900;
-    margin-top: 0;
-    display: block;
-    visibility: visible;
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #ff9900;
+  margin-top: 0;
+  display: block;
+  visibility: visible;
 
-    .icon {
-        font-size: 24px;
-        vertical-align: middle;
-    }
+  .icon {
+    font-size: 20px;
+    vertical-align: middle;
+  }
 `;
 
 const ContentWrapper = styled.div`
-    padding-top: 60px;
+  padding-top: 70px;
 `;
 
+const TableAccount = lazy(() => import("./component/table/TableAccount"));
+
 const Users = () => {
-    return (
-        <DefaultLayout>
-            <ContentWrapper>
-                <Title_Head>
-                    Quản lí tài khoản <DoubleRightOutlined className="icon" />
-                </Title_Head>
-                <TableAccount />
-            </ContentWrapper>
-        </DefaultLayout>
-    );
-}
+  return (
+    <DefaultLayout>
+      <TableContainer>
+        <Suspense fallback={<Skeleton active paragraph={{ rows: 5 }} />}>
+          <ContentWrapper>
+            <Title_Head>
+              Quản lí tài khoản <ArrowRightOutlined className="icon" />
+            </Title_Head>
+
+            <TableAccount />
+          </ContentWrapper>
+        </Suspense>
+      </TableContainer>
+    </DefaultLayout>
+  );
+};
 
 export default Users;
