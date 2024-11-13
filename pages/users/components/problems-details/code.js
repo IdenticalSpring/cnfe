@@ -4,6 +4,7 @@ import { Select } from "antd";
 import styled from "styled-components";
 import { Code as CodeIcon } from "@mui/icons-material";
 import languageContent from "@/utils/languageContent";
+import { LightMode, DarkMode } from "@mui/icons-material";
 
 const languages = [
   { label: "TypeScript", value: "typescript" },
@@ -106,10 +107,10 @@ const Code = () => {
         </HeaderContent>
         <ButtonContainer>
           <StyledButton selected={theme === "vs-light"} onClick={setLightTheme}>
-            Light
+            <LightMode />
           </StyledButton>
           <StyledButton selected={theme === "vs-dark"} onClick={setDarkTheme}>
-            Dark
+            <DarkMode />
           </StyledButton>
         </ButtonContainer>
       </ProblemHeader>

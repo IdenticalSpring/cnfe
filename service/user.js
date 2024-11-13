@@ -76,6 +76,15 @@ export const userAPI = {
       throw error;
     }
   },
+  getCompaniesProblem: async (id) => {
+    try {
+      const response = await request.get(`problem-companies/${id}/companies`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching problem-companies:", error);
+      throw error;
+    }
+  },
   // -----------------------------EXPLORE-----------------------------------
   getCourseById: async (id) => {
     try {

@@ -14,11 +14,12 @@ const GlobalStyle = createGlobalStyle`
   }
   
   html, body {
-    height: 100%;
+    height: 100vh;
+    overflow: hidden;
   }
 
   #__next {
-    min-height: 100%;
+    min-height: 100vh;
   }
 `;
 
@@ -33,17 +34,16 @@ const PageWrapper = styled.div`
 const LayoutContainer = styled.div`
   display: flex;
   width: 100%;
-  min-height: 90vh;
+  height: calc(100vh - 50px); /* Điều chỉnh chiều cao */
 `;
 
 const DescriptionContainer = styled.div`
-  width: 40%;
-  height: 100%;
-  padding: 5px;
+  width: 45%;
+  height: 100vh;
 `;
 
 const EditorContainer = styled.div`
-  width: 60%;
+  width: 55%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -51,7 +51,7 @@ const EditorContainer = styled.div`
 
 const ContentContainer = styled.div`
   background-color: #ffffff;
-  margin: 5px;
+  margin: 4px;
   border-radius: 8px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   flex-grow: 1;

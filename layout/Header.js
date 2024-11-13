@@ -67,7 +67,7 @@ export const Logo = styled.img`
   display: block;
 
   @media screen and (min-width: 1024px) {
-    max-height: 25px;
+    max-height: 24px;
   }
 
   @media screen and (min-width: 768px) and (max-width: 1023px) {
@@ -93,15 +93,15 @@ export const Title = styled.span`
   }
 
   @media screen and (min-width: 1024px) {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
   }
 
   @media screen and (min-width: 768px) and (max-width: 1023px) {
-    font-size: 0.6rem;
+    font-size: 0.7rem;
   }
 
   @media screen and (max-width: 767px) {
-    font-size: 0.5rem;
+    font-size: 0.6rem;
   }
 `;
 
