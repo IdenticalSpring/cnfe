@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styled, { createGlobalStyle } from "styled-components";
 import Header from "./header";
 import Description from "../components/problems-details/description";
 import CodeEditorComponent from "../components/problems-details/code";
 import TestCaseComponent from "../components/problems-details/test-case";
 import { userAPI } from "service/user";
+import axios from "axios";
+import Cookies from 'js-cookie';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -34,7 +36,7 @@ const PageWrapper = styled.div`
 const LayoutContainer = styled.div`
   display: flex;
   width: 100%;
-  height: calc(100vh - 50px); /* Điều chỉnh chiều cao */
+  height: calc(100vh - 50px);
 `;
 
 const DescriptionContainer = styled.div`
@@ -58,15 +60,30 @@ const ContentContainer = styled.div`
 `;
 
 const DetailProblem = ({ problemId }) => {
-  const [problem, setProblem] = useState(null);
+  const [problem, setProblem] = useState({
+    id: problemId || 1,
+    title: "Sample Problem",
+    description: "Calculate the sum of two numbers.",
+    testCases: [
+      { input: "2\n3", output: "5\n" },
+    ],
+  });
+
   const [loading, setLoading] = useState(true);
+  const [testResult, setTestResult] = useState(null);
+  const [code, setCode] = useState(null);
+  const [language, setLanguage] = useState("javascript");
 
   useEffect(() => {
     const fetchProblemDetails = async () => {
       setLoading(true);
       try {
         const response = await userAPI.getProblemByID(problemId);
-        setProblem(response.data);
+        setProblem(prevProblem => ({
+          ...prevProblem,
+          ...response.data,
+          testCases: response.data.testCases || prevProblem.testCases,
+        }));
       } catch (error) {
         console.error("Error fetching problem details:", error);
       } finally {
@@ -79,15 +96,35 @@ const DetailProblem = ({ problemId }) => {
     }
   }, [problemId]);
 
+  const handleRunCode = useCallback(async () => {
+    try {
+      const userId = sessionStorage.getItem('userId'); 
+
+      if (!userId) {
+        console.warn("User ID is not available in session storage.");
+        return;
+      }
+
+      if (!code) {
+        console.warn("Code is empty or null.");
+        return;
+      }
+
+      const result = await userAPI.executeCode(userId, code, language, problem?.testCases[0]?.input || "");
+      setTestResult(result);
+    } catch (error) {
+      console.error("Error running code:", error);
+    }
+  }, [code, language, problem?.testCases]);
+
+
+
+
+
   return (
     <>
       <GlobalStyle />
-      <Header
-        style={{
-          width: "100%",
-          zIndex: 3,
-        }}
-      />
+      <Header onRunCode={handleRunCode} />
       <PageWrapper>
         <LayoutContainer>
           <DescriptionContainer>
@@ -101,10 +138,15 @@ const DetailProblem = ({ problemId }) => {
           </DescriptionContainer>
           <EditorContainer>
             <ContentContainer>
-              <CodeEditorComponent />
+              <CodeEditorComponent
+                code={code}
+                setCode={setCode} 
+                language={language}
+                setLanguage={setLanguage}
+              />
             </ContentContainer>
             <ContentContainer>
-              <TestCaseComponent testCases={problem?.testCases} />
+              <TestCaseComponent testCases={problem?.testCases} result={testResult} />
             </ContentContainer>
           </EditorContainer>
         </LayoutContainer>

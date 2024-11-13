@@ -167,4 +167,23 @@ export const userAPI = {
       throw error;
     }
   },
+  executeCode: async (userId, code, language, stdin) => {
+    try {
+      const requestData = {
+        code,
+        language,
+        stdin
+      };
+
+      const response = await request.post(
+        `/submissions/run/${userId}`,
+        requestData
+      );
+
+      return response.data.data;
+    } catch (error) {
+      console.error("Error running code:", error);
+      throw error;
+    }
+  },
 };

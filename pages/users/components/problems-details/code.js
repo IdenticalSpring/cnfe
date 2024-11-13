@@ -85,10 +85,9 @@ const StyledButton = styled.button`
   transition: background-color 0.3s;
 `;
 
-const Code = () => {
-  const [language, setLanguage] = useState("typescript");
-  const [code, setCode] = useState(languageContent["typescript"]);
+const CodeEditorComponent = ({ code, setCode, language, setLanguage }) => {
   const [theme, setTheme] = useState("vs-dark");
+
 
   const handleLanguageChange = (value) => {
     setLanguage(value);
@@ -130,8 +129,8 @@ const Code = () => {
             height="100%"
             language={language}
             theme={theme}
-            value={code}
-            onChange={(value) => setCode(value)}
+            value={code} 
+            onChange={(value) => setCode(value)} 
             options={{
               minimap: { enabled: false },
               fontSize: 16,
@@ -146,4 +145,4 @@ const Code = () => {
   );
 };
 
-export default Code;
+export default CodeEditorComponent;
