@@ -173,4 +173,26 @@ export const userAPI = {
       throw new Error(error.message);
     }
   },
+
+  getCommentsByDiscussionID: async (id, page = 1) => {
+    try {
+      const response = await request.get(
+        `/discussion-comments/${id}?page=${page}`
+      );
+      return response.data.data; // Trả về dữ liệu bình luận từ API
+    } catch (error) {
+      console.error("Lỗi khi fetch comments:", error);
+      throw error;
+    }
+  },
+
+  submitComment: async (userId, data) => {
+    try {
+      const response = await request.post(`/comments/${userId}`, data); // Sử dụng dynamic ID trong URL
+      return response.data;
+    } catch (error) {
+      console.error("Lỗi khi gửi comment:", error);
+      throw error;
+    }
+  },
 };

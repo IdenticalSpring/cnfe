@@ -12,39 +12,36 @@ const DiscussionDetail = () => {
   const [discussion, setDiscussion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [comments, setComments] = useState([]); // State để quản lý các comment
-  const [newComment, setNewComment] = useState(""); // State để lưu comment mới
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState(""); // State lưu comment mới
 
-  // Fetch dữ liệu thảo luận
+  // Fetch dữ liệu thảo luận và danh sách bình luận
   useEffect(() => {
     if (id) {
       const fetchDiscussion = async () => {
         try {
-          const data = await userAPI.getDiscussionByID(id);
-          setDiscussion(data.data);
+          const discussionData = await userAPI.getDiscussionByID(id);
+          setDiscussion(discussionData.data);
           setLoading(false);
         } catch (err) {
-          setError("Error fetching discussion details");
+          setError("Lỗi khi tải chi tiết thảo luận");
           setLoading(false);
+        }
+      };
+
+      const fetchComments = async () => {
+        try {
+          const commentsData = await userAPI.getCommentsByDiscussionID(id);
+          setComments(
+            Array.isArray(commentsData.data) ? commentsData.data : []
+          );
+        } catch (err) {
+          console.error("Lỗi khi tải bình luận:", err);
+          setError("Lỗi khi tải bình luận");
         }
       };
 
       fetchDiscussion();
-    }
-  }, [id]);
-
-  // Fetch comment của thảo luận
-  useEffect(() => {
-    if (id) {
-      const fetchComments = async () => {
-        try {
-          const data = await userAPI.getCommentsByDiscussionID(id); // Gọi API lấy danh sách comment
-          setComments(data.data);
-        } catch (err) {
-          console.error("Lỗi khi fetch comments:", err);
-        }
-      };
-
       fetchComments();
     }
   }, [id]);
@@ -67,9 +64,18 @@ const DiscussionDetail = () => {
   const handleSubmitComment = async () => {
     if (newComment.trim() === "") return;
 
+    // Chuyển đổi `id` sang số nguyên
+    const discussionId = parseInt(id, 10);
+    if (!discussionId) {
+      console.error("ID không hợp lệ:", discussionId);
+      return;
+    }
+
     try {
-      const data = await userAPI.submitComment(id, { content: newComment });
-      setComments([...comments, data.data]); // Thêm comment mới vào danh sách
+      const data = await userAPI.submitComment(discussionId, {
+        content: newComment,
+      });
+      setComments((prevComments) => [...prevComments, data.data]); // Thêm comment mới vào danh sách
       setNewComment(""); // Reset trường input
     } catch (err) {
       console.error("Lỗi khi gửi comment:", err);
@@ -91,7 +97,7 @@ const DiscussionDetail = () => {
             <VoteCount>{discussion.voteUp} Upvotes</VoteCount>
           </VoteButtons>
 
-          {/* Section để gửi comment mới */}
+          {/* Section gửi comment mới */}
           <CommentsSection>
             <CommentInput
               value={newComment}
@@ -103,12 +109,12 @@ const DiscussionDetail = () => {
 
           {/* Hiển thị danh sách comment */}
           <CommentsList>
-            {comments.map((comment) => (
-              <CommentItem key={comment.id}>
-                <CommentUser>{comment.user.name}</CommentUser>
-                <CommentContent>{comment.content}</CommentContent>
+            {comments.map((comments) => (
+              <CommentItem key={comments.id}>
+                {/* <CommentUser>{comment.user.name}</CommentUser> */}
+                <CommentContent>{comments.comments.content}</CommentContent>
                 <CommentDate>
-                  {new Date(comment.createdAt).toLocaleString()}
+                  {new Date(comments.createdAt).toLocaleString()}
                 </CommentDate>
               </CommentItem>
             ))}
