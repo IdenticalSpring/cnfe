@@ -71,4 +71,36 @@ export const adminAPI = {
     const response = await request.get("/difficulties");
     return response.data;
   },
+  getAllTopics: async () => {
+    const response = await request.get("/topics");
+    return response.data;
+  },
+  getAllCompanies: async () => {
+    const response = await request.get("/companies");
+    return response.data;
+  },
+  getAllLesson: async () => {
+    const response = await request.get("/admin/lessons/all");
+    return response.data;
+  },
+  createLesson: async (data) => {
+    const response = await request.post("/admin/lessons", data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  },
+  // updateLesson: async (id, data) => {
+  //   const response = await request.put(`/admin/lessons/${id}`, data, {
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //   });
+  //   return response.data;
+  // },
+  deleteLesson: async (id) => {
+    const response = await request.delete(`/admin/lessons/${id}`);
+    return response.data;
+  },
 };

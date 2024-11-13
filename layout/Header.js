@@ -4,8 +4,8 @@ import styled from "styled-components";
 import { useRouter } from "next/router";
 import { Dropdown } from "antd";
 import Cookies from "js-cookie";
-import { jwtDecode } from "jwt-decode";
 import { logoutUser } from "service/auth-api";
+
 
 export const Container = styled.div`
   padding: ${({ theme }) => theme.spacing.small};
@@ -79,8 +79,7 @@ export const LinkWrapper = styled.div`
 `;
 
 const StyledLink = styled.a`
-  color: ${({ $isActive }) =>
-    $isActive ? "#DD0000" : "var(--text-secondary-color)"};
+  color: ${({ $isActive }) => ($isActive ? "#DD0000" : "var(--text-secondary-color)")};
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
@@ -108,24 +107,21 @@ export const Header = () => {
   const [username, setUsername] = useState(null);
 
   useEffect(() => {
-    const token = Cookies.get("token");
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        setUsername(decoded.username);
-      } catch (error) {
-        console.error("Error decoding token", error);
-      }
+    // Lấy username từ sessionStorage khi trang được tải
+    const storedUsername = sessionStorage.getItem("userName");
+    if (storedUsername) {
+      setUsername(storedUsername);
     }
   }, []);
 
+
   const handleLogout = async () => {
-    const result = await logoutUser(router);
-    if (!result.success) {
-      Modal.error({
-        title: "Lỗi",
-        content: result.message || "Có lỗi xảy ra khi đăng xuất.",
-      });
+    const result = await logoutUser(router); 
+    if (result.success) {
+      sessionStorage.removeItem("userName");
+      sessionStorage.removeItem("userId");
+      sessionStorage.removeItem("userRole");
+      setUsername(null);
     }
   };
 
@@ -158,19 +154,13 @@ export const Header = () => {
             <StyledLink $isActive={router.pathname === "/"}>Home</StyledLink>
           </Link>
           <Link href="/users/course" passHref legacyBehavior>
-            <StyledLink $isActive={router.pathname === "/users/course"}>
-              Explore
-            </StyledLink>
+            <StyledLink $isActive={router.pathname === "/users/course"}>Explore</StyledLink>
           </Link>
           <Link href="/users/problems" passHref legacyBehavior>
-            <StyledLink $isActive={router.pathname === "/users/problems"}>
-              Problem
-            </StyledLink>
+            <StyledLink $isActive={router.pathname === "/users/problems"}>Problem</StyledLink>
           </Link>
           <Link href="/users/developer" passHref legacyBehavior>
-            <StyledLink $isActive={router.pathname === "/users/developer"}>
-              Developer
-            </StyledLink>
+            <StyledLink $isActive={router.pathname === "/users/developer"}>Developer</StyledLink>
           </Link>
           {username ? (
             <Dropdown menu={{ items: menuItems }}>
@@ -178,9 +168,7 @@ export const Header = () => {
             </Dropdown>
           ) : (
             <Link href="/auth/login" passHref legacyBehavior>
-              <StyledLink $isActive={router.pathname === "/auth/login"}>
-                Sign in
-              </StyledLink>
+              <StyledLink $isActive={router.pathname === "/auth/login"}>Sign in</StyledLink>
             </Link>
           )}
         </LinkWrapper>
