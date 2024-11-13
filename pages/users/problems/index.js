@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 import { Dropdown, Table, Button, Skeleton, Input, Tag } from "antd";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -7,7 +7,7 @@ import DefaultLayout from "@/layout/DefaultLayout";
 import Link from "next/link";
 import { userAPI } from "service/user";
 import debounce from "lodash.debounce";
-import SidebarProblem from "../components/sidebar-problem/SidebarProblem";
+import Sidebar from "../components/sidebar-problem/SidebarProblem";
 
 const PageContainer = styled.div`
   display: flex;
@@ -19,7 +19,7 @@ const PageContainer = styled.div`
 const ProblemListContainer = styled.div`
   flex: 8;
   margin-left: 100px;
-  padding: 20px;
+  padding: 10px 20px;
   background-color: var(--background-color);
   color: var(--text-primary-color);
   min-height: 100vh;
@@ -32,6 +32,7 @@ const ProblemListContainer = styled.div`
 
   @media (max-width: 768px) {
     margin: 0 10px;
+    padding: 5px;
   }
 `;
 
@@ -41,10 +42,22 @@ const SearchContainer = styled.div`
   margin-bottom: 20px;
   gap: 10px;
   justify-content: space-between;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
 `;
+
 const DropdownGroup = styled.div`
   display: flex;
   gap: 10px;
+  justify-content: center; /* Căn giữa các nút */
+  padding: 10px 0; /* Thêm padding trên dưới để có khoảng cách đều */
+
+  @media (max-width: 768px) {
+    gap: 5px;
+  }
 `;
 
 const CustomButton = styled(Button)`
@@ -56,10 +69,15 @@ const CustomButton = styled(Button)`
   font-size: 14px;
   width: 100px;
   height: 35px;
-  padding: 0 12px;
+  padding: 0 16px; /* Đảm bảo padding đều cho các nút */
+  justify-content: center; /* Căn giữa nội dung trong nút */
 
   &:hover {
     background-color: #ebedf0;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%; /* Để nút chiếm toàn bộ chiều rộng trên màn hình nhỏ */
   }
 `;
 
@@ -69,6 +87,10 @@ const TagDropdownContainer = styled.div`
   background-color: white;
   border-radius: 8px;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const TagList = styled.div`
@@ -76,7 +98,7 @@ const TagList = styled.div`
   flex-wrap: wrap;
   gap: 8px;
   max-height: 200px;
-  overflow-y: auto;
+  overflow: auto;
 `;
 
 const CustomTag = styled(Tag)`
@@ -102,13 +124,22 @@ const StyledTable = styled(Table)`
     &:nth-child(odd) {
       background-color: #ffffff;
     }
-
     &:nth-child(even) {
       background-color: #f0f0f0;
     }
   }
-`;
 
+  @media (max-width: 768px) {
+    .ant-table-thead > tr > th,
+    .ant-table-tbody > tr > td {
+      font-size: 12px;
+      padding: 8px;
+    }
+  }
+`;
+const DifficultyButton = styled(CustomButton)`
+  width: 120px;
+`;
 const Index = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [allProblems, setAllProblems] = useState([]);
@@ -121,7 +152,8 @@ const Index = () => {
   const [totalProblems, setTotalProblems] = useState(0);
   const [topics, setTopics] = useState([]);
   const [isDifficultyLoaded, setIsDifficultyLoaded] = useState(false);
-  const [selectedTopic, setSelectedTopic] = useState(null); // Track the selected topic
+  const [selectedTopic, setSelectedTopic] = useState(null);
+  const [companyIdFilter, setCompanyIdFilter] = useState(null);
 
   const tagMenu = (
     <TagDropdownContainer>
@@ -143,7 +175,6 @@ const Index = () => {
               onClick={() => handleTopicChange(topic.id)}
               style={{
                 borderColor: selectedTopic === topic.id ? "orange" : "default",
-                borderWidth: selectedTopic === topic.id ? "2px" : "1px",
                 borderStyle: selectedTopic === topic.id ? "solid" : "none",
               }}
             >
@@ -181,7 +212,9 @@ const Index = () => {
       key: "title",
       render: (text, record) => (
         <Link href={`/users/problems/${record.key}`} passHref>
-          <span style={{ cursor: "pointer", color: "blue" }}>{text}</span>
+          <span style={{ cursor: "pointer", color: "blue" }}>
+            {record.id}. {text}
+          </span>
         </Link>
       ),
     },
@@ -209,47 +242,57 @@ const Index = () => {
     },
   ];
 
-  const fetchProblems = async (
-    page = 1,
-    size = pageSize,
-    difficultyId = null,
-    title = "",
-    topicId = null
-  ) => {
-    setLoading(true);
-
-    try {
-      let response;
-
-      if (!difficultyId && !topicId && !title) {
-        response = await userAPI.getAllProblemsByPage(page, size);
-      } else if (difficultyId || topicId) {
-        response = await userAPI.getSearchProblemByDifficultyAndTopic(
-          difficultyId,
-          topicId
-        );
-      } else if (title) {
-        response = await userAPI.getSearchProblemByTitle(title);
-      }
-
-      const problemsData = response?.data?.data || [];
-      const totalItems = response?.data?.totalItems || 0;
-
-      const formattedData = problemsData.map((problem) => ({
-        key: problem.id,
-        title: problem.title,
-        acceptance: problem.acceptance_rate || "none",
-        difficulty: difficultyLabels[problem.difficultyId] || "Unknown",
-      }));
-
-      setAllProblems(formattedData);
-      setTotalProblems(totalItems);
-    } catch (error) {
-      console.error("Error fetching problems:", error);
-    } finally {
-      setLoading(false);
-    }
+  const handleCompanyFilter = async (companyId) => {
+    fetchProblems(currentPage, pageSize, null, "", null, companyId);
   };
+
+  const fetchProblems = useCallback(
+    async (
+      page = 1,
+      size = pageSize,
+      difficultyId = null,
+      title = "",
+      topicId = null,
+      companyId = null
+    ) => {
+      setLoading(true);
+
+      try {
+        let response;
+        if (companyId) {
+          response = await userAPI.getSearchByCompanies(companyId);
+        } else if (!difficultyId && !topicId && !title) {
+          response = await userAPI.getAllProblemsByPage(page, size);
+        } else if (difficultyId || topicId) {
+          response = await userAPI.getSearchProblemByDifficultyAndTopic(
+            difficultyId,
+            topicId
+          );
+        } else if (title) {
+          response = await userAPI.getSearchProblemByTitle(title);
+        }
+
+        const problemsData = response?.data?.data || [];
+        const totalItems = response?.data?.totalItems || 0;
+
+        const formattedData = problemsData.map((problem) => ({
+          key: problem.id,
+          id: problem.id,
+          title: problem.title,
+          acceptance: problem.acceptance_rate || "none",
+          difficulty: difficultyLabels[problem.difficultyId] || "Unknown",
+        }));
+
+        setAllProblems(formattedData);
+        setTotalProblems(totalItems);
+      } catch (error) {
+        console.error("Lỗi khi tải danh sách vấn đề:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [pageSize, difficultyLabels]
+  );
 
   useEffect(() => {
     const fetchDifficulties = async () => {
@@ -290,7 +333,8 @@ const Index = () => {
         pageSize,
         difficultyId,
         searchText,
-        selectedTopic
+        selectedTopic,
+        companyIdFilter
       );
     }
   }, [
@@ -300,6 +344,9 @@ const Index = () => {
     selectedDifficulty,
     searchText,
     selectedTopic,
+    companyIdFilter,
+    difficultyLabels,
+    fetchProblems,
   ]);
 
   const handlePageChange = (page, size) => {
@@ -333,9 +380,9 @@ const Index = () => {
                 trigger={["click"]}
                 placement="bottomLeft"
               >
-                <CustomButton>
+                <DifficultyButton>
                   Difficulty <ArrowDropDownIcon />
-                </CustomButton>
+                </DifficultyButton>
               </Dropdown>
 
               <Dropdown
@@ -373,7 +420,7 @@ const Index = () => {
             />
           )}
         </ProblemListContainer>
-        <SidebarProblem />
+        <Sidebar onCompanyFilter={handleCompanyFilter} />
       </PageContainer>
     </DefaultLayout>
   );

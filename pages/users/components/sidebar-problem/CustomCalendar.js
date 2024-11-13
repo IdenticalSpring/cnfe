@@ -6,8 +6,8 @@ const { Option } = Select;
 const { Title } = Typography;
 
 const CalendarContainer = styled.div`
-  margin-top: 20px;
-  padding: 15px;
+  margin-top: 0px;
+  padding: 015px;
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -154,6 +154,7 @@ const CustomCalendar = () => {
               </Option>
             ))}
           </CustomSelect>
+
           <CustomSelect
             value={currentYear}
             onChange={handleYearChange}
