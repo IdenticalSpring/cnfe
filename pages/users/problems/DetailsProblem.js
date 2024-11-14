@@ -6,8 +6,7 @@ import CodeEditorComponent from "../components/problems-details/code";
 import TestCaseComponent from "../components/problems-details/test-case";
 import { userAPI } from "service/user";
 import axios from "axios";
-import Cookies from 'js-cookie';
-
+import Bottleneck from 'bottleneck';
 const GlobalStyle = createGlobalStyle`
   * {
     margin: 0;
@@ -70,15 +69,16 @@ const DetailProblem = ({ problemId }) => {
     const fetchProblemDetails = async () => {
       setLoading(true);
       try {
+    
         const problemResponse = await userAPI.getProblemByID(problemId);
-        const testCaseResponse = await axios.get(`http://localhost:8080/api/v1/test-cases/problem/${problemId}`);
+
+
+        const testCases = await userAPI.getTestCasesByProblemId(problemId);
+
 
         setProblem({
           ...problemResponse.data,
-          testCases: testCaseResponse.data.data.map(testCase => ({
-            input: testCase.input,
-            output: testCase.expected_output,
-          })),
+          testCases,
         });
       } catch (error) {
         console.error("Error fetching problem details:", error);
@@ -87,10 +87,9 @@ const DetailProblem = ({ problemId }) => {
       }
     };
 
-    if (problemId) {
-      fetchProblemDetails();
-    }
+    fetchProblemDetails();
   }, [problemId]);
+
   const handleRunCode = useCallback(async () => {
     try {
       const userId = sessionStorage.getItem('userId');
@@ -105,10 +104,16 @@ const DetailProblem = ({ problemId }) => {
         return;
       }
 
-      // Dùng Promise.all để chạy tất cả test case
+      // Khởi tạo Bottleneck với giới hạn
+      const limiter = new Bottleneck({
+        maxConcurrent: 2, // Giới hạn số lượng yêu cầu đồng thời (có thể điều chỉnh)
+        minTime: 500 // Thời gian chờ tối thiểu giữa các yêu cầu (500ms)
+      });
+
+      // Thực hiện từng yêu cầu thông qua Bottleneck
       const results = await Promise.all(
         (problem?.testCases || []).map(testCase =>
-          userAPI.executeCode(userId, code, language, testCase.input)
+          limiter.schedule(() => userAPI.executeCode(userId, code, language, testCase.input))
         )
       );
 
