@@ -66,7 +66,11 @@ const Header = ({ toggleSidebar, collapsed }) => {
 
   const handleLogout = async () => {
     const result = await logoutUser(router);
+    sessionStorage.removeItem("userName");
+    sessionStorage.removeItem("userId");
+    sessionStorage.removeItem("userRole");
     if (!result.success) {
+
       Modal.error({
         title: "Lỗi",
         content: result.message || "Có lỗi xảy ra khi đăng xuất.",

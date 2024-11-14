@@ -5,7 +5,8 @@ const TestCaseSection = styled.div`
   background-color: #ffffff;
   padding: 20px;
   height: 100%;
-  overflow: auto;
+  max-height: 400px;
+  overflow-y: auto;
   border: 1px solid #ddd;
   border-radius: 8px;
 `;
@@ -25,23 +26,45 @@ const TestCase = styled.pre`
   overflow: auto;
 `;
 
-const TestCaseComponent = ({ testCases }) => (
-  <TestCaseSection>
-    <SectionTitle>Test Cases</SectionTitle>
-    {testCases && testCases.length > 0 ? (
-      testCases.map((testCase, index) => (
-        <div key={index}>
-          <h3>Test Case {index + 1}</h3>
-          <TestCase>
-            <strong>Đầu vào:</strong> {testCase.input} <br />
-            <strong>{testCase.output}</strong>
-          </TestCase>
-        </div>
-      ))
-    ) : (
-      <p>No test cases available.</p>
-    )}
-  </TestCaseSection>
-);
+const TestCaseComponent = ({ testCases, result }) => {
+  return (
+    <TestCaseSection>
+      <SectionTitle>Test Cases</SectionTitle>
+      {testCases && testCases.length > 0 ? (
+        testCases.map((testCase, index) => {
+          // Kiểm tra nếu có kết quả thực tế cho test case hiện tại
+          const actualResult = result && result[index] ? result[index] : null;
+          const isCorrect = actualResult?.stdout?.trim() === testCase.output?.trim();
+
+          return (
+            <div key={index}>
+              <h3>Test Case {index + 1}</h3>
+              <TestCase>
+                <strong>Đầu vào:</strong> {testCase.input} <br />
+                <strong>Kết quả mong đợi:</strong> {testCase.output} <br />
+                <strong>Kết quả thực tế:</strong>
+                {actualResult ? (
+                  <div>
+                    <p><strong>Status:</strong> {actualResult.status?.description || "Unknown"}</p>
+                    <p><strong>Output (stdout):</strong> {actualResult.stdout || "No output"}</p>
+                    <p><strong>Đánh giá:</strong> {isCorrect ? "Đúng" : "Sai"}</p>
+                    <p><strong>Time:</strong> {actualResult.time || "N/A"} seconds</p>
+                    <p><strong>Memory:</strong> {actualResult.memory || "N/A"} KB</p>
+                    <p><strong>Compile Output:</strong> {actualResult.compile_output || "No compile output"}</p>
+                    <p><strong>Error (stderr):</strong> {actualResult.stderr || "No error"}</p>
+                  </div>
+                ) : (
+                  <p>Đang xử lý...</p>
+                )}
+              </TestCase>
+            </div>
+          );
+        })
+      ) : (
+        <p>No test cases available.</p>
+      )}
+    </TestCaseSection>
+  );
+};
 
 export default TestCaseComponent;

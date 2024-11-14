@@ -72,7 +72,7 @@ const Logo = styled.img`
 
 const CustomTooltip = styled(Tooltip)``;
 
-const Header = () => {
+const Header = ({ onRunCode }) => {
   const router = useRouter();
   const handleClickBack = () => {
     router.push("/users/problems"); // Điều hướng về trang /users/problems
@@ -81,32 +81,25 @@ const Header = () => {
   return (
     <HeaderContainer>
       <LeftSection>
-        {/* Thêm logo vào vị trí LeftSection */}
         <Link href="/">
           <LogoWrapper>
             <Logo src="/assets/img/logo-nobg.png" alt="Logo" />
           </LogoWrapper>
         </Link>
-
-        {/* btn back */}
         <CustomTooltip title="Back to Problems">
           <IconButton onClick={handleClickBack} icon={<ArrowLeftOutlined />} />
         </CustomTooltip>
-
-        {/* btn menu */}
         <CustomTooltip title="Show list Problems">
           <IconButton icon={<MenuOutlined />} />
         </CustomTooltip>
       </LeftSection>
 
-      {/* Center section for the Run and Submit buttons */}
       <CenterSection>
         <CustomTooltip title="Run Code">
-          <IconButton icon={<PlayCircleOutlined />}>
+          <IconButton onClick={onRunCode} icon={<PlayCircleOutlined />}> {/* Gọi hàm onRunCode */}
             <span>Run</span>
           </IconButton>
         </CustomTooltip>
-
         <CustomTooltip title="Submit Code">
           <IconButton icon={<CloudUploadOutlined style={{ color: "green" }} />}>
             <span style={{ color: "green" }}>Submit</span>
@@ -118,7 +111,6 @@ const Header = () => {
         <CustomTooltip title="Notifications">
           <IconButton icon={<BellOutlined />} />
         </CustomTooltip>
-
         <CustomTooltip title="Upgrade to Premium">
           <Button>Premium</Button>
         </CustomTooltip>
