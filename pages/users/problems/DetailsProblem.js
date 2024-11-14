@@ -60,15 +60,7 @@ const ContentContainer = styled.div`
 `;
 
 const DetailProblem = ({ problemId }) => {
-  const [problem, setProblem] = useState({
-    id: problemId || 1,
-    title: "Sample Problem",
-    description: "Calculate the sum of two numbers.",
-    testCases: [
-      { input: "2\n3", output: "5\n" },
-    ],
-  });
-
+  const [problem, setProblem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [testResult, setTestResult] = useState(null);
   const [code, setCode] = useState(null);
@@ -78,12 +70,16 @@ const DetailProblem = ({ problemId }) => {
     const fetchProblemDetails = async () => {
       setLoading(true);
       try {
-        const response = await userAPI.getProblemByID(problemId);
-        setProblem(prevProblem => ({
-          ...prevProblem,
-          ...response.data,
-          testCases: response.data.testCases || prevProblem.testCases,
-        }));
+        const problemResponse = await userAPI.getProblemByID(problemId);
+        const testCaseResponse = await axios.get(`http://localhost:8080/api/v1/test-cases/problem/${problemId}`);
+
+        setProblem({
+          ...problemResponse.data,
+          testCases: testCaseResponse.data.data.map(testCase => ({
+            input: testCase.input,
+            output: testCase.expected_output,
+          })),
+        });
       } catch (error) {
         console.error("Error fetching problem details:", error);
       } finally {
@@ -95,10 +91,9 @@ const DetailProblem = ({ problemId }) => {
       fetchProblemDetails();
     }
   }, [problemId]);
-
   const handleRunCode = useCallback(async () => {
     try {
-      const userId = sessionStorage.getItem('userId'); 
+      const userId = sessionStorage.getItem('userId');
 
       if (!userId) {
         console.warn("User ID is not available in session storage.");
@@ -110,15 +105,23 @@ const DetailProblem = ({ problemId }) => {
         return;
       }
 
-      const result = await userAPI.executeCode(userId, code, language, problem?.testCases[0]?.input || "");
-      setTestResult(result);
+      // Dùng Promise.all để chạy tất cả test case
+      const results = await Promise.all(
+        (problem?.testCases || []).map(testCase =>
+          userAPI.executeCode(userId, code, language, testCase.input)
+        )
+      );
+
+      // Log kết quả trả về của tất cả test case
+      console.log("Results from all test cases:", results);
+
+      // Lưu toàn bộ kết quả vào testResult
+      setTestResult(results);
+
     } catch (error) {
       console.error("Error running code:", error);
     }
   }, [code, language, problem?.testCases]);
-
-
-
 
 
   return (
@@ -140,7 +143,7 @@ const DetailProblem = ({ problemId }) => {
             <ContentContainer>
               <CodeEditorComponent
                 code={code}
-                setCode={setCode} 
+                setCode={setCode}
                 language={language}
                 setLanguage={setLanguage}
               />

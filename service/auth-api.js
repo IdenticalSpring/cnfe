@@ -135,6 +135,7 @@ export const logoutUser = async (router) => {
         if (response.status === 200 || response.status === 204) {
             Cookies.remove('token');
             Modal.success({
+            
                 title: 'Đăng xuất thành công',
                 content: 'Bạn đã đăng xuất thành công. Bấm OK để tiếp tục.',
                 onOk: () => {
