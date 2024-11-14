@@ -1,30 +1,27 @@
-import React, { useEffect, useState } from "react";
+// Description.js
+import React, { useState } from "react";
 import styled from "styled-components";
-import { Menu, Tag, Skeleton } from "antd";
+import { Menu } from "antd";
 import {
   FileTextOutlined,
   ReloadOutlined,
   BookOutlined,
   ExperimentOutlined,
 } from "@ant-design/icons";
-import { userAPI } from "service/user";
-
-const { Item } = Menu;
+import DescriptionContent from "./DescriptionContent"; // Import DescriptionContent mới
+import Submissions from "./Submissions";
+import Editorial from "./Editorial";
+import Solutions from "./Solutions";
 
 const DescriptionContainer = styled.div`
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
 `;
 
 const ProblemHeader = styled.div`
-  position: sticky;
-  top: 0;
+  background-color: #f0f0f0;
   border-bottom: 1px solid #ddd;
-  z-index: 100;
-  .ant-menu-item-selected {
-    font-weight: 500;
-  }
 `;
 
 const ProblemContent = styled.div`
@@ -33,108 +30,48 @@ const ProblemContent = styled.div`
   overflow-y: auto;
 `;
 
-const ProblemDescription = styled.div`
-  font-size: 16px;
-  line-height: 1.6;
-  margin-top: 8px;
-`;
-
-const TagContainer = styled.div`
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-  flex-wrap: wrap;
-`;
-
 const Description = ({ id, title, description }) => {
-  const [difficulty, setDifficulty] = useState("Unknown");
-  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("description");
 
-  useEffect(() => {
-    const fetchProblemDetails = async () => {
-      try {
-        const difficultiesResponse = await userAPI.getDifficulties();
-        const difficulties = difficultiesResponse?.data?.reduce(
-          (acc, item) => ({ ...acc, [item.id]: item.name }),
-          {}
-        );
-
-        const problemResponse = await userAPI.getProblemByID(id);
-        setDifficulty(
-          difficulties[problemResponse.data.difficultyId] || "Unknown"
-        );
-      } catch (error) {
-        console.error("Error fetching problem details:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (id) fetchProblemDetails();
-  }, [id]);
+  const handleMenuClick = (e) => {
+    setActiveTab(e.key);
+  };
 
   return (
     <DescriptionContainer>
       <ProblemHeader>
         <Menu
           mode="horizontal"
+          selectedKeys={[activeTab]}
+          onClick={handleMenuClick}
           defaultSelectedKeys={["description"]}
-          style={{ borderBottom: "none" }}
-        >
-          <Item key="description" icon={<FileTextOutlined />}>
-            Description
-          </Item>
-          <Item key="submissions" icon={<ReloadOutlined />}>
-            Submissions
-          </Item>
-          <Item key="editorial" icon={<BookOutlined />}>
-            Editorial
-          </Item>
-          <Item key="solutions" icon={<ExperimentOutlined />}>
-            Solutions
-          </Item>
-        </Menu>
+          items={[
+            {
+              key: "description",
+              icon: <FileTextOutlined />,
+              label: "Description",
+            },
+            {
+              key: "submissions",
+              icon: <ReloadOutlined />,
+              label: "Submissions",
+            },
+            { key: "editorial", icon: <BookOutlined />, label: "Editorial" },
+            {
+              key: "solutions",
+              icon: <ExperimentOutlined />,
+              label: "Solutions",
+            },
+          ]}
+        />
       </ProblemHeader>
       <ProblemContent>
-        <h2>
-          {loading ? (
-            <Skeleton active paragraph={{ rows: 1 }} />
-          ) : (
-            `${id}. ${title}`
-          )}
-        </h2>
-
-        <TagContainer>
-          {loading ? (
-            <Skeleton.Button active size="small" style={{ width: 80 }} />
-          ) : (
-            <Tag
-              color={
-                difficulty === "Easy"
-                  ? "green"
-                  : difficulty === "Medium"
-                  ? "orange"
-                  : difficulty === "Hard"
-                  ? "red"
-                  : "default"
-              }
-            >
-              {difficulty}
-            </Tag>
-          )}
-          <Tag icon={<FileTextOutlined />} color="default">
-            Topics
-          </Tag>
-          <Tag icon={<ReloadOutlined />} color="default">
-            Companies
-          </Tag>
-          <Tag icon={<ExperimentOutlined />} color="default">
-            Hint
-          </Tag>
-        </TagContainer>
-        <ProblemDescription
-          dangerouslySetInnerHTML={{ __html: description }}
-        />
+        {activeTab === "description" && (
+          <DescriptionContent id={id} title={title} description={description} /> // Gọi component mới
+        )}
+        {activeTab === "submissions" && <Submissions />}
+        {activeTab === "editorial" && <Editorial />}
+        {activeTab === "solutions" && <Solutions />}
       </ProblemContent>
     </DescriptionContainer>
   );
