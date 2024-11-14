@@ -88,6 +88,7 @@ const TableProblem = () => {
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [deleteProblemId, setDeleteProblemId] = useState(null);
+
   const router = useRouter();
 
   const truncateDescription = (description) => {
@@ -104,10 +105,11 @@ const TableProblem = () => {
     const fetchAllProblems = async (page) => {
       setLoading(true);
       try {
-        const [response, result] = await Promise.all([
-          adminAPI.getAllProblemsByPage(page),
-          adminAPI.getAllDifficulties(),
-        ]);
+        const [response, result] =
+          await Promise.all([
+            adminAPI.getAllProblemsByPage(page),
+            adminAPI.getAllDifficulties(),
+          ]);
 
         if (
           (response?.statusCode === 200 || response?.statusCode === 201) &&
@@ -127,6 +129,8 @@ const TableProblem = () => {
             difficulty:
               difficultiesMap[problem?.difficultyId] || "Không xác định",
             courseId: problem?.courseId || "Không xác định",
+            topic: problem?.topics?.map(t => t.name).join(", ") || "Không xác định",
+            company: problem?.companies?.map(c => c.name).join(", ") || "Không xác định",
             likes: problem?.likes || 0,
             dislikes: problem?.dislikes || 0,
             rating: problem?.rating || 0,
@@ -242,6 +246,18 @@ const TableProblem = () => {
       title: "Course ID",
       dataIndex: "courseId",
       key: "courseId",
+      width: "150px",
+    },
+    {
+      title: "Topic",
+      dataIndex: "topic",
+      key: "topic",
+      width: "150px",
+    },
+    {
+      title: "Company",
+      dataIndex: "company",
+      key: "company",
       width: "150px",
     },
     {

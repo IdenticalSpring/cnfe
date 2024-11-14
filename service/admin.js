@@ -71,4 +71,12 @@ export const adminAPI = {
     const response = await request.get("/difficulties");
     return response.data;
   },
+  getAllTopics: async () => {
+    const response = await request.get("/admin/topics");
+    return response.data;
+  },
+  getAllCompanies: async () => {
+    const response = await request.get("/admin/companies");
+    return response.data;
+  },
 };
