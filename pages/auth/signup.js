@@ -192,7 +192,7 @@ const Signup = () => {
       <Container>
         <FormWrapper>
           <LogoWrapper>
-            <Logo src="/assets/img/iconlogo.png" alt="Logo" />
+            <Logo src="/assets/img/iconLogo.png" alt="Logo" />
           </LogoWrapper>
 
           <Title>Sign Up</Title>
