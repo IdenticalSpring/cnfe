@@ -1,8 +1,14 @@
 import { request } from "config/request";
 
 export const adminAPI = {
-  gelAllCourse: async () => {
+  getAllCourse: async () => {
     const response = await request.get("/admin/courses/list");
+    return response.data;
+  },
+  getAllCourseByPage: async (page) => {
+    const response = await request.get(
+      `/admin/courses/getPagination?page=${page}`
+    );
     return response.data;
   },
   gelAllAccount: async () => {
@@ -22,7 +28,7 @@ export const adminAPI = {
     return response.data;
   },
   updateCourse: async (id, data) => {
-    const response = await request.patch(`/admin/courses/update/${id}`, data, {
+    const response = await request.patch(`/admin/courses/${id}`, data, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -31,6 +37,46 @@ export const adminAPI = {
   },
   deleteCourse: async (id) => {
     const response = await request.delete(`/admin/courses/delete/${id}`);
+    return response.data;
+  },
+  getAllProblemsByPage: async (page) => {
+    const response = await request.get(`/admin/problem/paginated?page=${page}`);
+    return response.data;
+  },
+  createProblem: async (data) => {
+    const response = await request.post("/admin/problem/create", data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  },
+  detailProblem: async (id) => {
+    const response = await request.get(`/admin/problem/detail/${id}`);
+    return response.data;
+  },
+  updateProblem: async (id, data) => {
+    const response = await request.patch(`/admin/problem/update/${id}`, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  },
+  deleteProblem: async (id) => {
+    const response = await request.delete(`/admin/problem/delete/${id}`);
+    return response.data;
+  },
+  getAllDifficulties: async () => {
+    const response = await request.get("/difficulties");
+    return response.data;
+  },
+  getAllTopics: async () => {
+    const response = await request.get("/admin/topics");
+    return response.data;
+  },
+  getAllCompanies: async () => {
+    const response = await request.get("/admin/companies");
     return response.data;
   },
 };
