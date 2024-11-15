@@ -85,6 +85,37 @@ export const userAPI = {
       throw error;
     }
   },
+  getTestCasesByProblemId: async (problemId) => {
+    try {
+      const response = await request.get(`/test-cases/problem/${problemId}`);
+      return response.data.data.map(testCase => ({
+        input: testCase.input,
+        output: testCase.expected_output,
+      }));
+    } catch (error) {
+      console.error("Error fetching test cases:", error);
+      throw error;
+    }
+  },
+  executeCode: async (userId, code, language, stdin) => {
+    try {
+      const requestData = {
+        code,
+        language,
+        stdin
+      };
+
+      const response = await request.post(
+        `/submissions/run/${userId}`,
+        requestData
+      );
+
+      return response.data.data;
+    } catch (error) {
+      console.error("Error running code:", error);
+      throw error;
+    }
+  },
   // -----------------------------EXPLORE-----------------------------------
   getCourseById: async (id) => {
     try {
@@ -167,4 +198,5 @@ export const userAPI = {
       throw error;
     }
   },
+  
 };

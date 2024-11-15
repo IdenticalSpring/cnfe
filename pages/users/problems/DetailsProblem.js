@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styled, { createGlobalStyle } from "styled-components";
 import Header from "./header";
 import Description from "../components/problems-details/description";
 import CodeEditorComponent from "../components/problems-details/code";
 import TestCaseComponent from "../components/problems-details/test-case";
 import { userAPI } from "service/user";
-
+import axios from "axios";
+import Bottleneck from 'bottleneck';
 const GlobalStyle = createGlobalStyle`
   * {
     margin: 0;
@@ -34,7 +35,7 @@ const PageWrapper = styled.div`
 const LayoutContainer = styled.div`
   display: flex;
   width: 100%;
-  height: calc(100vh - 50px); /* Điều chỉnh chiều cao */
+  height: calc(100vh - 50px);
 `;
 
 const DescriptionContainer = styled.div`
@@ -61,13 +62,25 @@ const ContentContainer = styled.div`
 const DetailProblem = ({ problemId }) => {
   const [problem, setProblem] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [testResult, setTestResult] = useState(null);
+  const [code, setCode] = useState(null);
+  const [language, setLanguage] = useState("javascript");
 
   useEffect(() => {
     const fetchProblemDetails = async () => {
       setLoading(true);
       try {
-        const response = await userAPI.getProblemByID(problemId);
-        setProblem(response.data);
+    
+        const problemResponse = await userAPI.getProblemByID(problemId);
+
+
+        const testCases = await userAPI.getTestCasesByProblemId(problemId);
+
+
+        setProblem({
+          ...problemResponse.data,
+          testCases,
+        });
       } catch (error) {
         console.error("Error fetching problem details:", error);
       } finally {
@@ -75,20 +88,52 @@ const DetailProblem = ({ problemId }) => {
       }
     };
 
-    if (problemId) {
-      fetchProblemDetails();
-    }
+    fetchProblemDetails();
   }, [problemId]);
+
+  const handleRunCode = useCallback(async () => {
+    try {
+      const userId = sessionStorage.getItem('userId');
+
+      if (!userId) {
+        console.warn("User ID is not available in session storage.");
+        return;
+      }
+
+      if (!code) {
+        console.warn("Code is empty or null.");
+        return;
+      }
+
+      // Khởi tạo Bottleneck với giới hạn
+      const limiter = new Bottleneck({
+        maxConcurrent: 2, // Giới hạn số lượng yêu cầu đồng thời (có thể điều chỉnh)
+        minTime: 500 // Thời gian chờ tối thiểu giữa các yêu cầu (500ms)
+      });
+
+      // Thực hiện từng yêu cầu thông qua Bottleneck
+      const results = await Promise.all(
+        (problem?.testCases || []).map(testCase =>
+          limiter.schedule(() => userAPI.executeCode(userId, code, language, testCase.input))
+        )
+      );
+
+      // Log kết quả trả về của tất cả test case
+      console.log("Results from all test cases:", results);
+
+      // Lưu toàn bộ kết quả vào testResult
+      setTestResult(results);
+
+    } catch (error) {
+      console.error("Error running code:", error);
+    }
+  }, [code, language, problem?.testCases]);
+
 
   return (
     <>
       <GlobalStyle />
-      <Header
-        style={{
-          width: "100%",
-          zIndex: 3,
-        }}
-      />
+      <Header onRunCode={handleRunCode} />
       <PageWrapper>
         <LayoutContainer>
           <DescriptionContainer>
@@ -102,10 +147,15 @@ const DetailProblem = ({ problemId }) => {
           </DescriptionContainer>
           <EditorContainer>
             <ContentContainer>
-              <CodeEditorComponent />
+              <CodeEditorComponent
+                code={code}
+                setCode={setCode}
+                language={language}
+                setLanguage={setLanguage}
+              />
             </ContentContainer>
             <ContentContainer>
-              <TestCaseComponent testCases={problem?.testCases} />
+              <TestCaseComponent testCases={problem?.testCases} result={testResult} />
             </ContentContainer>
           </EditorContainer>
         </LayoutContainer>
