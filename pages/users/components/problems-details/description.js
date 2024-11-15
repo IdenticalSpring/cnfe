@@ -26,7 +26,7 @@ const ProblemHeader = styled.div`
 
 const ProblemContent = styled.div`
   flex-grow: 1;
-  padding: 20px;
+  padding: 10px;
   overflow-y: auto;
 `;
 

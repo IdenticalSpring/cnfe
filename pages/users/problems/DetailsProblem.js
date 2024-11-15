@@ -39,6 +39,7 @@ const LayoutContainer = styled.div`
 `;
 
 const DescriptionContainer = styled.div`
+  // display: flex;
   width: 45%;
   height: 100vh;
 `;
