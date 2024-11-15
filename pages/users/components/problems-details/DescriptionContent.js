@@ -7,23 +7,19 @@ import { userAPI } from "service/user";
 const ProblemContent = styled.div`
   flex-grow: 1;
   padding: 0;
-  padding-right: 10px; /* Tạo khoảng cách giữa thanh cuộn và nội dung */
+  padding-right: 10px;
   overflow-y: auto;
   height: calc(100vh - 125px);
 
-  /* Custom scrollbar styling */
   &::-webkit-scrollbar {
-    width: 5px; /* Độ rộng thanh cuộn */
+    width: 6px;
   }
   &::-webkit-scrollbar-track {
-    background: #f0f0f0; /* Màu nền track */
   }
   &::-webkit-scrollbar-thumb {
-    background-color: #b0b0b0; /* Màu thanh cuộn */
-    border-radius: 4px; /* Bo tròn thanh cuộn */
   }
   &::-webkit-scrollbar-thumb:hover {
-    background-color: #8a8a8a; /* Màu thanh cuộn khi hover */
+    background-color: #a8a8a8;
   }
 `;
 

@@ -4,11 +4,31 @@ import styled from "styled-components";
 const TestCaseSection = styled.div`
   background-color: #ffffff;
   padding: 20px;
-  height: 100%;
-  max-height: 400px;
+  height: calc(100vh - 67.5vh);
   overflow-y: auto;
-  border: 1px solid #ddd;
   border-radius: 8px;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+  }
+  &::-webkit-scrollbar-thumb {
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #a8a8a8;
+  }
+
+  @media (max-width: 1024px) {
+    height: calc(100vh - 67.5vh);
+  }
+
+  @media (max-width: 768px) {
+    height: calc(100vh - 70vh);
+  }
+
+  @media (max-width: 480px) {
+    height: calc(100vh - 67vh);
+  }
 `;
 
 const SectionTitle = styled.h2`
@@ -34,7 +54,8 @@ const TestCaseComponent = ({ testCases, result }) => {
         testCases.map((testCase, index) => {
           // Kiểm tra nếu có kết quả thực tế cho test case hiện tại
           const actualResult = result && result[index] ? result[index] : null;
-          const isCorrect = actualResult?.stdout?.trim() === testCase.output?.trim();
+          const isCorrect =
+            actualResult?.stdout?.trim() === testCase.output?.trim();
 
           return (
             <div key={index}>
@@ -45,13 +66,32 @@ const TestCaseComponent = ({ testCases, result }) => {
                 <strong>Kết quả thực tế:</strong>
                 {actualResult ? (
                   <div>
-                    <p><strong>Status:</strong> {actualResult.status?.description || "Unknown"}</p>
-                    <p><strong>Output (stdout):</strong> {actualResult.stdout || "No output"}</p>
-                    <p><strong>Đánh giá:</strong> {isCorrect ? "Đúng" : "Sai"}</p>
-                    <p><strong>Time:</strong> {actualResult.time || "N/A"} seconds</p>
-                    <p><strong>Memory:</strong> {actualResult.memory || "N/A"} KB</p>
-                    <p><strong>Compile Output:</strong> {actualResult.compile_output || "No compile output"}</p>
-                    <p><strong>Error (stderr):</strong> {actualResult.stderr || "No error"}</p>
+                    <p>
+                      <strong>Status:</strong>{" "}
+                      {actualResult.status?.description || "Unknown"}
+                    </p>
+                    <p>
+                      <strong>Output (stdout):</strong>{" "}
+                      {actualResult.stdout || "No output"}
+                    </p>
+                    <p>
+                      <strong>Đánh giá:</strong> {isCorrect ? "Đúng" : "Sai"}
+                    </p>
+                    <p>
+                      <strong>Time:</strong> {actualResult.time || "N/A"}{" "}
+                      seconds
+                    </p>
+                    <p>
+                      <strong>Memory:</strong> {actualResult.memory || "N/A"} KB
+                    </p>
+                    <p>
+                      <strong>Compile Output:</strong>{" "}
+                      {actualResult.compile_output || "No compile output"}
+                    </p>
+                    <p>
+                      <strong>Error (stderr):</strong>{" "}
+                      {actualResult.stderr || "No error"}
+                    </p>
                   </div>
                 ) : (
                   <p>Đang xử lý...</p>
