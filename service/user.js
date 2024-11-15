@@ -186,12 +186,25 @@ export const userAPI = {
     }
   },
 
-  submitComment: async (userId, data) => {
+  submitComment: async (discussionId, userId, commentData) => {
     try {
-      const response = await request.post(`/comments/${userId}`, data); // Sử dụng dynamic ID trong URL
-      return response.data;
+      const response = await request.post(
+        `/comments/${discussionId}/${userId}`,
+        commentData
+      );
+      return response.data; // Return the response from the API
     } catch (error) {
-      console.error("Lỗi khi gửi comment:", error);
+      console.error("Error submitting comment:", error);
+      throw error;
+    }
+  },
+
+  getCommentsByCommentID: async (commentId) => {
+    try {
+      const response = await request.get(`/user-comments/comment/${commentId}`);
+      return response.data.data;
+    } catch (error) {
+      console.error("Error fetching comments by comment ID:", error);
       throw error;
     }
   },

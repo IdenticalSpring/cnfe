@@ -32,12 +32,18 @@ const DiscussionDetail = () => {
       const fetchComments = async () => {
         try {
           const commentsData = await userAPI.getCommentsByDiscussionID(id);
-          setComments(
-            Array.isArray(commentsData.data) ? commentsData.data : []
+          const enrichedComments = await Promise.all(
+            commentsData.data.map(async (comment) => {
+              const commentDetail = await userAPI.getCommentsByCommentID(
+                comment.commentId
+              );
+              return { ...comment, userName: commentDetail[0]?.user.name };
+            })
           );
+          setComments(enrichedComments);
         } catch (err) {
-          console.error("Lỗi khi tải bình luận:", err);
-          setError("Lỗi khi tải bình luận");
+          console.error("Error loading comments:", err);
+          setError("Error loading comments");
         }
       };
 
@@ -60,25 +66,21 @@ const DiscussionDetail = () => {
     }
   };
 
-  // Hàm gửi comment mới
+  // Submit new comment
   const handleSubmitComment = async () => {
     if (newComment.trim() === "") return;
 
-    // Chuyển đổi `id` sang số nguyên
-    const discussionId = parseInt(id, 10);
-    if (!discussionId) {
-      console.error("ID không hợp lệ:", discussionId);
-      return;
-    }
+    const discussionId = parseInt(id, 10); // Ensure ID is an integer
+    const userId = 123; // Replace with actual userId
 
     try {
-      const data = await userAPI.submitComment(discussionId, {
+      const data = await userAPI.submitComment(discussionId, userId, {
         content: newComment,
       });
-      setComments((prevComments) => [...prevComments, data.data]); // Thêm comment mới vào danh sách
-      setNewComment(""); // Reset trường input
+      setComments((prevComments) => [...prevComments, data.data]); // Add new comment to the list
+      setNewComment(""); // Clear the input field
     } catch (err) {
-      console.error("Lỗi khi gửi comment:", err);
+      console.error("Error submitting comment:", err);
     }
   };
 
@@ -111,7 +113,7 @@ const DiscussionDetail = () => {
           <CommentsList>
             {comments.map((comments) => (
               <CommentItem key={comments.id}>
-                {/* <CommentUser>{comment.user.name}</CommentUser> */}
+                <CommentUser>{comments.userName}</CommentUser>
                 <CommentContent>{comments.comments.content}</CommentContent>
                 <CommentDate>
                   {new Date(comments.createdAt).toLocaleString()}
