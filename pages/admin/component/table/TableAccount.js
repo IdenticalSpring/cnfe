@@ -39,10 +39,6 @@ const StyledTable = styled(Table)`
   }
 `;
 
-const TableContainer = styled.div`
-  margin-right: 20px;
-`;
-
 const TableAccount = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -159,7 +155,7 @@ const TableAccount = () => {
   };
 
   return (
-    <TableContainer>
+    <>
       {loading ? (
         <Skeleton active paragraph={{ rows: 5 }} />
       ) : (
@@ -180,7 +176,7 @@ const TableAccount = () => {
       >
         <p>Bạn có chắc chắn muốn xóa tài khoản này?</p>
       </Modal>
-    </TableContainer>
+    </>
   );
 };
 

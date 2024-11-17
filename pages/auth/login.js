@@ -1,3 +1,4 @@
+// Login Component
 import React, { useState } from 'react';
 import Link from 'next/link';
 import styled from 'styled-components';
@@ -9,6 +10,10 @@ import { loginUser } from '@/service/auth-api';
 import { notification } from 'antd';
 import { useRouter } from 'next/router';
 import { jwtDecode } from 'jwt-decode';
+import ActivateAccountModal from './active-account';
+import axios from 'axios';
+import ForgotPassword from './forgot-password';
+import ResetPassword from './reset-password';
 
 const StyledLink = styled.a`
   text-decoration: none;
@@ -77,19 +82,61 @@ const ButtonGroup = styled.div`
   justify-content: space-between;
   margin-top: 30px;
 
-  a {
+  a, button {
+    color: #1890ff;
+    font-size: 14px;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+
     &:hover {
       color: red;
     }
   }
 `;
 
+const LinkButton = styled.button`
+  background: none;
+  border: none;
+  color: #1890ff;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  font-size: 14px;
+
+  &:hover {
+    color: red;
+  }
+`;
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [userId, setUserId] = useState(null); 
   const router = useRouter();
+  const [isForgotPasswordVisible, setForgotPasswordVisible] = useState(false);
+  const [isResetPasswordVisible, setResetPasswordVisible] = useState(false);
+  const [emailForReset, setEmailForReset] = useState('');
 
+  const openForgotPassword = () => {
+    setForgotPasswordVisible(true);
+  };
+
+  const closeForgotPassword = () => {
+    setForgotPasswordVisible(false);
+  };
+
+  const openResetPassword = (email) => {
+    setEmailForReset(email);
+    setResetPasswordVisible(true);
+  };
+
+  const closeResetPassword = () => {
+    setResetPasswordVisible(false);
+  };
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -105,11 +152,7 @@ const Login = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const payload = {
-      username,
-      password,
-    };
-
+    const payload = { username, password };
     const result = await loginUser(payload);
 
     if (result.success) {
@@ -117,16 +160,22 @@ const Login = () => {
 
       try {
         const decodedToken = jwtDecode(token);
-        const role = decodedToken.role;
+        const userId = decodedToken.sub;
+        const userName = decodedToken.username;
+        const userRole = decodedToken.role;
 
-        if (role === 'admin') {
+        sessionStorage.setItem('userId', userId);
+        sessionStorage.setItem('userName', userName);
+        sessionStorage.setItem('userRole', userRole);
+
+        if (userRole === 'admin') {
           router.push('/admin/dashboard');
-        } else if (role === 'user') {
+        } else if (userRole === 'user') {
           router.push('/');
         } else {
           notification.error({
             message: 'Error',
-            description: 'Vai trò không hợp lệ!',
+            description: 'Invalid role!',
             placement: 'bottomRight',
             duration: 3,
           });
@@ -135,16 +184,31 @@ const Login = () => {
         console.error('JWT Decode Error:', error);
         notification.error({
           message: 'Error',
-          description: 'Token không hợp lệ!',
+          description: 'Invalid token!',
+          placement: 'bottomRight',
+          duration: 3,
+        });
+      }
+    } else if (result.message === 'The account has not been activated.') {
+      try {
+        const userIdResult = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/get-user-id?username=${username}`
+        );
+        setUserId(userIdResult.data.data.userId);
+        setModalVisible(true);
+      } catch (error) {
+        console.error("Error fetching user ID:", error);
+        notification.error({
+          message: 'Error',
+          description: 'Failed to fetch user ID for activation!',
           placement: 'bottomRight',
           duration: 3,
         });
       }
     } else {
-      console.log('Login failed');
       notification.error({
         message: 'Error',
-        description: result.message || 'Đăng nhập thất bại!',
+        description: result.message || 'Login failed!',
         placement: 'bottomRight',
         duration: 3,
       });
@@ -156,7 +220,7 @@ const Login = () => {
       <Container>
         <FormWrapper>
           <LogoWrapper>
-            <Logo src="/assets/img/iconlogo.png" alt="Logo" />
+            <Logo src="/assets/img/iconLogo.png" alt="Logo" />
           </LogoWrapper>
 
           <Title>Login</Title>
@@ -190,13 +254,37 @@ const Login = () => {
             Login
           </LoginButton>
           <ButtonGroup>
-            <Link href="/" passHref legacyBehavior>
-              <StyledLink>Forgot Password?</StyledLink>
-            </Link>
+            <LinkButton onClick={openForgotPassword}>Forgot Password</LinkButton>
+
+            {/* Modal quên mật khẩu */}
+            <ForgotPassword
+              open={isForgotPasswordVisible}
+              onClose={closeForgotPassword}
+              onEmailSubmitted={(email) => {
+                setEmailForReset(email);
+                closeForgotPassword();
+                openResetPassword(email);
+              }}
+            />
+
+            {/* Modal đặt lại mật khẩu */}
+            <ResetPassword
+              open={isResetPasswordVisible}
+              onClose={closeResetPassword}
+              email={emailForReset}
+            />
+
             <Link href="/auth/signup" passHref legacyBehavior>
               <StyledLink>Sign Up</StyledLink>
             </Link>
           </ButtonGroup>
+
+
+          <ActivateAccountModal
+            visible={isModalVisible}
+            onClose={() => setModalVisible(false)}
+            userId={userId} 
+          />
         </FormWrapper>
       </Container>
     </DefaultLayout>
