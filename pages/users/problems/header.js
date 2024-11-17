@@ -72,10 +72,10 @@ const Logo = styled.img`
 
 const CustomTooltip = styled(Tooltip)``;
 
-const Header = ({ onRunCode }) => {
+const Header = ({ onRunCode, onSubmitCode }) => {
   const router = useRouter();
   const handleClickBack = () => {
-    router.push("/users/problems"); // Điều hướng về trang /users/problems
+    router.push("/users/problems"); 
   };
 
   return (
@@ -101,7 +101,7 @@ const Header = ({ onRunCode }) => {
           </IconButton>
         </CustomTooltip>
         <CustomTooltip title="Submit Code">
-          <IconButton icon={<CloudUploadOutlined style={{ color: "green" }} />}>
+          <IconButton onClick={onSubmitCode} icon={<CloudUploadOutlined />}>
             <span style={{ color: "green" }}>Submit</span>
           </IconButton>
         </CustomTooltip>
