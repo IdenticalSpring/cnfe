@@ -127,9 +127,9 @@ const DetailProblem = ({ problemId }) => {
               isCorrect: false,
             };
           }
-
+    
           const result = await userAPI.executeCode(userId, code, language, testCase.input);
-
+          console.log("API Response:", result.data);
           const actualOutput = result.data?.output?.trim();
           const expectedOutput = testCase.output?.trim();
           const isCorrect = actualOutput === expectedOutput;
@@ -145,9 +145,9 @@ const DetailProblem = ({ problemId }) => {
         })
       );
 
-      console.log("Test Case Results:", results);
-
+      console.log("Test Case Results (Before setTestResult):", results);
       setTestResult(results);
+      console.log("Test Result State Updated:", results);
 
       notification.success({
         message: "Code Execution Successful",
@@ -208,10 +208,15 @@ const DetailProblem = ({ problemId }) => {
 
       const submissionStatus = response?.data.acceptanceSubmission?.status;
 
-      if (submissionStatus === "accepted") {
+      if (response.status === 200) {
+        notification.warning({
+          message: "Duplicate Submission",
+          description: response?.message || "Your submission has already been completed and accepted.",
+        });
+      } else if (response.status === 201) {
         notification.success({
-          message: "Submission Successful!",
-          description: "Your submission has been accepted.",
+          message: "New Submission Created",
+          description: response?.message || "Your new submission was created successfully.",
         });
       } else if (submissionStatus === "rejected") {
         notification.error({

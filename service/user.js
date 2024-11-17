@@ -110,12 +110,34 @@ export const userAPI = {
         requestData
       );
 
-      return response.data.data;
+      return response.data
     } catch (error) {
       console.error("Error running code:", error);
       throw error;
     }
   },
+  submitCode: async (userId, code, language, problemId, stdin) => {
+    try {
+      const requestData = {
+        code: code,
+        language: language,
+        problemId: problemId,
+        stdin: stdin,
+      };
+
+      const response = await request.post(`/submissions/${userId}`, requestData);
+
+      return response.data;
+    } catch (error) {
+      if (error.response) {
+        console.error("Error submitting code:", error.response.data);
+      } else {
+        console.error("Error submitting code:", error.message);
+      }
+      throw error;
+    }
+  },
+
   // -----------------------------EXPLORE-----------------------------------
   getCourseById: async (id) => {
     try {
@@ -199,26 +221,5 @@ export const userAPI = {
     }
   },
 
-  submitCode: async (userId, code, language, problemId, stdin) => {
-    try {
-      const requestData = {
-        code: code,
-        language: language,
-        problemId: problemId,
-        stdin: stdin, 
-      };
-
-      const response = await request.post(`/submissions/${userId}`, requestData);
-
-      return response.data.data;
-    } catch (error) {
-      if (error.response) {
-        console.error("Error submitting code:", error.response.data); // Log lỗi server
-      } else {
-        console.error("Error submitting code:", error.message);
-      }
-      throw error;
-    }
-  }
-
+ 
 };
