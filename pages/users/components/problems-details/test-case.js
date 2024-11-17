@@ -52,10 +52,10 @@ const TestCaseComponent = ({ testCases, result }) => {
       <SectionTitle>Test Cases</SectionTitle>
       {testCases && testCases.length > 0 ? (
         testCases.map((testCase, index) => {
-          // Kiểm tra nếu có kết quả thực tế cho test case hiện tại
-          const actualResult = result && result[index] ? result[index] : null;
+          const actualResult = result && result[index] ? result[index].data : null;
           const isCorrect =
-            actualResult?.stdout?.trim() === testCase.output?.trim();
+            actualResult?.status === "completed" &&
+            actualResult?.output?.trim() === testCase.output?.trim();
 
           return (
             <div key={index}>
@@ -66,31 +66,50 @@ const TestCaseComponent = ({ testCases, result }) => {
                 <strong>Kết quả thực tế:</strong>
                 {actualResult ? (
                   <div>
+                    {/* Hiển thị trạng thái */}
                     <p>
                       <strong>Status:</strong>{" "}
-                      {actualResult.status?.description || "Unknown"}
+                      {actualResult.status === "completed"
+                        ? "Hoàn thành"
+                        : actualResult.status === "failed"
+                          ? "Thất bại"
+                          : actualResult.status === "killed"
+                            ? "Bị giết"
+                            : "Không xác định"}
                     </p>
+
+                    {/* Hiển thị Output */}
                     <p>
                       <strong>Output (stdout):</strong>{" "}
-                      {actualResult.stdout || "No output"}
+                      {actualResult.output || "Không có kết quả"}
                     </p>
+
+                    {/* Hiển thị lỗi */}
                     <p>
-                      <strong>Đánh giá:</strong> {isCorrect ? "Đúng" : "Sai"}
+                      <strong>Error (stderr):</strong>{" "}
+                      {actualResult.error ? (
+                        <pre style={{ color: "red", whiteSpace: "pre-wrap" }}>
+                          {actualResult.error}
+                        </pre>
+                      ) : (
+                        "Không có lỗi"
+                      )}
                     </p>
+
+                    {/* Hiển thị thêm thông tin */}
                     <p>
-                      <strong>Time:</strong> {actualResult.time || "N/A"}{" "}
-                      seconds
+                      <strong>CPU Time:</strong> {actualResult.cpu_time || "N/A"} ms
                     </p>
                     <p>
                       <strong>Memory:</strong> {actualResult.memory || "N/A"} KB
                     </p>
                     <p>
-                      <strong>Compile Output:</strong>{" "}
-                      {actualResult.compile_output || "No compile output"}
+                      <strong>Wall Time:</strong> {actualResult.wall_time || "N/A"} ms
                     </p>
+
+                    {/* Đánh giá kết quả */}
                     <p>
-                      <strong>Error (stderr):</strong>{" "}
-                      {actualResult.stderr || "No error"}
+                      <strong>Đánh giá:</strong> {isCorrect ? "Đúng" : "Sai"}
                     </p>
                   </div>
                 ) : (
@@ -101,10 +120,11 @@ const TestCaseComponent = ({ testCases, result }) => {
           );
         })
       ) : (
-        <p>No test cases available.</p>
+        <p>Không có test cases.</p>
       )}
     </TestCaseSection>
   );
 };
+
 
 export default TestCaseComponent;

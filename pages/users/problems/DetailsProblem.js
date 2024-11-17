@@ -93,7 +93,7 @@ const DetailProblem = ({ problemId }) => {
 
   const handleRunCode = useCallback(async () => {
     try {
-      const userId = sessionStorage.getItem('userId');
+      const userId = sessionStorage.getItem("userId");
 
       if (!userId) {
         console.warn("User ID is not available in session storage.");
@@ -105,29 +105,28 @@ const DetailProblem = ({ problemId }) => {
         return;
       }
 
-      // Khởi tạo Bottleneck với giới hạn
-      const limiter = new Bottleneck({
-        maxConcurrent: 2, // Giới hạn số lượng yêu cầu đồng thời (có thể điều chỉnh)
-        minTime: 500 // Thời gian chờ tối thiểu giữa các yêu cầu (500ms)
-      });
-
-      // Thực hiện từng yêu cầu thông qua Bottleneck
       const results = await Promise.all(
-        (problem?.testCases || []).map(testCase =>
-          limiter.schedule(() => userAPI.executeCode(userId, code, language, testCase.input))
-        )
+        (problem?.testCases || []).map(async (testCase) => {
+          const result = await userAPI.executeCode(userId, code, language, testCase.input);
+          return {
+            input: testCase.input,
+            expectedOutput: testCase.output,
+            ...result, // Kết quả từ backend
+          };
+        })
       );
 
-      // Log kết quả trả về của tất cả test case
+      // Log kết quả trả về
       console.log("Results from all test cases:", results);
 
-      // Lưu toàn bộ kết quả vào testResult
+      // Lưu kết quả
       setTestResult(results);
-
     } catch (error) {
       console.error("Error running code:", error);
     }
   }, [code, language, problem?.testCases]);
+
+
 
 
   return (
