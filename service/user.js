@@ -89,7 +89,7 @@ export const userAPI = {
   getTestCasesByProblemId: async (problemId) => {
     try {
       const response = await request.get(`/test-cases/problem/${problemId}`);
-      return response.data.data.map(testCase => ({
+      return response.data.data.map((testCase) => ({
         input: testCase.input,
         output: testCase.expected_output,
       }));
@@ -103,7 +103,7 @@ export const userAPI = {
       const requestData = {
         code,
         language,
-        stdin
+        stdin,
       };
 
       const response = await request.post(
@@ -171,10 +171,11 @@ export const userAPI = {
       throw error;
     }
   },
+  // ---------------------------Discussions------------------------
   getCategories: async () => {
     try {
       const response = await request.get("/categories");
-      return response.data.data; // Trả về dữ liệu từ API
+      return response.data.data;
     } catch (error) {
       console.error("Error fetching categories:", error);
       throw error;
@@ -185,13 +186,13 @@ export const userAPI = {
     try {
       const response = await request.get("/tags");
       console.log(response.data);
-      return response.data.data; // Trả về dữ liệu từ API
+      return response.data.data;
     } catch (error) {
       console.error("Error fetching tags:", error);
       throw error;
     }
   },
-  getAllDiscussions: async (page) => {
+  getAllDiscussionsByPage: async (page) => {
     try {
       const response = await request.get(`/discuss/getpaginated?page=${page}`);
       return response.data.data;
@@ -203,7 +204,7 @@ export const userAPI = {
 
   createDiscussion: async (id, data) => {
     try {
-      const response = await request.post(`/discuss/${id}`, data); // Use dynamic ID in URL
+      const response = await request.post(`/discuss/${id}`, data);
       return response.data;
     } catch (error) {
       console.error("Error posting discussion:", error);
@@ -239,7 +240,7 @@ export const userAPI = {
       const response = await request.get(
         `/discussion-comments/${id}?page=${page}`
       );
-      return response.data.data; // Trả về dữ liệu bình luận từ API
+      return response.data.data;
     } catch (error) {
       console.error("Lỗi khi fetch comments:", error);
       throw error;
@@ -252,7 +253,7 @@ export const userAPI = {
         `/comments/${discussionId}/${userId}`,
         commentData
       );
-      return response.data; // Return the response from the API
+      return response.data;
     } catch (error) {
       console.error("Error submitting comment:", error);
       throw error;
@@ -268,6 +269,7 @@ export const userAPI = {
       throw error;
     }
   },
+  // ---------------------------- Order ----------------------------
   createOrder: async (orderData) => {
     try {
       const response = await request.post("/orders", orderData);
@@ -296,5 +298,4 @@ export const userAPI = {
       throw error;
     }
   },
-  
 };

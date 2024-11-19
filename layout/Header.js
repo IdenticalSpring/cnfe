@@ -15,7 +15,7 @@ export const Container = styled.div`
   box-sizing: border-box;
   z-index: 100;
   background-color: var(--background-color);
-  margin-bottom: 8px;
+  margin-bottom: 5px;
 
   @media screen and (min-width: 1024px) {
     height: 50px;

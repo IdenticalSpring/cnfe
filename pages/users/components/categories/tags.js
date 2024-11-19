@@ -1,32 +1,14 @@
-// components/Tags.js
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { userAPI } from "service/user";
 import { Input, Tag, Skeleton } from "antd";
 import SearchIcon from "@mui/icons-material/Search";
 
-const SidebarContainer = styled.div`
-  flex: 2;
-  margin-right: 100px;
-  padding: 20px;
-  background-color: var(--background-color);
-  color: var(--text-primary-color);
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-
-  /* Responsive styles */
-  @media (max-width: 768px) {
-    padding: 15px;
-    margin: 0;
-  }
-`;
-
 const ContentBox = styled.div`
   padding: 20px;
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
 
   /* Responsive styles */
   @media (max-width: 768px) {
@@ -37,6 +19,7 @@ const ContentBox = styled.div`
 const Title = styled.h3`
   font-size: 16px;
   font-weight: bold;
+  margin-top: 0px;
   margin-bottom: 10px;
   color: var(--orange-color);
   @media (max-width: 768px) {
@@ -66,7 +49,7 @@ const CustomTag = styled(Tag)`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 14px;
+  font-size: 11px;
   padding: 4px 10px;
   background-color: #f0f0f0;
   border-radius: 8px;
@@ -86,13 +69,16 @@ const Tags = () => {
   useEffect(() => {
     const fetchTags = async () => {
       try {
+        setLoading(true);
         const data = await userAPI.getAllTags();
         setTags(data);
       } catch (error) {
         console.error("Error fetching tags:", error);
+      } finally {
+        setLoading(false);
       }
     };
-    setLoading(false);
+
     fetchTags();
   }, []);
 
@@ -103,29 +89,27 @@ const Tags = () => {
     : [];
 
   return (
-    <SidebarContainer>
-      <ContentBox>
-        <Title>Tags</Title>
-        <SearchContainer>
-          <Input
-            placeholder="Search for a tags..."
-            suffix={<SearchIcon />}
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            style={{ width: "100%", borderRadius: "8px" }}
-          />
-        </SearchContainer>
-        {loading ? (
-          <Skeleton active paragraph={{ rows: 6 }} />
-        ) : (
-          <TagList>
-            {filteredTags.map((tag) => (
-              <CustomTag key={tag.id}>{tag.name}</CustomTag>
-            ))}
-          </TagList>
-        )}
-      </ContentBox>
-    </SidebarContainer>
+    <ContentBox>
+      <Title>Tags</Title>
+      <SearchContainer>
+        <Input
+          placeholder="Search for a tags..."
+          suffix={<SearchIcon />}
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          style={{ width: "100%", borderRadius: "8px" }}
+        />
+      </SearchContainer>
+      {loading ? (
+        <Skeleton active paragraph={{ rows: 2 }} />
+      ) : (
+        <TagList>
+          {filteredTags.map((tag) => (
+            <CustomTag key={tag.id}>{tag.name}</CustomTag>
+          ))}
+        </TagList>
+      )}
+    </ContentBox>
   );
 };
 

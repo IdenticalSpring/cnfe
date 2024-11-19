@@ -60,7 +60,7 @@ const PostDiscussion = ({ userId }) => {
 
       <Modal
         title="Post Discussion"
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={handleCancel}
         footer={null}
       >
