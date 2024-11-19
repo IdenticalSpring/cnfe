@@ -5,6 +5,7 @@ import { adminAPI } from "service/admin";
 import { notification, Spin, Select } from "antd";
 import { useRouter } from "next/router";
 import Editor from "components/textEditor/Editor";
+import CloudinaryUpload from "../component/CloudinaryUpload";
 
 const { Option } = Select;
 
@@ -82,9 +83,9 @@ const CreateProblem = () => {
   const [rating, setRating] = useState("");
   const [acceptanceRate, setAcceptanceRate] = useState("");
   const [loading, setLoading] = useState(false);
-  const [topic, setTopic] = useState("");
+  const [topic, setTopic] = useState([]);
   const [topicOptions, setTopicOptions] = useState([]);
-  const [company, setCompany] = useState("");
+  const [company, setCompany] = useState([]);
   const [companyOptions, setCompanyOptions] = useState([]);
 
   const router = useRouter();
@@ -153,10 +154,9 @@ const CreateProblem = () => {
       dislikes: Number(dislikes),
       rating: Number(rating),
       acceptance_rate: Number(acceptanceRate),
-      companyIds: company.filter(id => id),
-      topicIds: topic.filter(id => id),
+      companyIds: company?.filter((id) => id),
+      topicIds: topic?.filter((id) => id),
     };
-    console.log("🚀 ~ handleSubmit ~ formData:", formData)
 
     try {
       const result = await adminAPI.createProblem(formData);
@@ -202,6 +202,8 @@ const CreateProblem = () => {
             onChange={setDescription}
             placeholder="Nhập mô tả bài tập"
           />
+          <Label htmlFor="upload">Upload ảnh</Label>
+          <CloudinaryUpload />
 
           <Label htmlFor="difficulty">Độ khó</Label>
           <Select
@@ -277,7 +279,7 @@ const CreateProblem = () => {
             onChange={(value) => setCompany(value)}
             required
           >
-            {companyOptions.map((opt) => (
+            {companyOptions?.map((opt) => (
               <Option key={opt.id} value={opt.id}>
                 {opt.name}
               </Option>
