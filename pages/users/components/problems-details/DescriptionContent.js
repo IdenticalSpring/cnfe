@@ -7,14 +7,27 @@ import { userAPI } from "service/user";
 const ProblemContent = styled.div`
   flex-grow: 1;
   padding: 0;
+  padding-right: 10px;
   overflow-y: auto;
-  height: 80vh;
+  height: calc(100vh - 125px);
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+  }
+  &::-webkit-scrollbar-thumb {
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #a8a8a8;
+  }
 `;
 
 const ProblemDescription = styled.div`
   font-size: 16px;
   line-height: 1.6;
   margin-top: 8px;
+  padding: 0;
 `;
 
 const TagContainer = styled.div`
