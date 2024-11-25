@@ -14,10 +14,6 @@ import { useRouter } from "next/router";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import ButtonCustom from "components/button/Button";
 
-const TableContainer = styled.div`
-  margin: 0 20px;
-`;
-
 const StyledTable = styled(Table)`
   .ant-table-thead > tr > th {
     background-color: var(--orange-color);
@@ -79,8 +75,8 @@ const ButtonContainer = styled.div`
   margin-top: 16px;
 `;
 
-const TableProblem = () => {
-  const [data, setData] = useState([]);
+const TableProblem = ({searchQuery}) => {
+  const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -88,6 +84,7 @@ const TableProblem = () => {
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [deleteProblemId, setDeleteProblemId] = useState(null);
+
   const router = useRouter();
 
   const truncateDescription = (description) => {
@@ -101,14 +98,14 @@ const TableProblem = () => {
   };
 
   useEffect(() => {
-    const fetchAllProblems = async (page) => {
+    const fetchAllProblems = async (page, searchQuery) => {
       setLoading(true);
       try {
-        const [response, result] = await Promise.all([
-          adminAPI.getAllProblemsByPage(page),
-          adminAPI.getAllDifficulties(),
-        ]);
-
+        const [response, result] =
+          await Promise.all([
+            adminAPI.getAllProblemsByPage(page, searchQuery),
+            adminAPI.getAllDifficulties(),
+          ]);
         if (
           (response?.statusCode === 200 || response?.statusCode === 201) &&
           (result?.statusCode === 200 || result?.statusCode === 201)
@@ -123,16 +120,20 @@ const TableProblem = () => {
             key: problem?.id,
             title: problem?.title,
             description: problem?.description,
-            truncatedDescription: truncateDescription(problem?.description),
-            difficulty:
+            description: truncateDescription(problem?.description),
+            difficultyId:
               difficultiesMap[problem?.difficultyId] || "Không xác định",
             courseId: problem?.courseId || "Không xác định",
+            topic: problem?.topics?.map(t => t.name).join(", ") || "Không xác định",
+            company: problem?.companies?.map(c => c.name).join(", ") || "Không xác định",
             likes: problem?.likes || 0,
             dislikes: problem?.dislikes || 0,
             rating: problem?.rating || 0,
             acceptanceRate: problem?.acceptance_rate || "Không xác định",
           }));
-          setData(formattedData);
+          console.log(formattedData);
+          setTableData(formattedData);
+          
           setTotal(response?.data?.totalItems);
           setTotalPages(response?.data?.totalPages);
         } else {
@@ -149,8 +150,8 @@ const TableProblem = () => {
         setLoading(false);
       }
     };
-    fetchAllProblems(currentPage);
-  }, [currentPage]);
+    fetchAllProblems(currentPage, searchQuery);
+  }, [currentPage, searchQuery]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -164,7 +165,7 @@ const TableProblem = () => {
   };
 
   const handleEdit = (key) => {
-    const problemToEdit = data.find((item) => item.key === key);
+    const problemToEdit = tableData.find((item) => item.key === key);
     if (problemToEdit) {
       router.push(`/admin/problem/${problemToEdit.key}`);
     } else {
@@ -191,7 +192,7 @@ const TableProblem = () => {
           placement: "bottomRight",
           duration: 2,
         });
-        setData(data.filter((item) => item.key !== deleteProblemId));
+        setTableData(tableData.filter((item) => item.key !== deleteProblemId));
       } else {
         notification.error({
           message: "Lỗi",
@@ -221,7 +222,7 @@ const TableProblem = () => {
     },
     {
       title: "Description",
-      dataIndex: "truncatedDescription",
+      dataIndex: "description",
       key: "description",
       render: (text, record) => (
         <span
@@ -234,7 +235,7 @@ const TableProblem = () => {
     },
     {
       title: "Difficulty",
-      dataIndex: "difficulty",
+      dataIndex: "difficultyId",
       key: "difficulty",
       width: "100px",
     },
@@ -242,6 +243,18 @@ const TableProblem = () => {
       title: "Course ID",
       dataIndex: "courseId",
       key: "courseId",
+      width: "150px",
+    },
+    {
+      title: "Topic",
+      dataIndex: "topic",
+      key: "topic",
+      width: "150px",
+    },
+    {
+      title: "Company",
+      dataIndex: "company",
+      key: "company",
       width: "150px",
     },
     {
@@ -296,7 +309,7 @@ const TableProblem = () => {
         <Skeleton active paragraph={{ rows: 10 }} />
       ) : (
         <>
-          <StyledTable columns={columns} dataSource={data} pagination={false} />
+          <StyledTable columns={columns} dataSource={tableData} pagination={false} />
           <PaginationContainer>
             <Pagination
               current={currentPage}

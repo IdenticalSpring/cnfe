@@ -5,6 +5,7 @@ import { adminAPI } from "service/admin";
 import { notification, Spin, Select } from "antd";
 import { useRouter } from "next/router";
 import Editor from "components/textEditor/Editor";
+import CloudinaryUpload from "../component/CloudinaryUpload";
 
 const { Option } = Select;
 
@@ -38,11 +39,6 @@ const Input = styled.input`
     border-color: ${({ hasError, isValid }) =>
       hasError ? "red" : isValid ? "green" : "#80bdff"};
   }
-`;
-
-const EditorContainer = styled.div`
-  height: 300px;
-  overflow-y: auto;
 `;
 
 const Label = styled.label`
@@ -87,6 +83,11 @@ const CreateProblem = () => {
   const [rating, setRating] = useState("");
   const [acceptanceRate, setAcceptanceRate] = useState("");
   const [loading, setLoading] = useState(false);
+  const [topic, setTopic] = useState([]);
+  const [topicOptions, setTopicOptions] = useState([]);
+  const [company, setCompany] = useState([]);
+  const [companyOptions, setCompanyOptions] = useState([]);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -119,6 +120,24 @@ const CreateProblem = () => {
       }
     };
 
+    const fetchTopicCompany = async () => {
+      try {
+        const result = await adminAPI.getAllTopics();
+        setTopicOptions(result?.data);
+        const response = await adminAPI.getAllCompanies();
+        setCompanyOptions(response?.data);
+      } catch (error) {
+        notification.error({
+          message: "Lỗi khi lấy dữ liệu",
+          description:
+            "Không thể tải dữ liệu các tùy chọn. Vui lòng thử lại sau!",
+          placement: "bottomRight",
+          duration: 2,
+        });
+      }
+    };
+
+    fetchTopicCompany();
     fetchCourses();
     fetchDifficulties();
   }, []);
@@ -135,6 +154,8 @@ const CreateProblem = () => {
       dislikes: Number(dislikes),
       rating: Number(rating),
       acceptance_rate: Number(acceptanceRate),
+      companyIds: company?.filter((id) => id),
+      topicIds: topic?.filter((id) => id),
     };
 
     try {
@@ -181,6 +202,8 @@ const CreateProblem = () => {
             onChange={setDescription}
             placeholder="Nhập mô tả bài tập"
           />
+          <Label htmlFor="upload">Upload ảnh</Label>
+          <CloudinaryUpload />
 
           <Label htmlFor="difficulty">Độ khó</Label>
           <Select
@@ -199,6 +222,9 @@ const CreateProblem = () => {
             }
             required
           >
+            <Option value="" disabled>
+              Chọn độ khó
+            </Option>
             {difficultyOptions.map((difficulty) => (
               <Option key={difficulty.id} value={difficulty?.name}>
                 {difficulty?.name}
@@ -218,9 +244,44 @@ const CreateProblem = () => {
             }
             required
           >
+            <Option value="" disabled>
+              Chọn khóa học
+            </Option>
             {courseOptions.map((course) => (
               <Option key={course.id} value={course.id}>
                 {course?.title}
+              </Option>
+            ))}
+          </Select>
+
+          <Label htmlFor="topic">Topic</Label>
+          <Select
+            id="topic"
+            mode="multiple"
+            placeholder="Chọn topic"
+            value={topic}
+            onChange={(value) => setTopic(value)}
+            required
+          >
+            {topicOptions.map((opt) => (
+              <Option key={opt.id} value={opt.id}>
+                {opt.name}
+              </Option>
+            ))}
+          </Select>
+
+          <Label htmlFor="Company">Company</Label>
+          <Select
+            id="Company"
+            mode="multiple"
+            placeholder="Chọn Company"
+            value={company}
+            onChange={(value) => setCompany(value)}
+            required
+          >
+            {companyOptions?.map((opt) => (
+              <Option key={opt.id} value={opt.id}>
+                {opt.name}
               </Option>
             ))}
           </Select>
@@ -229,7 +290,7 @@ const CreateProblem = () => {
           <Input
             id="likes"
             type="number"
-            placeholder="Lượt thích (Likes)"
+            placeholder="Likes"
             value={likes}
             onChange={(e) => setLikes(e.target.value)}
             required
@@ -239,7 +300,7 @@ const CreateProblem = () => {
           <Input
             id="dislikes"
             type="number"
-            placeholder="Lượt không thích (Dislikes)"
+            placeholder="Dislikes"
             value={dislikes}
             onChange={(e) => setDislikes(e.target.value)}
             required
@@ -249,7 +310,7 @@ const CreateProblem = () => {
           <Input
             id="rating"
             type="number"
-            placeholder="Xếp hạng (Rating)"
+            placeholder="Rating"
             value={rating}
             onChange={(e) => setRating(e.target.value)}
             required
@@ -259,7 +320,7 @@ const CreateProblem = () => {
           <Input
             id="acceptanceRate"
             type="number"
-            placeholder="Tỉ lệ chấp nhận (Acceptance Rate)"
+            placeholder="Acceptance Rate"
             value={acceptanceRate}
             onChange={(e) => setAcceptanceRate(e.target.value)}
             required

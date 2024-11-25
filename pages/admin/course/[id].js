@@ -6,7 +6,7 @@ const EditCoursePage = () => {
   const { id } = router.query;
 
   if (!id) {
-    return <div>Loading...</div>;
+    return;
   }
 
   return <EditCourse courseId={id} />;

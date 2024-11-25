@@ -12,6 +12,7 @@ import styled from "styled-components";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { adminAPI } from "service/admin";
 import ButtonCustom from "components/button/Button";
+import { useRouter } from "next/router";
 
 const StyledTable = styled(Table)`
   .ant-table-thead > tr > th {
@@ -74,16 +75,26 @@ const PaginationContainer = styled.div`
 
 const TableLesson = () => {
   const [data, setData] = useState([]);
+  const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedRowKey, setExpandedRowKey] = useState(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [deleteLessonId, setDeleteLessonId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const getAllLesson = async () => {
+  const router = useRouter();
+
+  const getAllLesson = async (page) => {
     try {
       setLoading(true);
-      const response = await adminAPI.getAllLesson();
-      setData(response?.data?.map((item, index) => ({ ...item, key: index })));
+      const response = await adminAPI.getAllLesson(page);
+      setData(
+        response?.data?.data?.map((item, index) => ({ ...item, key: index }))
+      );
+      setTotal(response?.data?.totalItems);
+      setTotalPages(response?.data?.totalPages);
     } catch (error) {
       notification.error({
         message: "Lỗi",
@@ -96,9 +107,27 @@ const TableLesson = () => {
     }
   };
 
+  const getCourses = async () => {
+    try {
+      const response = await adminAPI.getAllCourse();
+      setCourses(response?.data?.map((course) => ({
+        id: course?.id,
+        name: course?.title,
+      })));
+    } catch (error) {
+      notification.error({
+        message: "Lỗi",
+        description: "Không thể lấy dữ liệu courses",
+        placement: "bottomRight",
+        duration: 2,
+      });
+    }
+  };
+
   useEffect(() => {
-    getAllLesson();
-  }, []);
+    getAllLesson(currentPage);
+    getCourses();
+  }, [currentPage]);
 
   const toggleExpandRow = (record) => {
     setExpandedRowKey((prevKey) =>
@@ -152,6 +181,11 @@ const TableLesson = () => {
     }
   };
 
+  const getCourseName = (id) => {
+    const course = courses.find((course) => course.id === id);
+    return course ? course.name : "N/A";
+  };
+
   const columns = [
     {
       title: "Title",
@@ -164,6 +198,13 @@ const TableLesson = () => {
       dataIndex: "chapterId",
       key: "chapterId",
       width: 100,
+    },
+    {
+      title: "Course Name",
+      dataIndex: "courseId",
+      key: "courseId",
+      width: 150,
+      render: (courseId) => getCourseName(courseId),
     },
     {
       title: "Content",
@@ -207,9 +248,19 @@ const TableLesson = () => {
     },
   ];
 
-  const handleEdit = (key) => {
-    console.log("Edit", key);
-  };
+  const handleEdit = async (key) => {
+    const lessonToEdit = data?.find((item) => item.key === key);
+  
+    if (!lessonToEdit) {
+      notification.error({
+        message: "Lỗi",
+        description: "Lesson không tồn tại.",
+        placement: "bottomRight",
+      });
+      return;
+    }
+    router.push(`/admin/lessons/${lessonToEdit?.courseId}/${lessonToEdit?.id}`);
+  };  
 
   return (
     <>
@@ -220,10 +271,12 @@ const TableLesson = () => {
           <StyledTable columns={columns} dataSource={data} pagination={false} />
           <PaginationContainer>
             <Pagination
-              current={1}
-              total={data.length}
-              pageSize={10}
+              total={total}
+              current={currentPage}
+              pageSize={20}
               showSizeChanger={false}
+              onChange={(page) => setCurrentPage(page)}
+              totalPages={totalPages}
             />
           </PaginationContainer>
         </>
@@ -253,7 +306,7 @@ const TableLesson = () => {
           <ButtonCustom
             onClick={() => setIsDeleteModalVisible(false)}
             bgColor="#4CAF50"
-            hoverColor="#66BB6A"
+            hoverColor="#81C784"
           >
             Hủy
           </ButtonCustom>

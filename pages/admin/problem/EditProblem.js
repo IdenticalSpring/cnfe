@@ -5,6 +5,7 @@ import Editor from "components/textEditor/Editor";
 import DefaultLayout from "/pages/admin/layout/DefaultLayout";
 import styled from "styled-components";
 import { useRouter } from "next/router";
+import CloudinaryUpload from "../component/CloudinaryUpload";
 
 const { Option } = Select;
 
@@ -41,6 +42,9 @@ const EditProblem = ({ problemId }) => {
   const [problem, setProblem] = useState(null);
   const [difficulties, setDifficulties] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [topics, setTopics] = useState([]);
+  const [companies, setCompanies] = useState([]);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -62,31 +66,48 @@ const EditProblem = ({ problemId }) => {
     const fetchProblemDetails = async () => {
       setLoading(true);
       try {
-        const response = await adminAPI.detailProblem(problemId);
-        const result = await adminAPI.getAllDifficulties();
+        const [topicResult, companyResult, response, difficultyResult] =
+          await Promise.all([
+            adminAPI.getAllTopics(),
+            adminAPI.getAllCompanies(),
+            adminAPI.detailProblem(problemId),
+            adminAPI.getAllDifficulties(),
+          ]);
+
+        if (topicResult) setTopics(topicResult.data);
+        if (companyResult) setCompanies(companyResult.data);
+        if (difficultyResult) setDifficulties(difficultyResult.data);
 
         if (response?.statusCode === 200 || response?.statusCode === 201) {
+          const topicIds = response?.data?.topics?.map((topic) => topic?.id);
+          const companyIds = response?.data?.companies?.map(
+            (company) => company?.id
+          );
+
           setProblem(response?.data);
           form.setFieldsValue({
             title: response?.data?.title,
             description: response?.data?.description,
             difficultyId: response?.data?.difficultyId,
             courseId: response?.data?.courseId || "",
-            accepted: response?.data?.accepted || "",
-            submissions: response?.data?.submissions || "",
+            topicId: topicIds,
+            companyId: companyIds,
+            accepted: response?.data?.accepted || 0,
+            submissions: response?.data?.submissions || 0,
             likes: response?.data?.likes || 0,
             dislikes: response?.data?.dislikes || 0,
             rating: response?.data?.rating || 0,
             acceptance_rate: response?.data?.acceptance_rate || 0,
           });
         }
-        if (result.statusCode === 200) {
-          setDifficulties(result?.data);
+        if (difficultyResult.statusCode === 200) {
+          setDifficulties(difficultyResult?.data);
         }
       } catch (error) {
         notification.error({
           message: "Lỗi",
           description: "Không thể tải chi tiết bài toán.",
+          placement: "bottomRight",
         });
       } finally {
         setLoading(false);
@@ -102,26 +123,27 @@ const EditProblem = ({ problemId }) => {
       description: values.description,
       difficultyId: values.difficultyId,
       courseId: values.courseId || 0,
+      topicIds: values.topicId || [],
+      companyIds: values.companyId || [],
       likes: Number(values.likes) || 0,
       dislikes: Number(values.dislikes) || 0,
       rating: Number(values.rating) || 0,
       acceptance_rate: Number(values.acceptance_rate) || 0,
     };
 
-    console.log("🚀 ~ handleSubmit ~ dataToSend:", dataToSend);
-
     try {
       await adminAPI.updateProblem(problemId, dataToSend);
       notification.success({
         message: "Thành công",
         description: "Đã cập nhật bài toán thành công!",
+        placement: "bottomRight",
       });
       router.push("/admin/problem/");
     } catch (error) {
-      console.log("🚀 ~ handleSubmit ~ error:", error);
       notification.error({
         message: "Lỗi",
         description: "Cập nhật bài toán không thành công.",
+        placement: "bottomRight",
       });
     }
   };
@@ -156,6 +178,10 @@ const EditProblem = ({ problemId }) => {
               />
             </Form.Item>
 
+            <Form.Item label="images" name="images">
+              <CloudinaryUpload />
+            </Form.Item>
+
             <Form.Item
               label="Độ khó"
               name="difficultyId"
@@ -184,12 +210,40 @@ const EditProblem = ({ problemId }) => {
               </Select>
             </Form.Item>
 
+            <Form.Item
+              label="Chủ đề"
+              name="topicId"
+              rules={[{ required: true, message: "Vui lòng chọn chủ đề" }]}
+            >
+              <Select mode="multiple">
+                {topics?.map((topic) => (
+                  <Option key={topic?.id} value={topic?.id}>
+                    {topic?.name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              label="Công ty"
+              name="companyId"
+              rules={[{ required: true, message: "Vui lòng chọn công ty" }]}
+            >
+              <Select mode="multiple">
+                {companies?.map((company) => (
+                  <Option key={company?.id} value={company?.id}>
+                    {company?.name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+
             <Form.Item label="Accepted" name="accepted">
-              <Input type="number" />
+              <Input type="number" readOnly />
             </Form.Item>
 
             <Form.Item label="Submissions" name="submissions">
-              <Input type="number" />
+              <Input type="number" readOnly />
             </Form.Item>
 
             <Form.Item label="Likes" name="likes">

@@ -2,7 +2,7 @@ import DefaultLayout from "pages/admin/layout/DefaultLayout";
 import styled from "styled-components";
 import {
   ArrowRightOutlined,
-  DownOutlined,
+  CaretDownOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import { useRouter } from "next/router";
@@ -69,6 +69,7 @@ const Index = () => {
   const [topics, setTopics] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [searchTitle, setSearchTitle] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,8 +93,15 @@ const Index = () => {
     router.push("/admin/problem/CreateProblem");
   };
 
-  const onSearch = (value) => {
-    console.log("Search text:", value);
+  const onSearch = async (value) => {
+    console.log("🚀 ~ onSearch ~ value:", value)
+    try {
+      const response = await adminAPI.searchProblemByTitle(value);
+      console.log("🚀 ~ onSearch ~ response:", response?.data)
+      setSearchTitle(response?.data?.data);
+    } catch (error) {
+      console.error("Error searching by title:", error);
+    }
   };
 
   const createTopicMenu = () => (
@@ -135,7 +143,7 @@ const Index = () => {
                   color="#fff"
                   type="button"
                 >
-                  Topics <DownOutlined />
+                  Topics <CaretDownOutlined />
                 </ButtonCustom>
               </Dropdown>
 
@@ -145,7 +153,7 @@ const Index = () => {
                   color="#fff"
                   type="button"
                 >
-                  Companies <DownOutlined />
+                  Companies <CaretDownOutlined />
                 </ButtonCustom>
               </Dropdown>
 
@@ -155,14 +163,14 @@ const Index = () => {
                   color="#fff"
                   type="button"
                 >
-                  Course <DownOutlined />
+                  Course <CaretDownOutlined />
                 </ButtonCustom>
               </Dropdown>
 
               <StyledSearch
                 placeholder="Tìm kiếm problem"
                 suffix={<SearchOutlined />}
-                onPressEnter={(e) => onSearch(e.target.value)}
+                onPressEnter={(e) => onSearch(e?.target?.value)}
                 allowClear
               />
             </FilterGroup>
@@ -173,12 +181,12 @@ const Index = () => {
               type="button"
               onClick={handleCreateProblem}
             >
-              Tạo mới problem
+              Create problem
             </ButtonCustom>
           </ButtonContainer>
 
           <Suspense fallback={<Skeleton active paragraph={{ rows: 5 }} />}>
-            <TableProblem />
+            <TableProblem searchQuery={searchTitle}/>
           </Suspense>
         </ContentWrapper>
       </TableContainer>

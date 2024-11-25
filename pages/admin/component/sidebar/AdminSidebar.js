@@ -1,8 +1,10 @@
 import React from "react";
 import { Layout, Menu } from "antd";
-import { DashboardOutlined, TeamOutlined, ReadOutlined, SolutionOutlined, FormOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { DashboardOutlined, TeamOutlined, ReadOutlined, SolutionOutlined, FormOutlined, ExclamationCircleOutlined, BookOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import { useRouter } from 'next/router';
+import TopicOutlinedIcon from '@mui/icons-material/TopicOutlined';
+import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
 
 const { Sider } = Layout;
 
@@ -64,6 +66,9 @@ const AdminSidebar = ({ collapsed }) => {
     if (pathname.includes('/admin/lessons')) return '/admin/lessons';
     if (pathname.includes('/admin/assignments')) return '/admin/assignments';
     if (pathname.includes('/admin/problem') || pathname.includes('/admin/problem/CreateProblem')) return '/admin/problem';
+    if (pathname.includes('/admin/chapters')) return '/admin/chapters';
+    if (pathname.includes('/admin/companies')) return '/admin/companies';
+    if (pathname.includes('/admin/topics')) return '/admin/topics';
     return '/admin/dashboard';
   };
 
@@ -84,19 +89,28 @@ const AdminSidebar = ({ collapsed }) => {
           Dashboard
         </StyledMenuItem>
         <StyledMenuItem key="/admin/users" icon={<TeamOutlined />} $isSelected={selectedKey === "/admin/users"}>
-          Người dùng
+          User
         </StyledMenuItem>
         <StyledMenuItem key="/admin/courses" icon={<ReadOutlined />} $isSelected={selectedKey === "/admin/courses"}>
-          Khóa học
+          Course
         </StyledMenuItem>
         <StyledMenuItem key="/admin/lessons" icon={<SolutionOutlined />} $isSelected={selectedKey === "/admin/lessons"}>
-          Bài học
+          Lesson
         </StyledMenuItem>
         <StyledMenuItem key="/admin/assignments" icon={<FormOutlined />} $isSelected={selectedKey === "/admin/assignments"}>
-          Bài tập
+          Assignments
         </StyledMenuItem>
         <StyledMenuItem key="/admin/problem" icon={<ExclamationCircleOutlined />} $isSelected={selectedKey === "/admin/problem"}>
           Problem
+        </StyledMenuItem>
+        <StyledMenuItem key="/admin/chapters" icon={<BookOutlined />} $isSelected={selectedKey === "/admin/chapters"}>
+          Chapter
+        </StyledMenuItem>
+        <StyledMenuItem key="/admin/topics" icon={<TopicOutlinedIcon />} $isSelected={selectedKey === "/admin/topics"}>
+          Topic
+        </StyledMenuItem>
+        <StyledMenuItem key="/admin/companies" icon={<BusinessOutlinedIcon />} $isSelected={selectedKey === "/admin/companies"}>
+          Company
         </StyledMenuItem>
       </StyledMenu>
     </StyledSider>

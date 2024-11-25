@@ -4,10 +4,31 @@ import styled from "styled-components";
 const TestCaseSection = styled.div`
   background-color: #ffffff;
   padding: 20px;
-  height: 100%;
-  overflow: auto;
-  border: 1px solid #ddd;
+  height: calc(100vh - 67.5vh);
+  overflow-y: auto;
   border-radius: 8px;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+  }
+  &::-webkit-scrollbar-thumb {
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #a8a8a8;
+  }
+
+  @media (max-width: 1024px) {
+    height: calc(100vh - 67.5vh);
+  }
+
+  @media (max-width: 768px) {
+    height: calc(100vh - 70vh);
+  }
+
+  @media (max-width: 480px) {
+    height: calc(100vh - 67vh);
+  }
 `;
 
 const SectionTitle = styled.h2`
@@ -25,23 +46,50 @@ const TestCase = styled.pre`
   overflow: auto;
 `;
 
-const TestCaseComponent = ({ testCases }) => (
-  <TestCaseSection>
-    <SectionTitle>Test Cases</SectionTitle>
-    {testCases && testCases.length > 0 ? (
-      testCases.map((testCase, index) => (
-        <div key={index}>
-          <h3>Test Case {index + 1}</h3>
-          <TestCase>
-            <strong>Đầu vào:</strong> {testCase.input} <br />
-            <strong>{testCase.output}</strong>
-          </TestCase>
-        </div>
-      ))
-    ) : (
-      <p>No test cases available.</p>
-    )}
-  </TestCaseSection>
-);
+const TestCaseComponent = ({ testCases, result }) => {
+  return (
+    <TestCaseSection>
+      <SectionTitle>Test Cases</SectionTitle>
+      {testCases && testCases.length > 0 ? (
+        testCases.map((testCase, index) => {
+          const actualResult = result && result[index] ? result[index] : null;
+          const isCorrect = actualResult?.isCorrect;
+
+          return (
+            <div key={index}>
+              <h3>Test Case {index + 1}</h3>
+              <TestCase>
+                <strong>Input:</strong> {testCase.input} <br />
+                <strong>Expected Output:</strong> {testCase.output} <br />
+                <strong>Actual Output:</strong> {actualResult?.actualOutput || "No Output"} <br />
+                <strong>Status:</strong> {actualResult?.status || "Unknown"} <br />
+                <strong>CPU Time:</strong> {actualResult?.cpu_time || "N/A"} ms <br />
+                <strong>Memory:</strong> {actualResult?.memory || "N/A"} KB <br />
+                <strong>Wall Time:</strong> {actualResult?.wall_time || "N/A"} ms <br />
+                <strong>Error:</strong>{" "}
+                {actualResult?.error ? (
+                  <pre style={{ color: "red", whiteSpace: "pre-wrap" }}>
+                    {actualResult.error}
+                  </pre>
+                ) : (
+                  "No Errors"
+                )}
+                <br />
+                <strong>Result:</strong>{" "}
+                {isCorrect ? (
+                  <span style={{ color: "green" }}>Passed</span>
+                ) : (
+                  <span style={{ color: "red" }}>Failed</span>
+                )}
+              </TestCase>
+            </div>
+          );
+        })
+      ) : (
+        <p>No test cases available.</p>
+      )}
+    </TestCaseSection>
+  );
+};
 
 export default TestCaseComponent;
