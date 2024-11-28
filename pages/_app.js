@@ -1,7 +1,7 @@
 // pages/_app.js
-import { ThemeProvider, createGlobalStyle } from 'styled-components';
-import { theme } from '../styles/theme';
-import '../styles/colors.css';
+import { ThemeProvider, createGlobalStyle } from "styled-components";
+import { theme } from "../styles/theme";
+import "../styles/colors.css";
 const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
