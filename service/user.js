@@ -1,4 +1,3 @@
-import { patch } from "@mui/material";
 import { request } from "config/request";
 import { requestNoTK } from "config/requestNoTK";
 
@@ -89,7 +88,7 @@ export const userAPI = {
   getTestCasesByProblemId: async (problemId) => {
     try {
       const response = await request.get(`/test-cases/problem/${problemId}`);
-      return response.data.data.map((testCase) => ({
+      return response.data.data.map(testCase => ({
         input: testCase.input,
         output: testCase.expected_output,
       }));
@@ -103,7 +102,7 @@ export const userAPI = {
       const requestData = {
         code,
         language,
-        stdin,
+        stdin
       };
 
       const response = await request.post(
@@ -111,7 +110,7 @@ export const userAPI = {
         requestData
       );
 
-      return response.data;
+      return response.data
     } catch (error) {
       console.error("Error running code:", error);
       throw error;
@@ -126,10 +125,7 @@ export const userAPI = {
         stdin: stdin,
       };
 
-      const response = await request.post(
-        `/submissions/${userId}`,
-        requestData
-      );
+      const response = await request.post(`/submissions/${userId}`, requestData);
 
       return response.data;
     } catch (error) {
@@ -196,105 +192,6 @@ export const userAPI = {
       throw error;
     }
   },
-  // ---------------------------Discussions------------------------
-  getCategories: async () => {
-    try {
-      const response = await request.get("/categories");
-      return response.data.data;
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-      throw error;
-    }
-  },
-
-  getAllTags: async () => {
-    try {
-      const response = await request.get("/tags");
-      console.log(response.data);
-      return response.data.data;
-    } catch (error) {
-      console.error("Error fetching tags:", error);
-      throw error;
-    }
-  },
-  getAllDiscussionsByPage: async (page) => {
-    try {
-      const response = await request.get(`/discuss/getpaginated?page=${page}`);
-      return response.data.data;
-    } catch (error) {
-      console.error("Error fetching discussions:", error);
-      throw error;
-    }
-  },
-
-  createDiscussion: async (id, data) => {
-    try {
-      const response = await request.post(`/discuss/${id}`, data);
-      return response.data;
-    } catch (error) {
-      console.error("Error posting discussion:", error);
-      throw error;
-    }
-  },
-
-  getDiscussionByID: async (id) => {
-    try {
-      const response = await request.get(`/discuss/getOne${id}`);
-      return response.data;
-    } catch (error) {
-      console.error("Lỗi khi lấy chi tiết thảo luận:", error);
-      throw error;
-    }
-  },
-
-  upvoteDiscussion: async (id) => {
-    try {
-      const response = await request.patch(`/discuss/${id}/upvote`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  },
-
-  getCommentsByDiscussionID: async (id, page = 1) => {
-    try {
-      const response = await request.get(
-        `/discussion-comments/${id}?page=${page}`
-      );
-      return response.data.data;
-    } catch (error) {
-      console.error("Lỗi khi fetch comments:", error);
-      throw error;
-    }
-  },
-
-  submitComment: async (discussionId, userId, commentData) => {
-    try {
-      const response = await request.post(
-        `/comments/${discussionId}/${userId}`,
-        commentData
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error submitting comment:", error);
-      throw error;
-    }
-  },
-
-  getCommentsByCommentID: async (commentId) => {
-    try {
-      const response = await request.get(`/user-comments/comment/${commentId}`);
-      return response.data.data;
-    } catch (error) {
-      console.error("Error fetching comments by comment ID:", error);
-      throw error;
-    }
-  },
-  // ---------------------------- Order ----------------------------
   createOrder: async (orderData) => {
     try {
       const response = await request.post("/orders", orderData);
@@ -323,4 +220,6 @@ export const userAPI = {
       throw error;
     }
   },
+
+ 
 };
