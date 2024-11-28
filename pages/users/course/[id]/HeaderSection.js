@@ -1,58 +1,37 @@
-import React from "react";
-import styled from "styled-components";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ShareAltOutlined from "@mui/icons-material/Share";
-import { BookOutlined, PlayCircleOutlined } from "@mui/icons-material";
-import { useRouter } from "next/router";
+import React from 'react';
+import styled from 'styled-components';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ShareAltOutlined from '@mui/icons-material/Share';
+import { BookOutlined, PlayCircleOutlined } from '@mui/icons-material';
+import { useRouter } from 'next/router';
 
-const HeaderSection = ({
-  title,
-  imageUrl,
-  chaptersCount,
-  lessonsCount,
-  price,
-  showPurchaseModal,
-  handleShare,
-  hasPurchased,
-}) => {
+const HeaderSection = ({ title, imageUrl, chaptersCount, lessonsCount, price, showPurchaseModal, handleShare, hasPurchased }) => {
   const router = useRouter();
 
   return (
     <StyledHeaderSection $bgImage={imageUrl}>
       <HeaderContainer>
-        <BackButton onClick={() => router.push("/users/course")}>
-          <ArrowBackIcon
-            style={{ fontSize: "20px", color: "white", marginRight: "8px" }}
-          />
+        <BackButton onClick={() => router.push('/users/course')}>
+          <ArrowBackIcon style={{ fontSize: '20px', color: 'white', marginRight: '8px' }} />
           Back to Explore
         </BackButton>
         <HeaderContent>
           <CourseTitle>{title}</CourseTitle>
           <CourseStats>
             <StatItem>
-              <BookOutlined
-                style={{ fontSize: "16px", color: "rgba(255, 255, 255, 0.9)" }}
-              />
+              <BookOutlined style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.9)' }} />
               {chaptersCount} Chapters
             </StatItem>
             <StatItem>
-              <PlayCircleOutlined
-                style={{ fontSize: "16px", color: "rgba(255, 255, 255, 0.9)" }}
-              />
+              <PlayCircleOutlined style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.9)' }} />
               {lessonsCount} Lessons
             </StatItem>
           </CourseStats>
           {price && <PriceTag>Price: {price} VND</PriceTag>}
           <ActionButtons>
-            {!hasPurchased && (
-              <PrimaryButton onClick={showPurchaseModal}>
-                Start Learning
-              </PrimaryButton>
-            )}
+            {!hasPurchased && <PrimaryButton onClick={showPurchaseModal}>Start Learning</PrimaryButton>}
             <SecondaryButton onClick={handleShare}>
-              <ShareAltOutlined
-                style={{ fontSize: "16px", marginRight: "1px" }}
-              />
+              <ShareAltOutlined style={{ fontSize: '16px', marginRight: '1px' }} />
               Share
             </SecondaryButton>
           </ActionButtons>
@@ -72,9 +51,7 @@ const StyledHeaderSection = styled.div`
   align-items: center;
   gap: 32px;
   background-image: ${({ $bgImage }) =>
-    $bgImage
-      ? `url(${$bgImage})`
-      : "linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)"};
+    $bgImage ? `url(${$bgImage})` : 'linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)'};
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -82,7 +59,7 @@ const StyledHeaderSection = styled.div`
   position: relative;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -152,6 +129,7 @@ const PriceTag = styled.div`
   margin-bottom: 24px;
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
 `;
+
 
 const ActionButtons = styled.div`
   display: flex;
