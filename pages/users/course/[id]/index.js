@@ -116,7 +116,24 @@ const CourseDetail = () => {
 
           <MainContent>
             <ContentGrid>
-              {!isLoggedIn ? (
+              {course?.status === 'demo' || course?.isDemoAvailable ? (
+                // Nếu khóa học là demo hoặc có demo, hiển thị toàn bộ nội dung
+                <>
+                  <NavCard
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                    chapters={chapters}
+                    toggleChapter={toggleChapter}
+                    openChapters={openChapters}
+                    fetchLessonDetails={fetchLessonDetails}
+                  />
+                  <ContentCard
+                    activeTab={activeTab}
+                    courseDescription={course?.description}
+                    selectedLesson={selectedLesson}
+                  />
+                </>
+              ) : !isLoggedIn ? (
                 <PurchaseMessage message="Log in to unlock more content." />
               ) : !hasPurchased ? (
                 <PurchaseMessage message="Please purchase the course to access all content." />

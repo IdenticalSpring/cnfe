@@ -27,7 +27,7 @@ const HeaderSection = ({ title, imageUrl, chaptersCount, lessonsCount, price, sh
               {lessonsCount} Lessons
             </StatItem>
           </CourseStats>
-          <PriceTag>Price: ${parseFloat(price).toLocaleString()}</PriceTag>
+          {price && <PriceTag>Price: {price} VND</PriceTag>}
           <ActionButtons>
             {!hasPurchased && <PrimaryButton onClick={showPurchaseModal}>Start Learning</PrimaryButton>}
             <SecondaryButton onClick={handleShare}>
@@ -129,6 +129,7 @@ const PriceTag = styled.div`
   margin-bottom: 24px;
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
 `;
+
 
 const ActionButtons = styled.div`
   display: flex;
