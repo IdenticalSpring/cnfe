@@ -1,6 +1,14 @@
 import { request } from "config/request";
 
 export const adminAPI = {
+  uploadImage: async (data) => {
+    const response = await request.post("/images/upload", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  },
   getAllCourse: async () => {
     const response = await request.get("/admin/courses/list");
     return response.data;

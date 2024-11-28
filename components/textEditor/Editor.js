@@ -10,6 +10,8 @@ const Editor = ({ value, onChange, placeholder }) => {
     () => ({
       readonly: false,
       placeholder: placeholder || "Start typing...",
+      minHeight: 200,
+      maxHeight: 400,
     }),
     [placeholder]
   );

@@ -5,6 +5,7 @@ import Editor from "components/textEditor/Editor";
 import DefaultLayout from "/pages/admin/layout/DefaultLayout";
 import styled from "styled-components";
 import { useRouter } from "next/router";
+import CloudinaryUpload from "../component/CloudinaryUpload";
 
 const { Option } = Select;
 
@@ -175,6 +176,10 @@ const EditProblem = ({ problemId }) => {
                 }
                 placeholder="Nhập nội dung mô tả..."
               />
+            </Form.Item>
+
+            <Form.Item label="images" name="images">
+              <CloudinaryUpload />
             </Form.Item>
 
             <Form.Item

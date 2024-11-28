@@ -52,49 +52,34 @@ const TestCaseComponent = ({ testCases, result }) => {
       <SectionTitle>Test Cases</SectionTitle>
       {testCases && testCases.length > 0 ? (
         testCases.map((testCase, index) => {
-          // Kiểm tra nếu có kết quả thực tế cho test case hiện tại
           const actualResult = result && result[index] ? result[index] : null;
-          const isCorrect =
-            actualResult?.stdout?.trim() === testCase.output?.trim();
+          const isCorrect = actualResult?.isCorrect;
 
           return (
             <div key={index}>
               <h3>Test Case {index + 1}</h3>
               <TestCase>
-                <strong>Đầu vào:</strong> {testCase.input} <br />
-                <strong>Kết quả mong đợi:</strong> {testCase.output} <br />
-                <strong>Kết quả thực tế:</strong>
-                {actualResult ? (
-                  <div>
-                    <p>
-                      <strong>Status:</strong>{" "}
-                      {actualResult.status?.description || "Unknown"}
-                    </p>
-                    <p>
-                      <strong>Output (stdout):</strong>{" "}
-                      {actualResult.stdout || "No output"}
-                    </p>
-                    <p>
-                      <strong>Đánh giá:</strong> {isCorrect ? "Đúng" : "Sai"}
-                    </p>
-                    <p>
-                      <strong>Time:</strong> {actualResult.time || "N/A"}{" "}
-                      seconds
-                    </p>
-                    <p>
-                      <strong>Memory:</strong> {actualResult.memory || "N/A"} KB
-                    </p>
-                    <p>
-                      <strong>Compile Output:</strong>{" "}
-                      {actualResult.compile_output || "No compile output"}
-                    </p>
-                    <p>
-                      <strong>Error (stderr):</strong>{" "}
-                      {actualResult.stderr || "No error"}
-                    </p>
-                  </div>
+                <strong>Input:</strong> {testCase.input} <br />
+                <strong>Expected Output:</strong> {testCase.output} <br />
+                <strong>Actual Output:</strong> {actualResult?.actualOutput || "No Output"} <br />
+                <strong>Status:</strong> {actualResult?.status || "Unknown"} <br />
+                <strong>CPU Time:</strong> {actualResult?.cpu_time || "N/A"} ms <br />
+                <strong>Memory:</strong> {actualResult?.memory || "N/A"} KB <br />
+                <strong>Wall Time:</strong> {actualResult?.wall_time || "N/A"} ms <br />
+                <strong>Error:</strong>{" "}
+                {actualResult?.error ? (
+                  <pre style={{ color: "red", whiteSpace: "pre-wrap" }}>
+                    {actualResult.error}
+                  </pre>
                 ) : (
-                  <p>Đang xử lý...</p>
+                  "No Errors"
+                )}
+                <br />
+                <strong>Result:</strong>{" "}
+                {isCorrect ? (
+                  <span style={{ color: "green" }}>Passed</span>
+                ) : (
+                  <span style={{ color: "red" }}>Failed</span>
                 )}
               </TestCase>
             </div>
