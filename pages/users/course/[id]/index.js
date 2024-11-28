@@ -23,8 +23,8 @@ const ContentGrid = styled.div`
   gap: 24px;
   margin-top: 40px;
   margin-bottom: 32px;
-  min-height: calc(100vh - 400px); 
-  align-items: stretch; 
+  min-height: calc(100vh - 400px);
+  align-items: stretch;
 `;
 
 const CourseDetail = () => {
@@ -59,7 +59,7 @@ const CourseDetail = () => {
         .catch((error) => console.error('Error fetching data:', error))
         .finally(() => setLoading(false));
     } else {
-      setLoading(false); // Dừng trạng thái loading nếu chưa đăng nhập
+      setLoading(false);
     }
   }, [id]);
 
@@ -108,6 +108,7 @@ const CourseDetail = () => {
             imageUrl={course?.imageUrl}
             chaptersCount={chapters.length}
             lessonsCount={chapters.reduce((acc, ch) => acc + (ch.lessons?.length || 0), 0)}
+            price={course?.price}
             showPurchaseModal={showPurchaseModal}
             handleShare={handleShare}
             hasPurchased={hasPurchased}
@@ -115,8 +116,25 @@ const CourseDetail = () => {
 
           <MainContent>
             <ContentGrid>
-              {!isLoggedIn ? (
-                  <PurchaseMessage message="Log in to unlock more content." />
+              {course?.status === 'demo' || course?.isDemoAvailable ? (
+                // Nếu khóa học là demo hoặc có demo, hiển thị toàn bộ nội dung
+                <>
+                  <NavCard
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                    chapters={chapters}
+                    toggleChapter={toggleChapter}
+                    openChapters={openChapters}
+                    fetchLessonDetails={fetchLessonDetails}
+                  />
+                  <ContentCard
+                    activeTab={activeTab}
+                    courseDescription={course?.description}
+                    selectedLesson={selectedLesson}
+                  />
+                </>
+              ) : !isLoggedIn ? (
+                <PurchaseMessage message="Log in to unlock more content." />
               ) : !hasPurchased ? (
                 <PurchaseMessage message="Please purchase the course to access all content." />
               ) : (
@@ -145,7 +163,7 @@ const CourseDetail = () => {
             onCancel={closePurchaseModal}
             footer={null}
           >
-            <PurchaseCourse onClose={closePurchaseModal} />
+            <PurchaseCourse price={course?.price} onClose={closePurchaseModal} />
           </Modal>
         </>
       )}
