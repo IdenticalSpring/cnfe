@@ -28,6 +28,8 @@ const DiscussionStats = styled.div`
 `;
 
 const DiscussionItem = ({ discussion }) => {
+  if (!discussion) return null;
+
   return (
     <DiscussionItemContainer>
       <DiscussionContent>
