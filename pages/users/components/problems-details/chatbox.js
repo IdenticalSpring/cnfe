@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
-import { ChatBubbleOutline, Close, Send } from '@mui/icons-material';
+import { ChatBubbleOutline, Close, Send, Person, Computer } from '@mui/icons-material';
 import { userAPI } from '@/service/user';
 
 const ChatBoxContainer = styled.div`
@@ -39,7 +39,7 @@ const InputContainer = styled.div`
 
 const CodeButton = styled.button`
   width: 50%;
-  background-color: #e53e3e; /* Màu đỏ */
+  background-color: #e53e3e;
   color: white;
   border: none;
   border-radius: 20px;
@@ -50,18 +50,13 @@ const CodeButton = styled.button`
   transition: all 0.3s ease;
   
   &:hover {
-    background-color: #c53030; /* Màu đỏ khi hover */
+    background-color: #c53030;
     transform: scale(1.05);
   }
-
-  box-shadow: none;
-  outline: none;
-  border: none;
-  background-color: #e53e3e; /* Đảm bảo màu đồng bộ */
 `;
 
 const ChatHeader = styled.div`
-  background-color: #e53e3e; /* Màu đỏ */
+  background-color: #e53e3e;
   color: white;
   padding: 15px;
   display: flex;
@@ -71,19 +66,12 @@ const ChatHeader = styled.div`
   font-weight: 600;
 `;
 
-const MessageBubble = styled.div`
-  max-width: 80%;
-  margin-bottom: 10px;
-  padding: 10px 15px;
-  border-radius: 15px;
-  clear: both;
-  
-  ${props =>
-        props.type === 'user'
-            ? `align-self: flex-end; background-color: #e53e3e; color: white; border-bottom-right-radius: 5px;` /* Màu đỏ cho tin nhắn người dùng */
-            : `align-self: flex-start; background-color: #fed7d7; color: #333; border-bottom-left-radius: 5px;` /* Màu sáng đỏ cho tin nhắn hỗ trợ */
-    }
+
+const MessageContent = styled.p`
+  margin: 0;
+  font-size: 14px;
 `;
+
 
 const MessageInput = styled.input`
   flex-grow: 1;
@@ -93,14 +81,15 @@ const MessageInput = styled.input`
   margin-right: 10px;
   font-size: 16px;
   outline: none;
+  
   &:focus {
-    border-color: #e53e3e; /* Màu đỏ khi focus */
+    border-color: #e53e3e;
     box-shadow: 0 0 5px rgba(229, 62, 62, 0.3);
   }
 `;
 
 const SendButton = styled.button`
-  background-color: #e53e3e; /* Màu đỏ */
+  background-color: #e53e3e;
   color: white;
   border: none;
   border-radius: 50%;
@@ -113,7 +102,7 @@ const SendButton = styled.button`
   transition: background-color 0.2s;
   
   &:hover {
-    background-color: #c53030; /* Màu đỏ khi hover */
+    background-color: #c53030;
   }
 
   &:disabled {
@@ -128,7 +117,7 @@ const ToggleChatButton = styled.button`
   right: 20px;
   width: 60px;
   height: 60px;
-  background-color: #e53e3e; /* Màu đỏ */
+  background-color: #e53e3e;
   color: white;
   border: none;
   border-radius: 50%;
@@ -140,11 +129,84 @@ const ToggleChatButton = styled.button`
   transition: all 0.3s ease;
   
   &:hover {
-    background-color: #c53030; /* Màu đỏ khi hover */
+    background-color: #c53030;
     transform: scale(1.1);
   }
 `;
 
+const SenderLabel = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+`;
+
+const SenderIcon = styled.span`
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  
+  svg {
+    width: 16px;
+    height: 16px;
+    ${props => props.type === 'user'
+        ? 'color: #e53e3e;'
+        : 'color: #2c5282;'}
+  }
+`;
+
+const SenderName = styled.span`
+  font-weight: 500;
+  ${props => props.type === 'user'
+        ? 'color: #e53e3e;'
+        : 'color: #2c5282;'}
+`;
+
+const MessageBubble = styled.div`
+  max-width: 80%;
+  margin-bottom: 15px;
+  padding: 12px 15px;
+  border-radius: 15px;
+  clear: both;
+  position: relative;
+  
+  ${props =>
+        props.type === 'user'
+            ? `
+        align-self: flex-end; 
+        background-color: #e53e3e; 
+        color: white; 
+        border-bottom-right-radius: 5px;
+        &::before {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          right: -7px;
+          width: 0;
+          height: 0;
+          border-left: 10px solid #e53e3e;
+          border-top: 10px solid transparent;
+        }
+      `
+            : `
+        align-self: flex-start; 
+        background-color: #f0f4f8; 
+        color: #2d3748; 
+        border-bottom-left-radius: 5px;
+        &::before {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: -7px;
+          width: 0;
+          height: 0;
+          border-right: 10px solid #f0f4f8;
+          border-top: 10px solid transparent;
+        }
+      `
+    }
+`;
 const ChatBox = ({ code }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [message, setMessage] = useState('');
@@ -152,43 +214,63 @@ const ChatBox = ({ code }) => {
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
 
-    const toggleChat = () => setIsVisible(prev => !prev);
+    const toggleChat = () => setIsVisible((prev) => !prev);
 
     const handleSendMessage = async (userMessage) => {
         if (userMessage.trim()) {
-            setMessages(prevMessages => [
+            // Thêm tin nhắn của người dùng vào message list
+            setMessages((prevMessages) => [
                 ...prevMessages,
-                { text: userMessage, type: 'user' }
+                { text: userMessage, type: 'user' },
             ]);
 
-            try {
-                const result = await userAPI.generateContent(userMessage);
+            // Clear the input field after sending message
+            setMessage('');
 
-                setMessages(prevMessages => [
+            // Lấy ra 5 tin nhắn gần nhất từ lịch sử
+            const historyMessages = messages.slice(-5);
+
+            // Xây dựng prompt với tất cả các tin nhắn lịch sử (không có dấu ':' và không ghi 'Gemini')
+            const prompt = historyMessages
+                .map((msg) => `${msg.type === 'user' ? 'User' : ''} ${msg.text}`)  // Không thêm dấu ':' và 'Gemini'
+                .join('\n') + `\nUser ${userMessage}`;  // Thêm tin nhắn người dùng mới
+
+            try {
+                console.log('Prompt sent to API:', prompt);  // Log prompt trước khi gửi đi
+
+                // Gửi prompt tới API
+                const result = await userAPI.generateContent(prompt);
+
+                console.log('API Response:', result);  // Log kết quả trả về từ API
+
+                // Thêm phản hồi của Gemini vào message list
+                setMessages((prevMessages) => [
                     ...prevMessages,
-                    { text: result, type: 'support' }
+                    { text: result, type: 'gemini' },
                 ]);
             } catch (error) {
                 console.error('Error while sending message to API:', error);
-                setMessages(prevMessages => [
+                setMessages((prevMessages) => [
                     ...prevMessages,
-                    { text: 'Sorry, there was an error processing your request.', type: 'support' }
+                    { text: 'Sorry, there was an error processing your request.', type: 'gemini' },
                 ]);
             }
         }
     };
 
-    // Hàm này cập nhật message khi nhấn nút "Gửi Code"
+
+
+
     const handleCodeSubmit = () => {
         if (code) {
-            setMessage(`${code}`); // Chèn code vào ô nhập liệu
+            setMessage(`${code}`);
         }
     };
 
@@ -213,15 +295,13 @@ const ChatBox = ({ code }) => {
                 <MessageContainer>
                     {messages.map((msg, idx) => (
                         <MessageBubble key={idx} type={msg.type}>
-                            {msg.text}
+                            <MessageContent>{msg.text}</MessageContent>
                         </MessageBubble>
                     ))}
                     <div ref={messagesEndRef} />
                 </MessageContainer>
 
-                <CodeButton onClick={handleCodeSubmit}>
-                    Kéo code
-                </CodeButton>
+                <CodeButton onClick={handleCodeSubmit}>Kéo code</CodeButton>
 
                 <InputContainer>
                     <MessageInput
@@ -230,10 +310,7 @@ const ChatBox = ({ code }) => {
                         onKeyPress={handleKeyPress}
                         placeholder="Type a message..."
                     />
-                    <SendButton
-                        onClick={() => handleSendMessage(message)}
-                        disabled={!message.trim()}
-                    >
+                    <SendButton onClick={() => handleSendMessage(message)} disabled={!message.trim()}>
                         <Send />
                     </SendButton>
                 </InputContainer>
