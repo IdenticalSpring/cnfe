@@ -207,7 +207,34 @@ const MessageBubble = styled.div`
       `
     }
 `;
-const ChatBox = ({ code }) => {
+// Thêm nút Lấy đề bài
+const DescriptionButton = styled.button`
+  width: 50%;
+  background-color: #3182ce;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 12px;
+  padding: 5px;
+  margin: 10px auto;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #2b6cb0;
+    transform: scale(1.05);
+  }
+`;
+
+// Thêm một container để chứa cả 2 nút
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 15px;
+`;
+
+// Thay đổi code trong ChatBox để sử dụng ButtonContainer
+const ChatBox = ({ code, problemTitle, problemDescription }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
@@ -225,32 +252,22 @@ const ChatBox = ({ code }) => {
 
     const handleSendMessage = async (userMessage) => {
         if (userMessage.trim()) {
-            // Thêm tin nhắn của người dùng vào message list
             setMessages((prevMessages) => [
                 ...prevMessages,
                 { text: userMessage, type: 'user' },
             ]);
+            setMessage('');  // Reset message input
 
-            // Clear the input field after sending message
-            setMessage('');
-
-            // Lấy ra 5 tin nhắn gần nhất từ lịch sử
             const historyMessages = messages.slice(-5);
-
-            // Xây dựng prompt với tất cả các tin nhắn lịch sử (không có dấu ':' và không ghi 'Gemini')
             const prompt = historyMessages
-                .map((msg) => `${msg.type === 'user' ? 'User' : ''} ${msg.text}`)  // Không thêm dấu ':' và 'Gemini'
-                .join('\n') + `\nUser ${userMessage}`;  // Thêm tin nhắn người dùng mới
+                .map((msg) => `${msg.type === 'user' ? 'User' : ''} ${msg.text}`)
+                .join('\n') + `\nUser ${userMessage}`;
 
             try {
-                console.log('Prompt sent to API:', prompt);  // Log prompt trước khi gửi đi
-
+                console.log('Prompt sent to API:', prompt);
                 // Gửi prompt tới API
                 const result = await userAPI.generateContent(prompt);
-
-                console.log('API Response:', result);  // Log kết quả trả về từ API
-
-                // Thêm phản hồi của Gemini vào message list
+                console.log('API Response:', result);
                 setMessages((prevMessages) => [
                     ...prevMessages,
                     { text: result, type: 'gemini' },
@@ -265,12 +282,15 @@ const ChatBox = ({ code }) => {
         }
     };
 
-
-
-
     const handleCodeSubmit = () => {
         if (code) {
-            setMessage(`${code}`);
+            setMessage(`Đây là code của tôi:${code}`);
+        }
+    };
+
+    const handleProblemSubmit = () => {
+        if (problemTitle && problemDescription) {
+            setMessage(`Đề bài của tôi:${problemTitle}: ${problemDescription}`);
         }
     };
 
@@ -301,7 +321,14 @@ const ChatBox = ({ code }) => {
                     <div ref={messagesEndRef} />
                 </MessageContainer>
 
-                <CodeButton onClick={handleCodeSubmit}>Kéo code</CodeButton>
+                {/* Container chứa 2 nút */}
+                <ButtonContainer>
+                    {/* Nút Lấy đề bài */}
+                    <DescriptionButton onClick={handleProblemSubmit}>Lấy đề bài</DescriptionButton>
+
+                    {/* Nút Lấy code */}
+                    <CodeButton onClick={handleCodeSubmit}>Kéo code</CodeButton>
+                </ButtonContainer>
 
                 <InputContainer>
                     <MessageInput
@@ -318,4 +345,5 @@ const ChatBox = ({ code }) => {
         </>
     );
 };
+
 export default ChatBox;

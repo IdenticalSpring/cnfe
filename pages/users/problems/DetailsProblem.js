@@ -274,7 +274,11 @@ const DetailProblem = ({ problemId }) => {
           </EditorContainer>
         </LayoutContainer>
       </PageWrapper>
-      <ChatBox code={code} />
+      <ChatBox
+        code={code}
+        problemTitle={problem.title}
+        problemDescription={problem.description}
+      />
     </>
   );
 };

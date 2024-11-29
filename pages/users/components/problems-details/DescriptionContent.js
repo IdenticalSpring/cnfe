@@ -167,7 +167,7 @@ const DescriptionContent = ({ id, title, description }) => {
     {
       key: "3",
       label: "Hint",
-      children: <p>Think about edge cases.</p>, // Thêm nội dung hint nếu cần
+      children: <p>Think about edge cases.</p>, 
     },
   ];
 
