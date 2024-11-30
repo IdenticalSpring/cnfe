@@ -1,6 +1,5 @@
 import React, { Suspense } from "react";
 import { useRouter } from "next/router";
-import { Spin } from "antd";
 const DetailProblem = React.lazy(() => import("./DetailsProblem"));
 
 const Details = () => {

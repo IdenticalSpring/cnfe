@@ -8,7 +8,7 @@ import {
   BookOutlined,
   ExperimentOutlined,
 } from "@ant-design/icons";
-import DescriptionContent from "./DescriptionContent"; // Import DescriptionContent mới
+import DescriptionContent from "./DescriptionContent"; 
 import Submissions from "./Submissions";
 import Editorial from "./Editorial";
 import Solutions from "./Solutions";
@@ -67,9 +67,9 @@ const Description = ({ id, title, description }) => {
       </ProblemHeader>
       <ProblemContent>
         {activeTab === "description" && (
-          <DescriptionContent id={id} title={title} description={description} /> // Gọi component mới
+          <DescriptionContent id={id} title={title} description={description} /> 
         )}
-        {activeTab === "submissions" && <Submissions />}
+        {activeTab === "submissions" && <Submissions problemId={id} />}
         {activeTab === "editorial" && <Editorial />}
         {activeTab === "solutions" && <Solutions />}
       </ProblemContent>
