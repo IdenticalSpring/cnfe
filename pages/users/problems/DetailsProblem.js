@@ -276,8 +276,8 @@ const DetailProblem = ({ problemId }) => {
       </PageWrapper>
       <ChatBox
         code={code}
-        problemTitle={problem.title||'No title'}
-        problemDescription={problem.description||''}
+        problemTitle={problem?.title || 'No title'}
+        problemDescription={problem?.description || 'No description'}
       />
     </>
   );
