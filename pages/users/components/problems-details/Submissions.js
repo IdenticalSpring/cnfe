@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { request } from "@/config/request";
+import { userAPI } from "service/user"; 
 import { Card, Tag, Typography, Space, Alert, Spin } from "antd";
 import styled from "styled-components";
 import { CodeOutlined, CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
@@ -45,15 +45,10 @@ const Submissions = ({ problemId }) => {
         const userId = sessionStorage.getItem("userId");
 
         if (userId && problemId) {
-          const response = await request.get(`/submissions/${userId}/${problemId}`);
-
-          if (response.status === 200) {
-            setSubmission(response.data.data);
-          } else {
-            console.error("Error fetching submission:", response.data.message);
-          }
+          const submissionData = await userAPI.getSubmissionByUserAndProblem(userId, problemId);
+          setSubmission(submissionData);
         } else {
-          console.error("User ID or Problem ID không tồn tại.");
+          console.error("User ID or Problem ID ");
         }
       } catch (error) {
         console.error("Error fetching submission:", error);
@@ -108,7 +103,6 @@ const Submissions = ({ problemId }) => {
   };
 
   const shouldShowError = () => {
-    // Chỉ hiển thị lỗi nếu submission.error không phải là "Unknown error occurred" hoặc chuỗi trống
     return submission.error && submission.error.trim() !== "" && submission.error !== "Unknown error occurred";
   };
 

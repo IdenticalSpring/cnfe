@@ -1,9 +1,13 @@
-import React from 'react'
-
-const index = () => {
+import React, { useState, useEffect } from 'react';
+import { Header } from '@/layout/Header';
+const Index = () => {
   return (
-    <div>Hello thiss is profile index</div>
-  )
-}
+    <div>
+      <Header />
 
-export default index
+      <div>Hello this is profile index</div>
+    </div>
+  );
+};
+
+export default Index;

@@ -1,4 +1,3 @@
-import { patch } from "@mui/material";
 import { request } from "config/request";
 import { requestNoTK } from "config/requestNoTK";
 
@@ -149,6 +148,15 @@ export const userAPI = {
       return response.data.data.result;
     } catch (error) {
       console.error("Error while generating content:", error);
+      throw error;
+    }
+  },
+  getSubmissionByUserAndProblem :async (userId, problemId) => {
+    try {
+      const response = await request.get(`/submissions/${userId}/${problemId}`);
+      return response.data.data;
+    } catch (error) {
+      console.error("Error fetching submission:", error);
       throw error;
     }
   },
