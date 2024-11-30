@@ -6,6 +6,7 @@ import CodeEditorComponent from "../components/problems-details/code";
 import TestCaseComponent from "../components/problems-details/test-case";
 import { userAPI } from "service/user";
 import { notification } from "antd";
+import ChatBox from "../components/problems-details/chatbox";
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -273,6 +274,11 @@ const DetailProblem = ({ problemId }) => {
           </EditorContainer>
         </LayoutContainer>
       </PageWrapper>
+      <ChatBox
+        code={code}
+        problemTitle={problem?.title || 'No title'}
+        problemDescription={problem?.description || 'No description'}
+      />
     </>
   );
 };

@@ -2,6 +2,7 @@
 import { ThemeProvider, createGlobalStyle } from "styled-components";
 import { theme } from "../styles/theme";
 import "../styles/colors.css";
+import useCheckTokenExpiration from "./auth/logout";
 const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
@@ -16,11 +17,13 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 function MyApp({ Component, pageProps }) {
+  useCheckTokenExpiration();
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
       <Component {...pageProps} />
     </ThemeProvider>
+    
   );
 }
 

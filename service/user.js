@@ -141,7 +141,17 @@ export const userAPI = {
       throw error;
     }
   },
-
+  generateContent: async (message) => {
+    try {
+      const response = await request.post('/gemini/generate-content', {
+        prompt: message,
+      });
+      return response.data.data.result;
+    } catch (error) {
+      console.error("Error while generating content:", error);
+      throw error;
+    }
+  },
   // -----------------------------EXPLORE-----------------------------------
   getCourseById: async (id) => {
     try {
