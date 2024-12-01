@@ -175,7 +175,7 @@ const TableCourse = () => {
       key: "img",
       width: 150,
       render: (text, record) => (
-        <Image src={record.img} alt={record.title} width="50" />
+        <img src={record.img} alt={record.title} width="50" />
       ),
     },
     {
