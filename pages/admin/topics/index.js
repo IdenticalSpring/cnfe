@@ -26,7 +26,7 @@ const index = () => {
     <>
       <DefaultLayout>
         <ContentWrapper>
-          <Title_Head>Chào mừng bạn đã đến với trang topics </Title_Head>
+          <Title_Head>Topic management </Title_Head>
         </ContentWrapper>
       </DefaultLayout>
     </>
