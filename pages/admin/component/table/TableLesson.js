@@ -97,8 +97,8 @@ const TableLesson = () => {
       setTotalPages(response?.data?.totalPages);
     } catch (error) {
       notification.error({
-        message: "Lỗi",
-        description: "Không thể lấy dữ liệu lesson",
+        message: "Error",
+        description: "Unable to get lesson data!",
         placement: "bottomRight",
         duration: 2,
       });
@@ -116,8 +116,8 @@ const TableLesson = () => {
       })));
     } catch (error) {
       notification.error({
-        message: "Lỗi",
-        description: "Không thể lấy dữ liệu courses",
+        message: "Error",
+        description: "Courses data cannot be taken!",
         placement: "bottomRight",
         duration: 2,
       });
@@ -155,24 +155,24 @@ const TableLesson = () => {
       const response = await adminAPI.deleteLesson(deleteLessonId);
       if (response?.statusCode === 200) {
         notification.success({
-          message: "Xóa thành công",
-          description: `Xóa thành công lesson`,
+          message: "Deleted successfully",
+          description: `Successfully delete Lesson`,
           placement: "bottomRight",
           duration: 2,
         });
         setData(data.filter((item) => item.key !== deleteLessonId));
       } else {
         notification.error({
-          message: "Lỗi",
-          description: "Không thể xóa lesson",
+          message: "Deleted failed",
+          description: "Can not delete lesson!",
           placement: "bottomRight",
           duration: 2,
         });
       }
     } catch (error) {
       notification.error({
-        message: "Lỗi",
-        description: "Đã có lỗi xảy ra khi xóa bài học.",
+        message: "Error",
+        description: "Error occurs when deleting the lesson!",
         placement: "bottomRight",
         duration: 2,
       });
@@ -253,8 +253,8 @@ const TableLesson = () => {
   
     if (!lessonToEdit) {
       notification.error({
-        message: "Lỗi",
-        description: "Lesson không tồn tại.",
+        message: "Error",
+        description: "Lesson does not exist!",
         placement: "bottomRight",
       });
       return;
@@ -282,17 +282,15 @@ const TableLesson = () => {
         </>
       )}
       <Modal
-        title={<ModalTitle>Xóa bài học</ModalTitle>}
+        title={<ModalTitle>Delete information</ModalTitle>}
         open={isDeleteModalVisible}
         onCancel={() => setIsDeleteModalVisible(false)}
         footer={null}
       >
         <ModalContent>
-          <ConfirmText>
-            Bạn có chắc chắn muốn xóa bài học này không?
-          </ConfirmText>
+          <ConfirmText>Are you sure?</ConfirmText>
           <WarningText>
-            Sau khi xóa, bạn sẽ không thể khôi phục lại bài học này.
+            Once deleted, you will not be able to recover. Are you sure?
           </WarningText>
         </ModalContent>
         <ButtonContainer>
@@ -301,14 +299,14 @@ const TableLesson = () => {
             bgColor="#FF4D4F"
             hoverColor="#FF7875"
           >
-            Đồng ý
+            Yes, Delete
           </ButtonCustom>
           <ButtonCustom
             onClick={() => setIsDeleteModalVisible(false)}
             bgColor="#4CAF50"
-            hoverColor="#81C784"
+            hoverColor="#66BB6A"
           >
-            Hủy
+            Cancel
           </ButtonCustom>
         </ButtonContainer>
       </Modal>

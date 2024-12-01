@@ -66,115 +66,19 @@ const StyledSearch = styled(Input)`
 
 const Index = () => {
   const router = useRouter();
-  const [topics, setTopics] = useState([]);
-  const [companies, setCompanies] = useState([]);
-  const [courses, setCourses] = useState([]);
-  const [searchTitle, setSearchTitle] = useState("");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const topicResponse = await adminAPI.getAllTopics();
-        const companyResponse = await adminAPI.getAllCompanies();
-        const courseResponse = await adminAPI.getAllCourse();
-
-        setTopics(topicResponse.data);
-        setCompanies(companyResponse.data);
-        setCourses(courseResponse?.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const handleCreateProblem = () => {
     router.push("/admin/problem/CreateProblem");
   };
-
-  const onSearch = async (value) => {
-    console.log("🚀 ~ onSearch ~ value:", value)
-    try {
-      const response = await adminAPI.searchProblemByTitle(value);
-      console.log("🚀 ~ onSearch ~ response:", response?.data)
-      setSearchTitle(response?.data?.data);
-    } catch (error) {
-      console.error("Error searching by title:", error);
-    }
-  };
-
-  const createTopicMenu = () => (
-    <Menu>
-      {topics.map((item, index) => (
-        <Menu.Item key={index}>{item?.name}</Menu.Item>
-      ))}
-    </Menu>
-  );
-
-  const createCompanyMenu = () => (
-    <Menu>
-      {companies.map((item, index) => (
-        <Menu.Item key={index}>{item?.name}</Menu.Item>
-      ))}
-    </Menu>
-  );
-
-  const createCourseMenu = () => (
-    <Menu>
-      {courses?.map((item, index) => (
-        <Menu.Item key={index}>{item?.title}</Menu.Item>
-      ))}
-    </Menu>
-  );
 
   return (
     <DefaultLayout>
       <TableContainer>
         <ContentWrapper>
           <Title_Head>
-            Trang quản lí Problem <ArrowRightOutlined className="icon" />
+            Problem management <ArrowRightOutlined className="icon" />
           </Title_Head>
           <ButtonContainer>
-            <FilterGroup>
-              <Dropdown overlay={createTopicMenu()}>
-                <ButtonCustom
-                  bgColor="var(--table-header-color)"
-                  color="#fff"
-                  type="button"
-                >
-                  Topics <CaretDownOutlined />
-                </ButtonCustom>
-              </Dropdown>
-
-              <Dropdown overlay={createCompanyMenu()}>
-                <ButtonCustom
-                  bgColor="var(--table-header-color)"
-                  color="#fff"
-                  type="button"
-                >
-                  Companies <CaretDownOutlined />
-                </ButtonCustom>
-              </Dropdown>
-
-              <Dropdown overlay={createCourseMenu()}>
-                <ButtonCustom
-                  bgColor="var(--table-header-color)"
-                  color="#fff"
-                  type="button"
-                >
-                  Course <CaretDownOutlined />
-                </ButtonCustom>
-              </Dropdown>
-
-              <StyledSearch
-                placeholder="Tìm kiếm problem"
-                suffix={<SearchOutlined />}
-                onPressEnter={(e) => onSearch(e?.target?.value)}
-                allowClear
-              />
-            </FilterGroup>
-
             <ButtonCustom
               bgColor="var(--success-color)"
               color="#fff"
@@ -186,7 +90,7 @@ const Index = () => {
           </ButtonContainer>
 
           <Suspense fallback={<Skeleton active paragraph={{ rows: 5 }} />}>
-            <TableProblem searchQuery={searchTitle}/>
+            <TableProblem />
           </Suspense>
         </ContentWrapper>
       </TableContainer>

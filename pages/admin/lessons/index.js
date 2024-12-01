@@ -43,7 +43,7 @@ const index = () => {
       <TableContainer>
         <ContentWrapper>
           <Title_Head>
-            Trang quản lí bài học <ArrowRightOutlined className="icon" />
+            Lesson management <ArrowRightOutlined className="icon" />
           </Title_Head>
         </ContentWrapper>
         <ButtonContainer>
@@ -53,7 +53,7 @@ const index = () => {
             type="button"
             onClick={handleCreateLesson}
           >
-            Tạo mới Lesson
+            Create Lesson
           </ButtonCustom>
         </ButtonContainer>
         <TableLesson />
