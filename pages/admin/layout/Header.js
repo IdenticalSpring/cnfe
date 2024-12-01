@@ -12,6 +12,7 @@ const HeaderContainer = styled.div.withConfig({
 })`
   display: flex;
   justify-content: space-between;
+  height: 45px;
   align-items: center;
   padding: 16px;
   background-color: #f0f2f5;

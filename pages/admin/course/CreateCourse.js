@@ -89,7 +89,7 @@ const CreateCourse = () => {
           placement: "bottomRight",
           duration: 2,
         });
-        router.push("/admin/courses");
+        router.push("/admin/courses");  
       }
     } catch (error) {
       notification.error({

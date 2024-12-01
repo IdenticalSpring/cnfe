@@ -36,7 +36,7 @@ const Users = () => {
         <Suspense fallback={<Skeleton active paragraph={{ rows: 5 }} />}>
           <ContentWrapper>
             <Title_Head>
-              Quản lí tài khoản <ArrowRightOutlined className="icon" />
+              User management <ArrowRightOutlined className="icon" />
             </Title_Head>
 
             <TableAccount />

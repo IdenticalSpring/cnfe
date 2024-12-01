@@ -14,10 +14,6 @@ import { useRouter } from "next/router";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import ButtonCustom from "components/button/Button";
 
-const TableContainer = styled.div`
-  margin: 0 20px;
-`;
-
 const StyledTable = styled(Table)`
   .ant-table-thead > tr > th {
     background-color: var(--orange-color);
@@ -80,7 +76,7 @@ const ButtonContainer = styled.div`
 `;
 
 const TableProblem = () => {
-  const [data, setData] = useState([]);
+  const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -105,12 +101,10 @@ const TableProblem = () => {
     const fetchAllProblems = async (page) => {
       setLoading(true);
       try {
-        const [response, result] =
-          await Promise.all([
-            adminAPI.getAllProblemsByPage(page),
-            adminAPI.getAllDifficulties(),
-          ]);
-
+        const [response, result] = await Promise.all([
+          adminAPI.getAllProblemsByPage(page),
+          adminAPI.getAllDifficulties(),
+        ]);
         if (
           (response?.statusCode === 200 || response?.statusCode === 201) &&
           (result?.statusCode === 200 || result?.statusCode === 201)
@@ -124,28 +118,37 @@ const TableProblem = () => {
           const formattedData = response?.data?.data?.map((problem) => ({
             key: problem?.id,
             title: problem?.title,
-            description: problem?.description,
-            truncatedDescription: truncateDescription(problem?.description),
-            difficulty:
+            description: problem?.description || "Không xác định",
+            truncatedDescription: truncateDescription(
+              problem?.description || ""
+            ),
+            difficultyId:
               difficultiesMap[problem?.difficultyId] || "Không xác định",
             courseId: problem?.courseId || "Không xác định",
-            topic: problem?.topics?.map(t => t.name).join(", ") || "Không xác định",
-            company: problem?.companies?.map(c => c.name).join(", ") || "Không xác định",
+            topic:
+              problem?.topics?.map((t) => t.name).join(", ") ||
+              "Không xác định",
+            company:
+              problem?.companies?.map((c) => c.name).join(", ") ||
+              "Không xác định",
             likes: problem?.likes || 0,
             dislikes: problem?.dislikes || 0,
             rating: problem?.rating || 0,
             acceptanceRate: problem?.acceptance_rate || "Không xác định",
           }));
-          setData(formattedData);
+          setTableData(formattedData);
+
           setTotal(response?.data?.totalItems);
-          setTotalPages(response?.data?.totalPages);
+          if (response?.data?.totalPages) {
+            setTotalPages(response?.data?.totalPages);
+          }
         } else {
-          throw new Error("Không thể lấy dữ liệu bài toán.");
+          throw new Error("Failed to load Problem");
         }
       } catch (error) {
         notification.error({
-          message: "Lỗi",
-          description: "Không thể lấy dữ liệu bài toán.",
+          message: "error",
+          description: "failed to load problem",
           placement: "bottomRight",
           duration: 2,
         });
@@ -168,13 +171,13 @@ const TableProblem = () => {
   };
 
   const handleEdit = (key) => {
-    const problemToEdit = data.find((item) => item.key === key);
+    const problemToEdit = tableData.find((item) => item.key === key);
     if (problemToEdit) {
       router.push(`/admin/problem/${problemToEdit.key}`);
     } else {
       notification.error({
-        message: "Lỗi",
-        description: "Bài toán không tồn tại.",
+        message: "error",
+        description: "The problem does not exist.",
         placement: "bottomRight",
       });
     }
@@ -190,24 +193,24 @@ const TableProblem = () => {
       const response = await adminAPI.deleteProblem(deleteProblemId);
       if (response?.statusCode === 200) {
         notification.success({
-          message: "Xóa thành công",
-          description: `Xóa thành công problem`,
+          message: "Successfully deleted the problem",
+          description: `Successful deletion of Problem`,
           placement: "bottomRight",
           duration: 2,
         });
-        setData(data.filter((item) => item.key !== deleteProblemId));
+        setTableData(tableData.filter((item) => item.key !== deleteProblemId));
       } else {
         notification.error({
-          message: "Lỗi",
-          description: "Không thể xóa problem",
+          message: "Error",
+          description: "Can't delete Problem",
           placement: "bottomRight",
           duration: 2,
         });
       }
     } catch (error) {
       notification.error({
-        message: "Lỗi",
-        description: "Đã có lỗi xảy ra khi xóa bài toán.",
+        message: "Error",
+        description: "Error occurs when deleting the problem.",
         placement: "bottomRight",
         duration: 2,
       });
@@ -238,7 +241,7 @@ const TableProblem = () => {
     },
     {
       title: "Difficulty",
-      dataIndex: "difficulty",
+      dataIndex: "difficultyId",
       key: "difficulty",
       width: "100px",
     },
@@ -312,7 +315,11 @@ const TableProblem = () => {
         <Skeleton active paragraph={{ rows: 10 }} />
       ) : (
         <>
-          <StyledTable columns={columns} dataSource={data} pagination={false} />
+          <StyledTable
+            columns={columns}
+            dataSource={tableData}
+            pagination={false}
+          />
           <PaginationContainer>
             <Pagination
               current={currentPage}
@@ -327,15 +334,15 @@ const TableProblem = () => {
         </>
       )}
       <Modal
-        title={<ModalTitle>Xóa thông tin</ModalTitle>}
+        title={<ModalTitle>Delete information</ModalTitle>}
         open={isDeleteModalVisible}
         onCancel={() => setIsDeleteModalVisible(false)}
         footer={null}
       >
         <ModalContent>
-          <ConfirmText>Chắc chưa?</ConfirmText>
+          <ConfirmText>Are you sure?</ConfirmText>
           <WarningText>
-            Sau khi xóa đi, bạn sẽ không thể khôi phục lại. Chắc chưa?
+            Once deleted, you will not be able to recover. Are you sure?
           </WarningText>
         </ModalContent>
         <ButtonContainer>
@@ -344,14 +351,14 @@ const TableProblem = () => {
             bgColor="#FF4D4F"
             hoverColor="#FF7875"
           >
-            Đồng ý
+            Yes, Delete
           </ButtonCustom>
           <ButtonCustom
             onClick={() => setIsDeleteModalVisible(false)}
             bgColor="#4CAF50"
             hoverColor="#66BB6A"
           >
-            Hủy
+            Cancel
           </ButtonCustom>
         </ButtonContainer>
       </Modal>

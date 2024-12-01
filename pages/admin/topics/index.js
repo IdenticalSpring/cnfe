@@ -1,5 +1,5 @@
 import React from "react";
-import DefaultLayout from "./layout/DefaultLayout";
+import DefaultLayout from "../layout/DefaultLayout";
 import styled from "styled-components";
 
 const Title_Head = styled.h1`
@@ -21,18 +21,16 @@ const ContentWrapper = styled.div`
   padding-top: 60px;
 `;
 
-const dashboard = () => {
+const index = () => {
   return (
     <>
       <DefaultLayout>
         <ContentWrapper>
-          <Title_Head>
-            Chào mừng bạn đã đến với trang admin master coding
-          </Title_Head>
+          <Title_Head>Topic management </Title_Head>
         </ContentWrapper>
       </DefaultLayout>
     </>
   );
 };
 
-export default dashboard;
+export default index;

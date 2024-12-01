@@ -47,9 +47,8 @@ const Courses = () => {
         <Suspense fallback={<Skeleton active paragraph={{ rows: 5 }} />}>
           <ContentWrapper>
             <Title_Head>
-              Quản lí khóa học <ArrowRightOutlined className="icon" />{" "}
+              Course management <ArrowRightOutlined className="icon" />{" "}
             </Title_Head>
-
             <ButtonContainer>
               <ButtonCustom
                 bgColor="var(--success-color)"
@@ -57,7 +56,7 @@ const Courses = () => {
                 type="button"
                 onClick={handleCreateCourse}
               >
-                Tạo khóa học
+                Create new Course
               </ButtonCustom>
             </ButtonContainer>
 

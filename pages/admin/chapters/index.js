@@ -1,7 +1,8 @@
+import React from 'react';
+import DefaultLayout from '../layout/DefaultLayout';
 import styled from 'styled-components';
-import DefaultLayout from './layout/DefaultLayout';
 
-const lessons = () => {
+const index = () => {
     const Title_Head = styled.h1`
     font-size: 32px;
     font-weight: 600;
@@ -17,18 +18,18 @@ const lessons = () => {
     }
 `;
 
-   const ContentWrapper = styled.div`
+    const ContentWrapper = styled.div`
     padding-top: 60px;
 `;
     return (
         <>
-             <DefaultLayout >
+            <DefaultLayout >
                 <ContentWrapper>
-                <Title_Head>trang bài học</Title_Head>
+                    <Title_Head>Chào mừng bạn đã đến với chapters </Title_Head>
                 </ContentWrapper>
-             </DefaultLayout>
+            </DefaultLayout>
         </>
     )
 }
 
-export default lessons;
+export default index;

@@ -97,15 +97,15 @@ const TableCourse = () => {
             );
             allCourses = [...allCourses, ...formattedData];
           } else {
-            throw new Error("Không thể lấy dữ liệu khóa học.");
+            throw new Error("Failed to get all courses");
           }
           currentPage += 1;
         }
         setData(allCourses);
       } catch (error) {
         notification.error({
-          message: "Lỗi",
-          description: "Không thể lấy dữ liệu khóa học.",
+          message: "Error getting all courses",
+          description: "Failed to load course!",
           placement: "bottomRight",
           duration: 2,
         });
@@ -218,8 +218,8 @@ const TableCourse = () => {
       router.push(`/admin/course/${courseToEdit.id}`);
     } else {
       notification.error({
-        message: "Lỗi",
-        description: "Khóa học không tồn tại.",
+        message: "Error",
+        description: "The course does not exist!",
         placement: "bottomRight",
       });
     }
@@ -236,8 +236,8 @@ const TableCourse = () => {
 
       if (!courseToDelete) {
         notification.error({
-          message: "Xóa không thành công",
-          description: "Không tìm thấy khóa học để xóa.",
+          message: "Delete failed",
+          description: "No course found to delete.",
           placement: "bottomRight",
           duration: 2,
         });
@@ -254,23 +254,23 @@ const TableCourse = () => {
           return updatedData;
         });
         notification.success({
-          message: "Xóa thành công",
-          description: "Khóa học đã được xóa thành công.",
+          message: "Delete successful",
+          description: "The course has been successfully erased.",
           placement: "bottomRight",
           duration: 2,
         });
       } else {
         notification.error({
-          message: "Xóa không thành công",
-          description: "Không thể xóa khóa học.",
+          message: "Delete failed",
+          description: "Can not delete the course.",
           placement: "bottomRight",
           duration: 2,
         });
       }
     } catch (error) {
       notification.error({
-        message: "Lỗi",
-        description: "Có lỗi xảy ra khi gọi API.",
+        message: "Error deleting the course",
+        description: "Error occurs when calling API.",
         placement: "bottomRight",
         duration: 2,
       });
@@ -278,10 +278,6 @@ const TableCourse = () => {
     } finally {
       setIsModalVisible(false);
     }
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
   };
 
   return (
@@ -292,15 +288,15 @@ const TableCourse = () => {
         <StyledTable columns={columns} dataSource={data} />
       )}
       <Modal
-        title={<ModalTitle>Xóa thông tin</ModalTitle>}
+        title={<ModalTitle>Delete information</ModalTitle>}
         open={isModalVisible}
-        onCancel={handleCancel}
+        onCancel={() => setIsModalVisible(false)}
         footer={null}
       >
         <ModalContent>
-          <ConfirmText>Chắc chưa?</ConfirmText>
+          <ConfirmText>Are you sure?</ConfirmText>
           <WarningText>
-            Sau khi xóa đi, bạn sẽ không thể khôi phục lại. Chắc chưa?
+            Once deleted, you will not be able to recover. Are you sure?
           </WarningText>
         </ModalContent>
         <ButtonContainer>
@@ -309,10 +305,14 @@ const TableCourse = () => {
             bgColor="#FF4D4F"
             hoverColor="#FF7875"
           >
-            Đồng ý
+            Yes, Delete
           </ButtonCustom>
-          <ButtonCustom onClick={handleCancel} bgColor="#f0f0f0" color="#000">
-            Không
+          <ButtonCustom
+            onClick={() => setIsModalVisible(false)}
+            bgColor="#4CAF50"
+            hoverColor="#66BB6A"
+          >
+            Cancel
           </ButtonCustom>
         </ButtonContainer>
       </Modal>
