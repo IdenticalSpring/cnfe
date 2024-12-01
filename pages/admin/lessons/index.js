@@ -32,7 +32,7 @@ const ContentWrapper = styled.div`
   padding-top: 70px;
 `;
 
-const index = () => {
+const Index = () => {
   const router = useRouter();
 
   const handleCreateLesson = () => {
@@ -62,4 +62,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default Index;

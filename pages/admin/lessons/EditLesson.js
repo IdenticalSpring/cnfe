@@ -40,34 +40,34 @@ const EditLesson = ({ courseId, lessonId }) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (lessonId && courseId) {
-      fetchLessonData(lessonId, courseId);
-    }
-  }, [lessonId, courseId]);
-
-  const fetchLessonData = async (courseId, lessonId) => {
-    try {
-      setLoading(true);
-      const response = await adminAPI.detailLesson(courseId, lessonId);
-      if (response?.statusCode === 200 || response?.statusCode === 201) {
-        form.setFieldsValue(response?.data);
-      } else {
+    const fetchLessonData = async (courseId, lessonId) => {
+      try {
+        setLoading(true);
+        const response = await adminAPI.detailLesson(courseId, lessonId);
+        if (response?.statusCode === 200 || response?.statusCode === 201) {
+          form.setFieldsValue(response?.data);
+        } else {
+          notification.error({
+            message: "Error",
+            description: "Failed to load lesson",
+            placement: "bottomRight",
+          });
+        }
+      } catch (error) {
         notification.error({
           message: "Error",
-          description: "Failed to load lesson",
+          description: "Failed to load lesson!",
           placement: "bottomRight",
         });
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      notification.error({
-        message: "Lỗi",
-        description: "Đã xảy ra lỗi khi tải dữ liệu bài học.",
-        placement: "bottomRight",
-      });
-    } finally {
-      setLoading(false);
+    };
+  
+    if (lessonId && courseId) {
+      fetchLessonData(courseId, lessonId);
     }
-  };
+  }, [lessonId, courseId, form]);
 
   const handleSubmit = async (values) => {
     const dataToSend = {
@@ -85,7 +85,6 @@ const EditLesson = ({ courseId, lessonId }) => {
       });
       router.push("/admin/lessons/");
     } catch (error) {
-      console.log("🚀 ~ handleSubmit ~ error:", error);
       notification.error({
         message: "Failed to update lesson",
         description: "Update lesson failed",

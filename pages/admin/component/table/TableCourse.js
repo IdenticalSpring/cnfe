@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { adminAPI } from "service/admin";
 import { useRouter } from "next/router";
 import ButtonCustom from "components/button/Button";
+import Image from "next/image";
 
 const StyledTable = styled(Table)`
   .ant-table-thead > tr > th {
@@ -174,7 +175,7 @@ const TableCourse = () => {
       key: "img",
       width: 150,
       render: (text, record) => (
-        <img src={record.img} alt={record.title} width="50" />
+        <Image src={record.img} alt={record.title} width="50" />
       ),
     },
     {

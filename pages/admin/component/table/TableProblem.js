@@ -137,7 +137,6 @@ const TableProblem = () => {
             acceptanceRate: problem?.acceptance_rate || "Không xác định",
           }));
           setTableData(formattedData);
-          console.log(tableData);
 
           setTotal(response?.data?.totalItems);
           if (response?.data?.totalPages) {
