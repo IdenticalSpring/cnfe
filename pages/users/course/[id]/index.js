@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import DefaultLayout from '@/layout/DefaultLayout';
-import { Skeleton, Modal, notification, message } from 'antd';
-import PurchaseCourse from './purchase';
-import HeaderSection from './HeaderSection';
-import NavCard from './NavCard';
-import ContentCard from './ContentCard';
-import PurchaseMessage from './PurchaseMessage';
-import { userAPI } from '@/service/user';
-import styled from 'styled-components';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import DefaultLayout from "@/layout/DefaultLayout";
+import { Skeleton, Modal, notification, message } from "antd";
+import PurchaseCourse from "./purchase";
+import HeaderSection from "./HeaderSection";
+import NavCard from "./NavCard";
+import ContentCard from "./ContentCard";
+import PurchaseMessage from "./PurchaseMessage";
+import { userAPI } from "@/service/user";
+import styled from "styled-components";
 
 const MainContent = styled.div`
   max-width: 1200px;
@@ -23,15 +23,15 @@ const ContentGrid = styled.div`
   gap: 24px;
   margin-top: 40px;
   margin-bottom: 32px;
-  min-height: calc(100vh - 400px); 
-  align-items: stretch; 
+  min-height: calc(100vh - 400px);
+  align-items: stretch;
 `;
 
 const CourseDetail = () => {
   const [course, setCourse] = useState(null);
   const [chapters, setChapters] = useState([]);
   const [selectedLesson, setSelectedLesson] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
   const [openChapters, setOpenChapters] = useState({});
   const [loading, setLoading] = useState(true);
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
@@ -42,7 +42,7 @@ const CourseDetail = () => {
   const { id, status, message: statusMessage } = router.query;
 
   useEffect(() => {
-    const userId = sessionStorage.getItem('userId');
+    const userId = sessionStorage.getItem("userId");
     const loggedIn = !!userId;
     setIsLoggedIn(loggedIn);
 
@@ -54,19 +54,19 @@ const CourseDetail = () => {
         userAPI.getPurchaseStatus(userId, id).then((response) => {
           const purchaseStatus = response?.data?.hasPurchased;
           setHasPurchased(purchaseStatus);
-        })
+        }),
       ])
-        .catch((error) => console.error('Error fetching data:', error))
+        .catch((error) => console.error("Error fetching data:", error))
         .finally(() => setLoading(false));
     } else {
-      setLoading(false); // Dừng trạng thái loading nếu chưa đăng nhập
+      setLoading(false);
     }
   }, [id]);
 
   useEffect(() => {
     if (status && statusMessage) {
-      notification[status === 'completed' ? 'success' : 'warning']({
-        message: 'Payment Status',
+      notification[status === "completed" ? "success" : "warning"]({
+        message: "Payment Status",
         description: statusMessage,
       });
     }
@@ -83,18 +83,22 @@ const CourseDetail = () => {
   const closePurchaseModal = () => setIsPurchaseModalOpen(false);
 
   const fetchLessonDetails = (chapterId, lessonId) => {
-    userAPI.getLessonById(chapterId, lessonId)
+    userAPI
+      .getLessonById(chapterId, lessonId)
       .then(setSelectedLesson)
-      .catch((error) => console.error('Error fetching lesson details:', error));
+      .catch((error) => console.error("Error fetching lesson details:", error));
   };
 
   const handleShare = () => {
     const courseUrl = `${window.location.origin}/users/course/${id}`;
-    navigator.clipboard.writeText(courseUrl).then(() => {
-      message.success("Course URL copied to clipboard!");
-    }).catch(() => {
-      message.error("Failed to copy URL. Please try again.");
-    });
+    navigator.clipboard
+      .writeText(courseUrl)
+      .then(() => {
+        message.success("Course URL copied to clipboard!");
+      })
+      .catch(() => {
+        message.error("Failed to copy URL. Please try again.");
+      });
   };
 
   return (
@@ -107,7 +111,11 @@ const CourseDetail = () => {
             title={course?.title}
             imageUrl={course?.imageUrl}
             chaptersCount={chapters.length}
-            lessonsCount={chapters.reduce((acc, ch) => acc + (ch.lessons?.length || 0), 0)}
+            lessonsCount={chapters.reduce(
+              (acc, ch) => acc + (ch.lessons?.length || 0),
+              0
+            )}
+            price={course?.price}
             showPurchaseModal={showPurchaseModal}
             handleShare={handleShare}
             hasPurchased={hasPurchased}
@@ -115,8 +123,25 @@ const CourseDetail = () => {
 
           <MainContent>
             <ContentGrid>
-              {!isLoggedIn ? (
-                  <PurchaseMessage message="Log in to unlock more content." />
+              {course?.status === "demo" || course?.isDemoAvailable ? (
+                // Nếu khóa học là demo hoặc có demo, hiển thị toàn bộ nội dung
+                <>
+                  <NavCard
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                    chapters={chapters}
+                    toggleChapter={toggleChapter}
+                    openChapters={openChapters}
+                    fetchLessonDetails={fetchLessonDetails}
+                  />
+                  <ContentCard
+                    activeTab={activeTab}
+                    courseDescription={course?.description}
+                    selectedLesson={selectedLesson}
+                  />
+                </>
+              ) : !isLoggedIn ? (
+                <PurchaseMessage message="Log in to unlock more content." />
               ) : !hasPurchased ? (
                 <PurchaseMessage message="Please purchase the course to access all content." />
               ) : (
@@ -145,7 +170,10 @@ const CourseDetail = () => {
             onCancel={closePurchaseModal}
             footer={null}
           >
-            <PurchaseCourse onClose={closePurchaseModal} />
+            <PurchaseCourse
+              price={course?.price}
+              onClose={closePurchaseModal}
+            />
           </Modal>
         </>
       )}

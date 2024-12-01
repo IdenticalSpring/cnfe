@@ -163,10 +163,12 @@ const Login = () => {
         const userId = decodedToken.sub;
         const userName = decodedToken.username;
         const userRole = decodedToken.role;
+        const tokenExpiration = decodedToken.exp;
 
         sessionStorage.setItem('userId', userId);
         sessionStorage.setItem('userName', userName);
         sessionStorage.setItem('userRole', userRole);
+        sessionStorage.setItem('tokenExpiration', tokenExpiration);
 
         if (userRole === 'admin') {
           router.push('/admin/dashboard');

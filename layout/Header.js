@@ -15,7 +15,7 @@ export const Container = styled.div`
   box-sizing: border-box;
   z-index: 100;
   background-color: var(--background-color);
-  margin-bottom: 8px;
+  margin-bottom: 5px;
 
   @media screen and (min-width: 1024px) {
     height: 50px;
@@ -228,9 +228,9 @@ export const Header = () => {
               Problem
             </StyledLink>
           </Link>
-          <Link href="/users/developer" passHref legacyBehavior>
-            <StyledLink $isActive={router.pathname === "/users/developer"}>
-              Developer
+          <Link href="/users/discussions" passHref legacyBehavior>
+            <StyledLink $isActive={router.pathname === "/users/discussions"}>
+              Discussion
             </StyledLink>
           </Link>
           {username ? (

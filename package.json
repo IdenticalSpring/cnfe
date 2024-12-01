@@ -39,6 +39,7 @@
     "qs": "^6.13.0",
     "react": "^18",
     "react-dom": "^18",
+    "react-modal": "^3.16.1",
     "react-froala-wysiwyg": "^4.3.0",
     "react-resizable": "^3.0.5",
     "react-router-dom": "^6.26.1",

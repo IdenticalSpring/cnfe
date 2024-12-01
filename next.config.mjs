@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   compiler: {
-    styledComponents: true, // Kích hoạt styled-components SWC transform
+    styledComponents: true, 
   },
   images: {
     domains: ['assets.leetcode.com', 'res.cloudinary.com'],
