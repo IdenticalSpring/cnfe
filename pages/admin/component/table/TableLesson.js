@@ -160,7 +160,7 @@ const TableLesson = () => {
           placement: "bottomRight",
           duration: 2,
         });
-        setData(data.filter((item) => item.key !== deleteLessonId));
+        setData(data.filter((item) => item?.key !== deleteLessonId));
       } else {
         notification.error({
           message: "Deleted failed",
@@ -183,7 +183,7 @@ const TableLesson = () => {
 
   const getCourseName = (id) => {
     const course = courses.find((course) => course.id === id);
-    return course ? course.name : "N/A";
+    return course ? course?.name : "N/A";
   };
 
   const columns = [
@@ -265,7 +265,7 @@ const TableLesson = () => {
   return (
     <>
       {loading ? (
-        <Skeleton active paragraph={{ rows: 10 }} />
+        <Skeleton active paragraph={{ rows: 15 }} />
       ) : (
         <>
           <StyledTable columns={columns} dataSource={data} pagination={false} />
