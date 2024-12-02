@@ -1,4 +1,3 @@
-import { patch } from "@mui/material";
 import { request } from "config/request";
 import { requestNoTK } from "config/requestNoTK";
 
@@ -152,6 +151,34 @@ export const userAPI = {
       throw error;
     }
   },
+  getSubmissionByUserAndProblem: async (userId, problemId) => {
+    try {
+      const response = await request.get(`/submissions/${userId}`, {
+        params: { problemId }
+      });
+      console.log("API Response:", response);  
+      return response.data.data;  
+    } catch (error) {
+      console.error("Error fetching submission:", error);
+      throw error;
+    }
+  },
+  getLessonProgress : async (courseId, userId) => {
+    try {
+      const response = await axios.get(`/user_lesson_progress/${courseId}/${userId}`);
+
+      if (response.status === 200) {
+        return response.data;
+      } else {
+        throw new Error('Failed to fetch lesson progress');
+      }
+    } catch (error) {
+      console.error('Error fetching lesson progress:', error);
+      throw error;
+    }
+  },
+
+
   // -----------------------------EXPLORE-----------------------------------
   getCourseById: async (id) => {
     try {
@@ -163,7 +190,7 @@ export const userAPI = {
     }
   },
 
-  getChaptersAndLessonsByCourseId: async (courseId) => {
+  getChaptersAndLessonsByCourseId: async (courseId,userId) => {
     try {
       const response = await request.get(`/chapters/course/${courseId}`);
       const chapters = response.data.data;
@@ -171,7 +198,7 @@ export const userAPI = {
       const chaptersWithLessons = await Promise.all(
         chapters.map(async (chapter) => {
           const lessonsResponse = await request.get(
-            `/lessons/chapter/${chapter.id}/${courseId}`
+            `/lessons/chapter/${chapter.id}/${courseId}/${userId}`
           );
           return { ...chapter, lessons: lessonsResponse.data.data };
         })
@@ -203,6 +230,28 @@ export const userAPI = {
       return response.data?.data?.data || [];
     } catch (error) {
       console.error(`Error fetching ${type} courses:`, error);
+      throw error;
+    }
+  },
+  updateLessonProgress: async (userId, lessonId) => {
+    const completedAt = new Date().toISOString();
+
+    const progressData = {
+      userId: parseInt(userId),
+      lessonId,
+      status: "completed",
+      completedAt,
+    };
+
+    try {
+      const response = await request.post("/user_lesson_progress", progressData);
+      if (response.status === 201) {
+        return response.data;
+      } else {
+        throw new Error("Failed to update lesson progress.");
+      }
+    } catch (error) {
+      console.error("Error updating lesson progress", error);
       throw error;
     }
   },
@@ -333,4 +382,34 @@ export const userAPI = {
       throw error;
     }
   },
+  // ---------------------------- profile ----------------------------
+  fetchSubmissionData: async (userId) => {
+    try {
+      const response = await request.get(`/submissions/${userId}`);
+      const data = response?.data?.data;
+      return data; 
+    } catch (err) {
+      throw new Error(`Error fetching data: ${err.message}`);  
+    }
+  },
+  fetchCompletedCoursesByUserId :async (userId) => {
+    try {
+      const response = await request.get(`/orders/user/${userId}`);
+      const completedOrders = response.data.data.filter(order => order.paymentStatus === 'completed');
+      return completedOrders;
+    } catch (error) {
+      console.error("Error fetching completed courses", error);
+      throw error;
+    }
+  },
+  fetchProfile: async () => {
+    try {
+      const response = await request.get('/auth/profile');
+      return response.data.data;
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      throw error;
+    }
+  },
+
 };

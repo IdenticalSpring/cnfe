@@ -324,10 +324,10 @@ const ChatBox = ({ code, problemTitle, problemDescription }) => {
                 {/* Container chứa 2 nút */}
                 <ButtonContainer>
                     {/* Nút Lấy đề bài */}
-                    <DescriptionButton onClick={handleProblemSubmit}>Lấy đề bài</DescriptionButton>
+                    <DescriptionButton onClick={handleProblemSubmit}>Submit Problem</DescriptionButton>
 
                     {/* Nút Lấy code */}
-                    <CodeButton onClick={handleCodeSubmit}>Kéo code</CodeButton>
+                    <CodeButton onClick={handleCodeSubmit}>Submit Code</CodeButton>
                 </ButtonContainer>
 
                 <InputContainer>

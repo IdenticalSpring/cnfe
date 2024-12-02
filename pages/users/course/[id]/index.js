@@ -50,7 +50,10 @@ const CourseDetail = () => {
       setLoading(true);
       Promise.all([
         userAPI.getCourseById(id).then(setCourse),
-        userAPI.getChaptersAndLessonsByCourseId(id).then(setChapters),
+        userAPI.getChaptersAndLessonsByCourseId(id, userId)
+          .then((chaptersData) => {
+            setChapters(chaptersData);
+          }),
         userAPI.getPurchaseStatus(userId, id).then((response) => {
           const purchaseStatus = response?.data?.hasPurchased;
           setHasPurchased(purchaseStatus);
@@ -101,6 +104,20 @@ const CourseDetail = () => {
       });
   };
 
+  const handleLessonCompletion = async (lessonId) => {
+    const userId = sessionStorage.getItem("userId");
+    if (userId) {
+      try {
+        const progress = await userAPI.updateLessonProgress(userId, lessonId);
+        message.success("Lesson marked as completed!");
+      } catch (error) {
+        message.error("Failed to update lesson progress.");
+      }
+    } else {
+      message.warning("Please log in to track your progress.");
+    }
+  };
+
   return (
     <DefaultLayout>
       {loading ? (
@@ -124,7 +141,6 @@ const CourseDetail = () => {
           <MainContent>
             <ContentGrid>
               {course?.status === "demo" || course?.isDemoAvailable ? (
-                // Nếu khóa học là demo hoặc có demo, hiển thị toàn bộ nội dung
                 <>
                   <NavCard
                     activeTab={activeTab}
@@ -138,6 +154,7 @@ const CourseDetail = () => {
                     activeTab={activeTab}
                     courseDescription={course?.description}
                     selectedLesson={selectedLesson}
+                    onCompleteLesson={handleLessonCompletion} 
                   />
                 </>
               ) : !isLoggedIn ? (
@@ -158,6 +175,7 @@ const CourseDetail = () => {
                     activeTab={activeTab}
                     courseDescription={course?.description}
                     selectedLesson={selectedLesson}
+                    onCompleteLesson={handleLessonCompletion} 
                   />
                 </>
               )}
@@ -170,10 +188,7 @@ const CourseDetail = () => {
             onCancel={closePurchaseModal}
             footer={null}
           >
-            <PurchaseCourse
-              price={course?.price}
-              onClose={closePurchaseModal}
-            />
+            <PurchaseCourse price={course?.price} onClose={closePurchaseModal} />
           </Modal>
         </>
       )}
