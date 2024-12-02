@@ -341,4 +341,14 @@ export const userAPI = {
       throw error;
     }
   },
+  // ---------------------------- profile ----------------------------
+  fetchSubmissionData: async (userId) => {
+    try {
+      const response = await request.get(`/submissions/${userId}`);
+      const data = response?.data?.data;
+      return data; 
+    } catch (err) {
+      throw new Error(`Error fetching data: ${err.message}`);  
+    }
+  },
 };
