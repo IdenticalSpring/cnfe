@@ -104,9 +104,6 @@ const EditLesson = ({ courseId, lessonId }) => {
             <Form.Item
               label="Title"
               name="title"
-              rules={[
-                { required: true, message: "Vui lòng nhập tiêu đề bài học!" },
-              ]}
             >
               <Input />
             </Form.Item>
@@ -114,7 +111,6 @@ const EditLesson = ({ courseId, lessonId }) => {
             <Form.Item
               label="Chapter ID"
               name="chapterId"
-              rules={[{ required: true, message: "Vui lòng nhập Chapter ID!" }]}
             >
               <Input />
             </Form.Item>
@@ -122,9 +118,6 @@ const EditLesson = ({ courseId, lessonId }) => {
             <Form.Item
               label="Content"
               name="content"
-              rules={[
-                { required: true, message: "Vui lòng nhập nội dung bài học!" },
-              ]}
             >
               <Editor />
             </Form.Item>
@@ -132,14 +125,13 @@ const EditLesson = ({ courseId, lessonId }) => {
             <Form.Item
               label="Order"
               name="order"
-              rules={[{ required: true, message: "Vui lòng nhập Order!" }]}
             >
               <Input disabled />
             </Form.Item>
 
             <Form.Item>
               <StyledButton type="primary" htmlType="submit">
-                Lưu thay đổi
+                Save changes
               </StyledButton>
             </Form.Item>
           </Form>

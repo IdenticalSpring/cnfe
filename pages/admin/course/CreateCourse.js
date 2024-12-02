@@ -131,7 +131,7 @@ const CreateCourse = () => {
 
           <ButtonContainer>
             <Button type="submit" disabled={loading}>
-              {loading ? <Spin size="small" /> : "Tạo"}
+              {loading ? <Spin size="small" /> : "Create"}
             </Button>
           </ButtonContainer>
         </Form>

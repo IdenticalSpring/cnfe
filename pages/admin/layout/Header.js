@@ -81,7 +81,7 @@ const Header = ({ toggleSidebar, collapsed }) => {
   const menuItems = [
     {
       key: "1",
-      label: <div onClick={handleLogout}>Đăng Xuất</div>,
+      label: <div onClick={handleLogout}>Log out</div>,
     },
   ];
 

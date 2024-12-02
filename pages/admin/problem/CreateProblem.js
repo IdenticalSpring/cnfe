@@ -328,7 +328,7 @@ const CreateProblem = () => {
 
           <ButtonContainer>
             <Button type="submit" disabled={loading}>
-              {loading ? <Spin /> : "Tạo bài tập"}
+              {loading ? <Spin /> : "Create"}
             </Button>
           </ButtonContainer>
         </Form>
