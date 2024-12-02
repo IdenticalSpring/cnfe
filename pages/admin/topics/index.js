@@ -35,7 +35,7 @@ const ButtonContainer = styled.div`
   align-items: center;
 `;
 
-const index = () => {
+const Index = () => {
   const router = useRouter();
 
   const handleCreateTopic = () => {
@@ -66,4 +66,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default Index;
