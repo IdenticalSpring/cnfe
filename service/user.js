@@ -151,15 +151,20 @@ export const userAPI = {
       throw error;
     }
   },
-  getSubmissionByUserAndProblem :async (userId, problemId) => {
+  getSubmissionByUserAndProblem: async (userId, problemId) => {
     try {
-      const response = await request.get(`/submissions/${userId}/${problemId}`);
-      return response.data.data;
+      const response = await request.get(`/submissions/${userId}`, {
+        params: { problemId }
+      });
+      console.log("API Response:", response);  
+      return response.data.data;  
     } catch (error) {
       console.error("Error fetching submission:", error);
       throw error;
     }
   },
+
+
   // -----------------------------EXPLORE-----------------------------------
   getCourseById: async (id) => {
     try {

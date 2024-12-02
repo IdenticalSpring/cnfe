@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { userAPI } from "service/user"; 
+import { userAPI } from "service/user";
 import { Card, Tag, Typography, Space, Alert, Spin } from "antd";
 import styled from "styled-components";
 import { CodeOutlined, CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
@@ -38,6 +38,7 @@ const ErrorBlock = styled(CodeBlock)`
 const Submissions = ({ problemId }) => {
   const [submission, setSubmission] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
 
   useEffect(() => {
     const fetchSubmission = async () => {
@@ -45,12 +46,20 @@ const Submissions = ({ problemId }) => {
         const userId = sessionStorage.getItem("userId");
 
         if (userId && problemId) {
-          const submissionData = await userAPI.getSubmissionByUserAndProblem(userId, problemId);
-          setSubmission(submissionData);
+          const response = await userAPI.getSubmissionByUserAndProblem(userId, problemId);
+          const submissionData = response.data;
+          console.log("Submission data:", submissionData);
+
+          if (submissionData) {
+            setSubmission(submissionData);
+          } else {
+            setFetchError("No submission data found for this problem.");
+          }
         } else {
-          console.error("User ID or Problem ID ");
+          setFetchError("User ID or Problem ID is missing.");
         }
       } catch (error) {
+        setFetchError("Error fetching submission.");
         console.error("Error fetching submission:", error);
       } finally {
         setLoading(false);
@@ -60,31 +69,8 @@ const Submissions = ({ problemId }) => {
     fetchSubmission();
   }, [problemId]);
 
-  if (loading) {
-    return (
-      <SubmissionCard>
-        <Card.Meta
-          title="Loading Submission"
-          description={<Spin size="large" />}
-        />
-      </SubmissionCard>
-    );
-  }
-
-  if (!submission) {
-    return (
-      <SubmissionCard>
-        <Alert
-          message="No Submission Data"
-          description="No submission details are available for this problem."
-          type="warning"
-        />
-      </SubmissionCard>
-    );
-  }
-
   const getStatusTag = () => {
-    switch (submission.status) {
+    switch (submission?.status) {
       case "completed":
         return (
           <Tag color="success" icon={<CheckCircleOutlined />}>
@@ -102,9 +88,28 @@ const Submissions = ({ problemId }) => {
     }
   };
 
-  const shouldShowError = () => {
-    return submission.error && submission.error.trim() !== "" && submission.error !== "Unknown error occurred";
-  };
+  if (loading) {
+    return (
+      <SubmissionCard>
+        <Card.Meta
+          title="Loading Submission"
+          description={<Spin size="large" />}
+        />
+      </SubmissionCard>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <SubmissionCard>
+        <Alert
+          message="Error"
+          description={fetchError}
+          type="error"
+        />
+      </SubmissionCard>
+    );
+  }
 
   return (
     <SubmissionCard
@@ -118,6 +123,7 @@ const Submissions = ({ problemId }) => {
       }
     >
       <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+
         <DetailRow>
           <Text strong>Language</Text>
           <Tag color="processing">{submission.language}</Tag>
@@ -135,8 +141,8 @@ const Submissions = ({ problemId }) => {
           </CodeBlock>
         </div>
 
-        {/* Only render error block if there's a real error */}
-        {shouldShowError() && (
+        {/* Hiển thị lỗi chỉ khi có thông báo lỗi thực sự */}
+        {submission?.error && submission.error !== "Unknown error occurred" && (
           <div>
             <Text strong type="danger">
               Error
