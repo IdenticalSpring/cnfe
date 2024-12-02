@@ -1,28 +1,29 @@
 import React from 'react';
-import ProfileInfo from './ProfileInfo'; 
-import CompletedCourses from './CompletedCourses'; 
-import CompletedProblem from './CompletedAssignments'; 
+import { Layout } from 'antd';
 import styled from 'styled-components';
 import { Header } from '@/layout/Header';
+import ProfileInfo from './ProfileInfo';
+import CompletedCourses from './CompletedCourses';
+import CompletedAssignments from './CompletedAssignments';
 
-// Styled component for the container
-const ProfileContainer = styled.div`
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+const { Content } = Layout;
+
+const ProfileContainer = styled(Content)`
+  padding: 24px;
+  background-color: #f0f2f5;
+  min-height: calc(100vh - 64px);
 `;
 
 const ProfileIndex = () => {
   return (
-    <>
-    <Header/>
+    <Layout>
+      <Header />
       <ProfileContainer>
-        <h1>User Profile</h1>
         <ProfileInfo />
         <CompletedCourses />
-        <CompletedProblem />
+        <CompletedAssignments />
       </ProfileContainer>
-    </>
+    </Layout>
   );
 };
 

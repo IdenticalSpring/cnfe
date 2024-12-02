@@ -392,4 +392,24 @@ export const userAPI = {
       throw new Error(`Error fetching data: ${err.message}`);  
     }
   },
+  fetchCompletedCoursesByUserId :async (userId) => {
+    try {
+      const response = await request.get(`/orders/user/${userId}`);
+      const completedOrders = response.data.data.filter(order => order.paymentStatus === 'completed');
+      return completedOrders;
+    } catch (error) {
+      console.error("Error fetching completed courses", error);
+      throw error;
+    }
+  },
+  fetchProfile: async () => {
+    try {
+      const response = await request.get('/auth/profile');
+      return response.data.data;
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      throw error;
+    }
+  },
+
 };
