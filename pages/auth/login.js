@@ -6,7 +6,7 @@ import { IconButton, InputAdornment, TextField } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import DefaultLayout from '@/layout/DefaultLayout';
-import { loginUser } from '@/service/auth-api';
+import { loginUser, loginWithGitHub, loginWithGoogle } from '@/service/auth-api';
 import { notification } from 'antd';
 import { useRouter } from 'next/router';
 import { jwtDecode } from 'jwt-decode';
@@ -110,6 +110,37 @@ const LinkButton = styled.button`
     color: red;
   }
 `;
+const GoogleButton = styled.button`
+  width: 100%;
+  padding: 12px;
+  background-color: #db4437;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 10px;
+  transition: 0.3s;
+  &:hover {
+    background-color: #c1351d;
+  }
+`;
+
+const GitHubButton = styled.button`
+  width: 100%;
+  padding: 12px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+  &:hover {
+    background-color: #444;
+  }
+`;
+
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -255,6 +286,8 @@ const Login = () => {
           <LoginButton type="submit" onClick={handleSubmit}>
             Login
           </LoginButton>
+          <button onClick={loginWithGoogle}>Sign in with Google</button>
+          <button onClick={loginWithGitHub}>Sign in with GitHub</button>
           <ButtonGroup>
             <LinkButton onClick={openForgotPassword}>Forgot Password</LinkButton>
 
