@@ -194,7 +194,7 @@ const EditCourse = ({ courseId }) => {
 
             <Form.Item>
               <StyledButton type="primary" htmlType="submit" loading={loading}>
-                Lưu thay đổi
+                Save changes
               </StyledButton>
             </Form.Item>
           </Form>

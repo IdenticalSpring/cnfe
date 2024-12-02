@@ -150,4 +150,34 @@ export const adminAPI = {
     );
     return response.data;
   },
+  //------------------------ topic----------------------------------------
+  getAllTopic: async () => {
+    const response = await request.get("/admin/topics");
+    return response.data;
+  },
+  createTopic: async (data) => {
+    const response = await request.post("/admin/topics", data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  },
+  detailTopic: async (id) => {
+    const response = await request.get(`/admin/topics/${id}`);
+    return response.data;
+  },
+  updateTopic: async (id, data) => {
+    const response = await request.put(`/admin/topics/${id}`, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  },
+  deleteTopic: async (id) => {
+    const response = await request.delete(`/admin/topics/${id}`);
+    return response.data;
+  },
+  //------------------------ company----------------------------------------
 };
