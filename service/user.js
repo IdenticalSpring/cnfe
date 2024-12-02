@@ -163,6 +163,20 @@ export const userAPI = {
       throw error;
     }
   },
+  getLessonProgress : async (courseId, userId) => {
+    try {
+      const response = await axios.get(`/user_lesson_progress/${courseId}/${userId}`);
+
+      if (response.status === 200) {
+        return response.data;
+      } else {
+        throw new Error('Failed to fetch lesson progress');
+      }
+    } catch (error) {
+      console.error('Error fetching lesson progress:', error);
+      throw error;
+    }
+  },
 
 
   // -----------------------------EXPLORE-----------------------------------
@@ -176,7 +190,7 @@ export const userAPI = {
     }
   },
 
-  getChaptersAndLessonsByCourseId: async (courseId) => {
+  getChaptersAndLessonsByCourseId: async (courseId,userId) => {
     try {
       const response = await request.get(`/chapters/course/${courseId}`);
       const chapters = response.data.data;
@@ -184,7 +198,7 @@ export const userAPI = {
       const chaptersWithLessons = await Promise.all(
         chapters.map(async (chapter) => {
           const lessonsResponse = await request.get(
-            `/lessons/chapter/${chapter.id}/${courseId}`
+            `/lessons/chapter/${chapter.id}/${courseId}/${userId}`
           );
           return { ...chapter, lessons: lessonsResponse.data.data };
         })
@@ -216,6 +230,28 @@ export const userAPI = {
       return response.data?.data?.data || [];
     } catch (error) {
       console.error(`Error fetching ${type} courses:`, error);
+      throw error;
+    }
+  },
+  updateLessonProgress: async (userId, lessonId) => {
+    const completedAt = new Date().toISOString();
+
+    const progressData = {
+      userId: parseInt(userId),
+      lessonId,
+      status: "completed",
+      completedAt,
+    };
+
+    try {
+      const response = await request.post("/user_lesson_progress", progressData);
+      if (response.status === 201) {
+        return response.data;
+      } else {
+        throw new Error("Failed to update lesson progress.");
+      }
+    } catch (error) {
+      console.error("Error updating lesson progress", error);
       throw error;
     }
   },

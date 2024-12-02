@@ -3,6 +3,8 @@ import styled from "styled-components";
 import BookOutlined from "@mui/icons-material/BookOutlined";
 import PlayCircleOutlined from "@mui/icons-material/PlayCircleOutlined";
 import ChevronRight from "@mui/icons-material/ChevronRight";
+import CheckCircleOutline from "@mui/icons-material/CheckCircleOutline"; // Dấu tích
+
 
 const NavCard = ({
   activeTab,
@@ -40,18 +42,27 @@ const NavCard = ({
               <LessonItem
                 key={lesson.id}
                 onClick={() => {
-                  setActiveTab("content"); // Chuyển sang tab "content"
-                  fetchLessonDetails(chapter.id, lesson.id); // Lấy chi tiết bài học
+                  setActiveTab("content");
+                  fetchLessonDetails(chapter.id, lesson.id);
                 }}
+                $completed={lesson.progresses?.some(progress => progress.status === "completed")} // Kiểm tra trạng thái bài học
               >
+                {lesson.progresses?.some(progress => progress.status === "completed") && (
+                  <CheckCircleOutline
+                    style={{
+                      fontSize: "16px",
+                      color: "#4CAF50", // Màu xanh cho dấu tích
+                      marginRight: "8px",
+                    }}
+                  />
+                )}
                 <ChevronRight
                   style={{
                     fontSize: "12px",
                     color: "#999",
                     marginRight: "8px",
                   }}
-                />{" "}
-                {/* Icon từ MUI */}
+                />
                 {lesson.title}
               </LessonItem>
             ))}
@@ -60,8 +71,6 @@ const NavCard = ({
       ))}
   </StyledNavCard>
 );
-
-export default NavCard;
 
 // Styled Components
 const StyledNavCard = styled.div`
@@ -107,26 +116,29 @@ const ChapterTitle = styled.h3`
   margin: 0;
   font-size: 16px;
   color: #333;
-  word-wrap: break-word; /* Cho phép văn bản xuống dòng khi cần thiết */
-  max-width: 25ch; /* Giới hạn chiều rộng văn bản khoảng 25 ký tự */
+  word-wrap: break-word;
+  max-width: 25ch;
+`;
+
+const LessonList = styled.div`
+  padding-left: 24px;
+  display: ${({ $open }) => ($open ? "block" : "none")};
 `;
 
 const LessonItem = styled.div`
   padding: 12px 16px;
   padding-left: 24px;
   cursor: pointer;
-  color: #666;
+  color: ${({ $completed }) => ($completed ? "#4CAF50" : "#666")};  // Màu xanh cho bài đã hoàn thành
+  background-color: ${({ $completed }) => ($completed ? "#e8f5e9" : "transparent")}; // Màu nền xanh nhạt cho bài đã hoàn thành
   display: flex;
   align-items: center;
-  word-wrap: break-word; /* Cho phép văn bản xuống dòng khi cần thiết */
-  max-width: 25ch; /* Giới hạn chiều rộng văn bản khoảng 25 ký tự */
+  word-wrap: break-word;
+  max-width: 100%;
 
   &:hover {
-    background: #f0f7ff;
-    color: #0070f3;
+    background-color: ${({ $completed }) => ($completed ? "#e8f5e9" : "#f0f7ff")};  // Hover hiệu ứng
   }
 `;
 
-const LessonList = styled.div`
-  display: ${({ $open }) => ($open ? "block" : "none")};
-`;
+export default NavCard;
