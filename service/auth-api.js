@@ -255,3 +255,12 @@ export const resetPassword = async ({
     };
   }
 };
+export const loginWithGoogle = async () => {
+  const googleAuthUrl = `${baseURL}/auth/google`;
+  window.location.href = googleAuthUrl; 
+};
+
+export const loginWithGitHub = async () => {
+  const githubAuthUrl = `${baseURL}/auth/github`;
+  window.location.href = githubAuthUrl;;
+};
