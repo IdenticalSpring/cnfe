@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import TestIcon from "@mui/icons-material/CheckCircle";
 
 const TestCaseSection = styled.div`
   background-color: #ffffff;
@@ -45,11 +46,15 @@ const TestCase = styled.pre`
   margin-bottom: 10px;
   overflow: auto;
 `;
-
+const TestCaseIndex = styled.pre`
+  color: var(--orange-color);
+  font-size: 16px;
+  font-family: Roboto, sans-serif;
+  margin-bottom: 5px;
+`;
 const TestCaseComponent = ({ testCases, result }) => {
   return (
     <TestCaseSection>
-      <SectionTitle>Test Cases</SectionTitle>
       {testCases && testCases.length > 0 ? (
         testCases.map((testCase, index) => {
           const actualResult = result && result[index] ? result[index] : null;
@@ -57,15 +62,20 @@ const TestCaseComponent = ({ testCases, result }) => {
 
           return (
             <div key={index}>
-              <h3>Test Case {index + 1}</h3>
+              <TestCaseIndex>Test Case {index + 1}</TestCaseIndex>
               <TestCase>
                 <strong>Input:</strong> {testCase.input} <br />
                 <strong>Expected Output:</strong> {testCase.output} <br />
-                <strong>Actual Output:</strong> {actualResult?.actualOutput || "No Output"} <br />
-                <strong>Status:</strong> {actualResult?.status || "Unknown"} <br />
-                <strong>CPU Time:</strong> {actualResult?.cpu_time || "N/A"} ms <br />
-                <strong>Memory:</strong> {actualResult?.memory || "N/A"} KB <br />
-                <strong>Wall Time:</strong> {actualResult?.wall_time || "N/A"} ms <br />
+                <strong>Actual Output:</strong>{" "}
+                {actualResult?.actualOutput || "No Output"} <br />
+                <strong>Status:</strong> {actualResult?.status || "Unknown"}{" "}
+                <br />
+                <strong>CPU Time:</strong> {actualResult?.cpu_time || "N/A"} ms{" "}
+                <br />
+                <strong>Memory:</strong> {actualResult?.memory || "N/A"} KB{" "}
+                <br />
+                <strong>Wall Time:</strong> {actualResult?.wall_time || "N/A"}{" "}
+                ms <br />
                 <strong>Error:</strong>{" "}
                 {actualResult?.error ? (
                   <pre style={{ color: "red", whiteSpace: "pre-wrap" }}>

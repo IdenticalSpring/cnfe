@@ -22,7 +22,6 @@ const languages = [
   { label: "Assembly", value: "assembly" },
 ];
 
-// Styled components for layout
 const EditorContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -63,31 +62,43 @@ const LanguageSelect = styled(Select)`
 const ButtonContainer = styled.div`
   display: flex;
   border: 1px solid #ddd;
-  border-radius: 20px;
+  border-radius: 16px;
   overflow: hidden;
-  height: 30px;
+  height: px;
+  width: fit-content;
 `;
 
-// Styled button that behaves like a switch
 const StyledButton = styled.button`
   flex: 1;
-  display: flex; /* Để căn giữa nội dung */
-  align-items: center; /* Căn giữa theo chiều dọc */
-  justify-content: center; /* Căn giữa theo chiều ngang */
-  padding: 8px 16px;
-  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  font-size: 12px;
   font-weight: bold;
   border: none;
   background-color: ${(props) =>
-    props.selected ? "var(--orange-color)" : "#f0f0f0"};
+    props.selected ? "var(--orange-color)" : "transparent"};
   color: ${(props) => (props.selected ? "#fff" : "#000")};
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  width: 28px;
+  height: 24px;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    opacity: ${(props) => (props.selected ? 1 : 0.6)};
+  }
+
+  &:hover {
+    background-color: ${(props) =>
+      props.selected ? "var(--orange-color)" : "rgba(0,0,0,0.05)"};
+  }
 `;
 
 const CodeEditorComponent = ({ code, setCode, language, setLanguage }) => {
   const [theme, setTheme] = useState("vs-dark");
-
 
   const handleLanguageChange = (value) => {
     setLanguage(value);
@@ -129,8 +140,8 @@ const CodeEditorComponent = ({ code, setCode, language, setLanguage }) => {
             height="100%"
             language={language}
             theme={theme}
-            value={code} 
-            onChange={(value) => setCode(value)} 
+            value={code}
+            onChange={(value) => setCode(value)}
             options={{
               minimap: { enabled: false },
               fontSize: 16,

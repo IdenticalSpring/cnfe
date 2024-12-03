@@ -9,22 +9,15 @@
   --success-color: #52c41a;
   --table-header-color: #cecece;
   --link-hover-color: #0D92F4;
-
+  --logo-color: #fe2840;
 }
 
 .ant-tooltip-inner {
   background-color: var(--background-color) !important;
-  /* Nền xám */
   color: var(--primary-color) !important;
-  /* Chữ màu trắng */
 }
 
 .ant-tooltip-arrow {
   border-top-color: white !important;
-  /* Mũi tên màu trắng */
 }
 
-/* body {
-  background-size: 0lvw;
-
-} */

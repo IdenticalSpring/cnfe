@@ -1,19 +1,24 @@
 // Login Component
-import React, { useState } from 'react';
-import Link from 'next/link';
-import styled from 'styled-components';
-import { IconButton, InputAdornment, TextField } from '@mui/material';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import DefaultLayout from '@/layout/DefaultLayout';
-import { loginUser, loginWithGitHub, loginWithGoogle } from '@/service/auth-api';
-import { notification } from 'antd';
-import { useRouter } from 'next/router';
-import { jwtDecode } from 'jwt-decode';
-import ActivateAccountModal from './active-account';
-import axios from 'axios';
-import ForgotPassword from './forgot-password';
-import ResetPassword from './reset-password';
+import React, { useState } from "react";
+import Link from "next/link";
+import styled from "styled-components";
+import { IconButton, InputAdornment, TextField } from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import DefaultLayout from "@/layout/DefaultLayout";
+import {
+  loginUser,
+  loginWithGitHub,
+  loginWithGoogle,
+} from "@/service/auth-api";
+import { notification } from "antd";
+import { useRouter } from "next/router";
+import { jwtDecode } from "jwt-decode";
+import ActivateAccountModal from "./active-account";
+import axios from "axios";
+import ForgotPassword from "./forgot-password";
+import ResetPassword from "./reset-password";
+import GitHubIcon from "@mui/icons-material/GitHub";
 
 const StyledLink = styled.a`
   text-decoration: none;
@@ -26,6 +31,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
+  background-color: var(--background-hover-color);
 `;
 
 const FormWrapper = styled.div`
@@ -82,7 +88,8 @@ const ButtonGroup = styled.div`
   justify-content: space-between;
   margin-top: 30px;
 
-  a, button {
+  a,
+  button {
     color: #1890ff;
     font-size: 14px;
     text-decoration: none;
@@ -110,47 +117,45 @@ const LinkButton = styled.button`
     color: red;
   }
 `;
-const GoogleButton = styled.button`
-  width: 100%;
-  padding: 12px;
-  background-color: #db4437;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  margin-bottom: 10px;
-  transition: 0.3s;
+const OAuthButtons = styled.div`
+  display: flex;
+  gap: 10px; // Creates space between buttons
+  justify-content: center; // Centers buttons horizontally
+  width: 100%; // Ensures full width usage
+`;
+const OAuthButton = styled(LoginButton)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  color: #333;
+  flex: 1; // Allows buttons to grow equally
+  margin-top: 10px;
+
   &:hover {
-    background-color: #c1351d;
+    background-color: #e0e0e0;
+  }
+
+  svg {
+    margin-right: 10px;
   }
 `;
 
-const GitHubButton = styled.button`
-  width: 100%;
-  padding: 12px;
-  background-color: #333;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: 0.3s;
-  &:hover {
-    background-color: #444;
-  }
+const GoogleIconImage = styled.img`
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
 `;
-
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
-  const [userId, setUserId] = useState(null); 
+  const [userId, setUserId] = useState(null);
   const router = useRouter();
   const [isForgotPasswordVisible, setForgotPasswordVisible] = useState(false);
   const [isResetPasswordVisible, setResetPasswordVisible] = useState(false);
-  const [emailForReset, setEmailForReset] = useState('');
+  const [emailForReset, setEmailForReset] = useState("");
 
   const openForgotPassword = () => {
     setForgotPasswordVisible(true);
@@ -196,33 +201,33 @@ const Login = () => {
         const userRole = decodedToken.role;
         const tokenExpiration = decodedToken.exp;
 
-        sessionStorage.setItem('userId', userId);
-        sessionStorage.setItem('userName', userName);
-        sessionStorage.setItem('userRole', userRole);
-        sessionStorage.setItem('tokenExpiration', tokenExpiration);
+        sessionStorage.setItem("userId", userId);
+        sessionStorage.setItem("userName", userName);
+        sessionStorage.setItem("userRole", userRole);
+        sessionStorage.setItem("tokenExpiration", tokenExpiration);
 
-        if (userRole === 'admin') {
-          router.push('/admin/dashboard');
-        } else if (userRole === 'user') {
-          router.push('/');
+        if (userRole === "admin") {
+          router.push("/admin/dashboard");
+        } else if (userRole === "user") {
+          router.push("/");
         } else {
           notification.error({
-            message: 'Error',
-            description: 'Invalid role!',
-            placement: 'bottomRight',
+            message: "Error",
+            description: "Invalid role!",
+            placement: "bottomRight",
             duration: 3,
           });
         }
       } catch (error) {
-        console.error('JWT Decode Error:', error);
+        console.error("JWT Decode Error:", error);
         notification.error({
-          message: 'Error',
-          description: 'Invalid token!',
-          placement: 'bottomRight',
+          message: "Error",
+          description: "Invalid token!",
+          placement: "bottomRight",
           duration: 3,
         });
       }
-    } else if (result.message === 'The account has not been activated.') {
+    } else if (result.message === "The account has not been activated.") {
       try {
         const userIdResult = await axios.get(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/get-user-id?username=${username}`
@@ -232,17 +237,17 @@ const Login = () => {
       } catch (error) {
         console.error("Error fetching user ID:", error);
         notification.error({
-          message: 'Error',
-          description: 'Failed to fetch user ID for activation!',
-          placement: 'bottomRight',
+          message: "Error",
+          description: "Failed to fetch user ID for activation!",
+          placement: "bottomRight",
           duration: 3,
         });
       }
     } else {
       notification.error({
-        message: 'Error',
-        description: result.message || 'Login failed!',
-        placement: 'bottomRight',
+        message: "Error",
+        description: result.message || "Login failed!",
+        placement: "bottomRight",
         duration: 3,
       });
     }
@@ -269,7 +274,7 @@ const Login = () => {
           <StyledTextField
             label="Password"
             variant="outlined"
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             value={password}
             onChange={handlePasswordChange}
             InputProps={{
@@ -286,10 +291,23 @@ const Login = () => {
           <LoginButton type="submit" onClick={handleSubmit}>
             Login
           </LoginButton>
-          <button onClick={loginWithGoogle}>Sign in with Google</button>
-          <button onClick={loginWithGitHub}>Sign in with GitHub</button>
+
+          <OAuthButtons>
+            <OAuthButton onClick={loginWithGoogle}>
+              <GoogleIconImage src="/assets/img/google.png" alt="Google Icon" />
+              Google
+            </OAuthButton>
+
+            <OAuthButton onClick={loginWithGitHub}>
+              <GitHubIcon />
+              GitHub
+            </OAuthButton>
+          </OAuthButtons>
+
           <ButtonGroup>
-            <LinkButton onClick={openForgotPassword}>Forgot Password</LinkButton>
+            <LinkButton onClick={openForgotPassword}>
+              Forgot Password
+            </LinkButton>
 
             {/* Modal quên mật khẩu */}
             <ForgotPassword
@@ -314,11 +332,10 @@ const Login = () => {
             </Link>
           </ButtonGroup>
 
-
           <ActivateAccountModal
             visible={isModalVisible}
             onClose={() => setModalVisible(false)}
-            userId={userId} 
+            userId={userId}
           />
         </FormWrapper>
       </Container>
