@@ -5,7 +5,8 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { userAPI } from "service/user";
 import styled from "styled-components";
-
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 const DiscussionDetail = () => {
   const router = useRouter();
   const { id } = router.query;
@@ -13,9 +14,8 @@ const DiscussionDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState(""); // State lưu comment mới
+  const [newComment, setNewComment] = useState("");
 
-  // Fetch dữ liệu thảo luận và danh sách bình luận
   useEffect(() => {
     if (id) {
       const fetchDiscussion = async () => {
@@ -24,7 +24,7 @@ const DiscussionDetail = () => {
           setDiscussion(discussionData.data);
           setLoading(false);
         } catch (err) {
-          setError("Lỗi khi tải chi tiết thảo luận");
+          setError("Error loading discussion details");
           setLoading(false);
         }
       };
@@ -61,45 +61,60 @@ const DiscussionDetail = () => {
         voteUp: prevDiscussion.voteUp + 1,
       }));
     } catch (err) {
-      console.error("Lỗi khi upvote thảo luận:", err);
-      setError("Không thể upvote thảo luận");
+      console.error("Error upvoting the discussion:", err);
+      setError("Unable to upvote the discussion");
     }
   };
-
+  const handleDownvote = async () => {
+    try {
+      await userAPI.downvoteDiscussion(id); // Cần thêm hàm downvote trong API của bạn
+      setDiscussion((prevDiscussion) => ({
+        ...prevDiscussion,
+        voteUp: prevDiscussion.voteUp - 1,
+      }));
+    } catch (err) {
+      console.error("Error downvoting the discussion:", err);
+      setError("Unable to downvote the discussion");
+    }
+  };
   // Submit new comment
   const handleSubmitComment = async () => {
     if (newComment.trim() === "") return;
 
-    const discussionId = parseInt(id, 10); // Ensure ID is an integer
-    const userId = 123; // Replace with actual userId
+    const discussionId = parseInt(id, 10);
+    const userId = 123;
 
     try {
       const data = await userAPI.submitComment(discussionId, userId, {
         content: newComment,
       });
-      setComments((prevComments) => [...prevComments, data.data]); // Add new comment to the list
-      setNewComment(""); // Clear the input field
+      setComments((prevComments) => [...prevComments, data.data]);
+      setNewComment("");
     } catch (err) {
       console.error("Error submitting comment:", err);
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
-
   return (
-    <DefaultLayout title={discussion.title}>
+    <DefaultLayout title={discussion?.title}>
       <DiscussionContainer>
-        <Title>{discussion.title}</Title>
-        <Content>{discussion.content}</Content>
+        <Title>{discussion?.title}</Title>
+        <Content>{discussion?.content}</Content>
 
         <Footer>
           <VoteButtons>
-            <VoteButton onClick={handleUpvote}>Upvote</VoteButton>
-            <VoteCount>{discussion.voteUp} Upvotes</VoteCount>
+            {/* Nút Upvote */}
+            <VoteButton onClick={handleUpvote}>
+              <ArrowDropUpIcon fontSize="small" />
+            </VoteButton>
+            <VoteCount>{discussion?.voteUp} Votes</VoteCount>
+
+            {/* Nút Downvote */}
+            <VoteButton onClick={handleDownvote}>
+              <ArrowDropDownIcon fontSize="small" />
+            </VoteButton>
           </VoteButtons>
 
-          {/* Section gửi comment mới */}
           <CommentsSection>
             <CommentInput
               value={newComment}
@@ -109,7 +124,6 @@ const DiscussionDetail = () => {
             <CommentButton onClick={handleSubmitComment}>Submit</CommentButton>
           </CommentsSection>
 
-          {/* Hiển thị danh sách comment */}
           <CommentsList>
             {comments.map((comments) => (
               <CommentItem key={comments.id}>
@@ -129,7 +143,6 @@ const DiscussionDetail = () => {
 
 export default DiscussionDetail;
 
-// Styled-components
 const DiscussionContainer = styled.div`
   max-width: 900px;
   margin: 0 auto;
@@ -160,19 +173,24 @@ const Footer = styled.div`
 const VoteButtons = styled.div`
   display: flex;
   gap: 10px;
+  align-items: center;
 `;
 
 const VoteButton = styled.button`
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
+  padding: 10px;
+  background-color: transparent;
+  border: 1px solid #007bff;
+  color: #007bff;
+  border-radius: 50%;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
-    background-color: #0056b3;
+    background-color: #007bff;
+    color: white;
   }
 `;
 

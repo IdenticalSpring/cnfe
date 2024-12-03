@@ -19,12 +19,15 @@ const MainContentContainer = styled.div`
 `;
 
 const LeftPanel = styled.div`
+  margin-top: 10px;
+
   flex: 8;
   max-width: 100%;
   padding-right: 10px;
 `;
 
 const RightPanel = styled.div`
+  margin-top: 10px;
   flex: 2;
   max-width: 100%;
 `;

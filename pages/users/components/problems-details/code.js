@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MonacoEditor from "@monaco-editor/react";
 import { Select } from "antd";
 import styled from "styled-components";
@@ -58,7 +58,6 @@ const LanguageSelect = styled(Select)`
   margin-bottom: 12px;
 `;
 
-// Container for the switch-like buttons
 const ButtonContainer = styled.div`
   display: flex;
   border: 1px solid #ddd;
@@ -99,6 +98,11 @@ const StyledButton = styled.button`
 
 const CodeEditorComponent = ({ code, setCode, language, setLanguage }) => {
   const [theme, setTheme] = useState("vs-dark");
+  useEffect(() => {
+    if (language) {
+      setCode(languageContent[language] || "// Write your code here...");
+    }
+  }, [language, setCode]);
 
   const handleLanguageChange = (value) => {
     setLanguage(value);

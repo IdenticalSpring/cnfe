@@ -1,32 +1,39 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
-const ContentCard = ({ activeTab, courseDescription, selectedLesson, onCompleteLesson }) => {
-    return (
-        <StyledContentCard>
-            {activeTab === 'overview' ? (
-                <TabContent>
-                    <h2>Course Overview</h2>
-                    <p>{courseDescription}</p>
-                </TabContent>
-            ) : (
-                <TabContent>
-                    {selectedLesson ? (
-                        <div>
-                            {console.log("Displaying selected lesson:", selectedLesson)}
-                            <h3>{selectedLesson.title}</h3>
-                            <p>{selectedLesson.content}</p>
-                            <CompleteButton onClick={() => onCompleteLesson(selectedLesson.id)}>
-                                Mark as Completed
-                            </CompleteButton>
-                        </div>
-                    ) : (
-                        <p>Select a lesson to view its content.</p>
-                    )}
-                </TabContent>
-            )}
-        </StyledContentCard>
-    );
+const ContentCard = ({
+  activeTab,
+  courseDescription,
+  selectedLesson,
+  onCompleteLesson,
+}) => {
+  return (
+    <StyledContentCard>
+      {activeTab === "overview" ? (
+        <TabContent>
+          <h2>Course Overview</h2>
+          <p>{courseDescription}</p>
+        </TabContent>
+      ) : (
+        <TabContent>
+          {selectedLesson ? (
+            <div>
+              {console.log("Displaying selected lesson:", selectedLesson)}
+              <h3>{selectedLesson.title}</h3>
+              <p>{selectedLesson.content}</p>
+              <CompleteButton
+                onClick={() => onCompleteLesson(selectedLesson.id)}
+              >
+                Mark as Completed
+              </CompleteButton>
+            </div>
+          ) : (
+            <p>Select a lesson to view its content.</p>
+          )}
+        </TabContent>
+      )}
+    </StyledContentCard>
+  );
 };
 
 export default ContentCard;
@@ -46,7 +53,7 @@ const TabContent = styled.div`
 `;
 
 const CompleteButton = styled.button`
-  background-color: #4CAF50; /* Màu xanh lá */
+  background-color: #4caf50; /* Màu xanh lá */
   color: white;
   border: none;
   padding: 12px 24px;
@@ -55,7 +62,7 @@ const CompleteButton = styled.button`
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.3s;
-  
+
   &:hover {
     background-color: #45a049; /* Màu xanh lá đậm khi hover */
     transform: translateY(-3px); /* Hiệu ứng đẩy lên khi hover */

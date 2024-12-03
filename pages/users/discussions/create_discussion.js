@@ -1,53 +1,47 @@
 import React, { useState } from "react";
 import { Modal, Button, Input, Form, notification } from "antd";
-import { userAPI } from "service/user"; // Thay thế đường dẫn đúng
+import { userAPI } from "service/user";
 
 const PostDiscussion = ({ userId }) => {
-  // Thêm userId vào để sử dụng khi gửi bài viết
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
 
-  // Mở modal khi bấm nút
   const showModal = () => {
     setIsModalVisible(true);
   };
 
-  // Đóng modal
   const handleCancel = () => {
     setIsModalVisible(false);
   };
 
-  // Gửi bài post lên API
   const handleSubmit = async (values) => {
     try {
       const { title, content } = values;
-      // Gửi yêu cầu tạo bài viết cùng với userId và dữ liệu bài viết
       const response = await userAPI.createDiscussion(userId, {
         title,
         content,
       });
 
-      // Kiểm tra nếu phản hồi từ API hợp lệ
       if (response && response.data) {
         notification.success({
-          message: "Bài viết thành công!",
-          description: "Bài viết của bạn đã được đăng lên.",
+          message: "Post Successful!",
+          description: "Your discussion has been posted successfully.",
         });
         setIsModalVisible(false);
-        form.resetFields(); // Reset form sau khi gửi
+        form.resetFields();
       } else {
         notification.error({
-          message: "Có lỗi xảy ra!",
-          description: "Không thể đăng bài viết. Vui lòng thử lại.",
+          message: "Error Occurred!",
+          description: "Unable to post the discussion. Please try again.",
         });
       }
     } catch (error) {
       console.error("Error posting discussion:", error);
       notification.error({
-        message: "Có lỗi xảy ra!",
+        message: "Error Occurred!",
         description:
           error?.response?.data?.message ||
-          "Không thể đăng bài viết. Vui lòng thử lại.",
+          "Unable to post the discussion. Please try again.",
       });
     }
   };
@@ -68,7 +62,7 @@ const PostDiscussion = ({ userId }) => {
           <Form.Item
             name="title"
             label="Title"
-            rules={[{ required: true, message: "Title không được để trống" }]}
+            rules={[{ required: true, message: "Title cannot be empty" }]}
           >
             <Input placeholder="Title" />
           </Form.Item>
@@ -76,7 +70,7 @@ const PostDiscussion = ({ userId }) => {
           <Form.Item
             name="content"
             label="Content"
-            rules={[{ required: true, message: "Content không được để trống" }]}
+            rules={[{ required: true, message: "Content cannot be empty" }]}
           >
             <Input.TextArea rows={4} placeholder="Content" />
           </Form.Item>

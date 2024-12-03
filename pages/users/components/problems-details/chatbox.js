@@ -16,7 +16,7 @@ const ChatBoxContainer = styled.div`
   width: 350px;
   height: 500px;
   background-color: white;
-  border-radius: 20px;
+  border-radius: 1 0px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
@@ -81,8 +81,9 @@ const MessageContent = styled.p`
 const MessageInput = styled.input`
   flex-grow: 1;
   padding: 10px;
+  height: 40px;
   border: 1px solid #ddd;
-  border-radius: 20px;
+  border-radius: 8px;
   margin-right: 10px;
   font-size: 16px;
   outline: none;
@@ -94,12 +95,12 @@ const MessageInput = styled.input`
 `;
 
 const SendButton = styled.button`
-  background-color: #e53e3e;
+  background-color: var(--logo-color);
   color: white;
   border: none;
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -233,7 +234,6 @@ const ButtonContainer = styled.div`
   margin: 10px 15px;
 `;
 
-// Thay đổi code trong ChatBox để sử dụng ButtonContainer
 const ChatBox = ({ code, problemTitle, problemDescription }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [message, setMessage] = useState("");

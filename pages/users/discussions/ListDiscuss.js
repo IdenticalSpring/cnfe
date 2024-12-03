@@ -9,7 +9,7 @@ import {
   SearchOutlined,
 } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
-
+import EjectIcon from "@mui/icons-material/Eject";
 const DiscussionItem = styled.div`
   display: flex;
   background-color: #fff;
@@ -45,9 +45,9 @@ const StyledLink = styled(Link)`
 
 const StatsWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 40px;
+  gap: 20px;
+  width: 10%;
 `;
 
 const StatItem = styled.div`
@@ -120,35 +120,52 @@ const ListDiscuss = () => {
   );
 
   if (error) return <ErrorMessage>{error}</ErrorMessage>;
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
 
+    return () => clearTimeout(timer);
+  }, []);
   return (
     <div>
-      {/* Nút "New" */}
       <NavWrapper>
-        <Button
-          icon={<AddIcon />}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            borderRadius: "8px",
-            backgroundColor: "#FC8F54",
-          }}
-        >
-          New
-        </Button>
+        {loading ? (
+          <Skeleton.Button
+            active={true}
+            size="large"
+            style={{ width: 100, height: 36 }}
+          />
+        ) : (
+          <Button
+            icon={<AddIcon />}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              borderRadius: "8px",
+              backgroundColor: "#FC8F54",
+            }}
+          >
+            New
+          </Button>
+        )}
 
-        <Input
-          placeholder="Search for discussions..."
-          suffix={<SearchOutlined />}
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          style={{ borderRadius: "8px", width: "25%" }}
-        />
+        {loading ? (
+          <Skeleton.Input
+            active={true}
+            style={{ width: "25%", borderRadius: "8px" }}
+          />
+        ) : (
+          <Input
+            placeholder="Search for discussions..."
+            suffix={<SearchOutlined />}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            style={{ borderRadius: "8px", width: "25%" }}
+          />
+        )}
       </NavWrapper>
 
-      {/* Thanh tìm kiếm */}
-
-      {/* Danh sách các cuộc thảo luận */}
       {loading ? (
         <>
           {Array.from({ length: 3 }).map((_, index) => (
@@ -173,7 +190,7 @@ const ListDiscuss = () => {
 
                 <StatsWrapper>
                   <StatItem>
-                    <ThumbUpAltOutlined fontSize="small" />
+                    <EjectIcon fontSize="small" />
                     {discussion.voteUp}
                   </StatItem>
                   <StatItem>
