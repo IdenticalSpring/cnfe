@@ -10,6 +10,7 @@ import {
 } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
 import EjectIcon from "@mui/icons-material/Eject";
+
 const DiscussionItem = styled.div`
   display: flex;
   background-color: #fff;
@@ -107,9 +108,19 @@ const ListDiscuss = () => {
     }
   };
 
+  // useEffect cho việc fetch dữ liệu
   useEffect(() => {
     fetchDiscussions(page);
   }, [page]);
+
+  // useEffect cho việc set loading mặc định 2s
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handlePageChange = (page) => {
     setPage(page);
@@ -120,13 +131,7 @@ const ListDiscuss = () => {
   );
 
   if (error) return <ErrorMessage>{error}</ErrorMessage>;
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
 
-    return () => clearTimeout(timer);
-  }, []);
   return (
     <div>
       <NavWrapper>
