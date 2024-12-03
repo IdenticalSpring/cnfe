@@ -4,6 +4,7 @@ import styled from "styled-components";
 import TableTopic from "../component/table/TableTopic";
 import ButtonCustom from "components/button/Button";
 import { useRouter } from "next/router";
+import { ArrowRightOutlined } from "@ant-design/icons";
 
 const TableContainer = styled.div`
   margin: 0 20px;
@@ -47,17 +48,19 @@ const Index = () => {
       <DefaultLayout>
         <TableContainer>
           <ContentWrapper>
-            <Title_Head>Topic management </Title_Head>
+            <Title_Head>
+              Topic management <ArrowRightOutlined className="icon" />{" "}
+            </Title_Head>
             <ButtonContainer>
-            <ButtonCustom
-              bgColor="var(--success-color)"
-              color="#fff"
-              type="button"
-              onClick={handleCreateTopic}
-            >
-              Create new topic
-            </ButtonCustom>
-          </ButtonContainer>
+              <ButtonCustom
+                bgColor="var(--success-color)"
+                color="#fff"
+                type="button"
+                onClick={handleCreateTopic}
+              >
+                Create new topic
+              </ButtonCustom>
+            </ButtonContainer>
           </ContentWrapper>
           <TableTopic />
         </TableContainer>
