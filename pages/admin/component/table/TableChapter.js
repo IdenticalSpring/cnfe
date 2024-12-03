@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Divider, Skeleton, Modal, notification } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  Table,
+  Button,
+  Skeleton,
+  Modal,
+  notification,
+  Pagination,
+  Divider,
+} from "antd";
 import styled from "styled-components";
-import { adminAPI } from "service/admin";
 import ButtonCustom from "components/button/Button";
+import { adminAPI } from "service/admin";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 
 const StyledTable = styled(Table)`
@@ -31,6 +39,12 @@ const StyledTable = styled(Table)`
   .custom-iconDelete {
     color: red;
   }
+`;
+
+const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
 `;
 
 const ModalTitle = styled.div`
@@ -62,24 +76,44 @@ const ButtonContainer = styled.div`
   margin-top: 16px;
 `;
 
-const TableCompany = () => {
+const TableChapter = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [deleteRecord, setDeleteRecord] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const router = useRouter();
 
   useEffect(() => {
-    const getAllCompany = async () => {
+    const getAllChapter = async (page) => {
+      setLoading(true);
       try {
-        const response = await adminAPI.getAllCompany();
-        setData(response?.data);
-        setLoading(false);
+        const response = await adminAPI.getAllChapter(page);
+        if (response.statusCode === 200 || response.statusCode === 201) {
+          const formattedData = response?.data?.data?.map((chapter) => ({
+            id: chapter?.id,
+            title: chapter?.title,
+            description: chapter?.description || "Không xác định",
+            truncatedDescription: truncateDescription(
+              chapter?.description || ""
+            ),
+            courseId: chapter?.courseId || 0,
+            order: chapter?.order || 0,
+          }));
+          setData(formattedData);
+
+          setTotal(response?.data?.totalItems);
+          if (response?.data?.totalPages) {
+            setTotalPages(response?.data?.totalPages);
+          }
+        }
       } catch (error) {
         notification.error({
           message: "Error",
-          description: "Failed to load company. Please try again later.",
+          description: "Failed to load chapter. Please try again later.",
           placement: "bottomRight",
           duration: 2,
         });
@@ -88,15 +122,29 @@ const TableCompany = () => {
       }
     };
 
-    getAllCompany();
-  }, []);
+    getAllChapter(currentPage);
+  }, [currentPage]);
 
   const columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      width: 150,
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+    },
+    {
+      title: "Course ID",
+      dataIndex: "courseId",
+      key: "courseId",
+    },
+    {
+      title: "Order",
+      dataIndex: "order",
+      key: "order",
     },
     {
       title: "Action",
@@ -116,26 +164,51 @@ const TableCompany = () => {
           />
         </span>
       ),
-      width: 150,
     },
   ];
 
+  const truncateDescription = (description) => {
+    if (description.length <= 50) return description;
+
+    let truncated = description.substring(0, 50);
+    const lastSpaceIndex = truncated.lastIndexOf(" ");
+    return lastSpaceIndex !== -1
+      ? truncated.substring(0, lastSpaceIndex) + " ..."
+      : truncated + " ...";
+  };
+
   const handleEdit = (record) => {
-    router.push(`/admin/companies/${record.id}`);
+    router.push(`/admin/chapters/${record.id}`);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   const handleDelete = (record) => {
-    setDeleteRecord(record);
+      setDeleteRecord(record);
+      console.log("Delete:", record);
     setIsDeleteModalVisible(true);
   };
 
   const confirmDelete = async () => {
+    console.log(deleteRecord?.id);
+    if (!deleteRecord?.id) {
+      notification.error({
+        message: "Error",
+        description: "Record ID is missing. Cannot delete.",
+        placement: "bottomRight",
+        duration: 2,
+      });
+      setIsDeleteModalVisible(false);
+      return;
+    }
     try {
-      const response = await adminAPI.deleteCompany(deleteRecord.id);
+      const response = await adminAPI.deleteChapter(deleteRecord.id);
       if (response?.statusCode == 200 || response?.statusCode === 201) {
         notification.success({
           message: "Success",
-          description: `The company has been deleted successfully.`,
+          description: `The chapter has been deleted successfully.`,
           placement: "bottomRight",
           duration: 2,
         });
@@ -144,9 +217,10 @@ const TableCompany = () => {
         );
       }
     } catch (error) {
+      console.log("🚀 ~ confirmDelete ~ error:", error);
       notification.error({
         message: "Error",
-        description: `Failed to delete the company. Please try again later.`,
+        description: `Failed to delete the chapter. Please try again later.`,
         placement: "bottomRight",
         duration: 2,
       });
@@ -161,7 +235,25 @@ const TableCompany = () => {
       {loading ? (
         <Skeleton active paragraph={{ rows: 10 }} />
       ) : (
-        <StyledTable columns={columns} dataSource={data} rowKey="id" />
+        <>
+          <StyledTable
+            columns={columns}
+            dataSource={data}
+            pagination={false}
+            rowKey="id"
+          />
+          <PaginationContainer>
+            <Pagination
+              current={currentPage}
+              total={total}
+              pageSize={20}
+              onChange={handlePageChange}
+              showSizeChanger={false}
+              pageSizeOptions={["20"]}
+              totalPages={totalPages}
+            />
+          </PaginationContainer>
+        </>
       )}
       <Modal
         title={<ModalTitle>Delete information</ModalTitle>}
@@ -196,4 +288,4 @@ const TableCompany = () => {
   );
 };
 
-export default TableCompany;
+export default TableChapter;
