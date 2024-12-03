@@ -203,4 +203,33 @@ export const adminAPI = {
     const response = await request.delete(`/admin/companies/${id}`);
     return response.data;
   },
+  //------------------------ chapter----------------------------------------
+  getAllChapter: async (page) => {
+    const response = await request.get(`/admin/chapters?page=${page}`);
+    return response.data;
+  },
+  createChapter: async (data) => {
+    const response = await request.post("/admin/chapters", data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  },
+  detailChapter: async (id) => {
+    const response = await request.get(`/admin/chapters/${id}`);
+    return response.data;
+  },
+  updateChapter: async (id, data) => {
+    const response = await request.patch(`/admin/chapters/${id}`, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  },
+  deleteChapter: async (id) => {
+    const response = await request.delete(`/admin/chapters/${id}`);
+    return response.data;
+  },
 };

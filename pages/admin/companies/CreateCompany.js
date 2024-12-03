@@ -9,7 +9,6 @@ import { adminAPI } from "service/admin";
 const Container = styled.div`
   margin: 0 auto;
   padding: 80px 20px 20px;
-  max-width: 600px;
 `;
 
 const Title = styled.h1`
