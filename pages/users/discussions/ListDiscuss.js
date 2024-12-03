@@ -10,6 +10,7 @@ import {
 } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
 import EjectIcon from "@mui/icons-material/Eject";
+import PostDiscussion from "./create_discussion";
 
 const DiscussionItem = styled.div`
   display: flex;
@@ -76,7 +77,19 @@ const NavWrapper = styled.div`
   border-bottom: 1px solid var(--background-hover-color);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 `;
+const NewButton = styled(Button)`
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  background-color: var(--orange-color);
+  border: none;
+  color: white;
 
+  &:hover {
+    background-color: var(--background-hover-color) !important;
+    color: black;
+  }
+`;
 const ListDiscuss = () => {
   const [discussions, setDiscussions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -113,7 +126,6 @@ const ListDiscuss = () => {
     fetchDiscussions(page);
   }, [page]);
 
-  // useEffect cho việc set loading mặc định 2s
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -142,17 +154,7 @@ const ListDiscuss = () => {
             style={{ width: 100, height: 36 }}
           />
         ) : (
-          <Button
-            icon={<AddIcon />}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              borderRadius: "8px",
-              backgroundColor: "#FC8F54",
-            }}
-          >
-            New
-          </Button>
+          <NewButton icon={<AddIcon />}>New</NewButton>
         )}
 
         {loading ? (

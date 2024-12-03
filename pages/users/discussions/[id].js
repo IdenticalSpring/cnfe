@@ -7,6 +7,7 @@ import { userAPI } from "service/user";
 import styled from "styled-components";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { Tooltip } from "antd";
 const DiscussionDetail = () => {
   const router = useRouter();
   const { id } = router.query;
@@ -97,55 +98,58 @@ const DiscussionDetail = () => {
 
   return (
     <DefaultLayout title={discussion?.title}>
-      <DiscussionContainer>
+      <ContainerDis>
         <Title>{discussion?.title}</Title>
         <Content>{discussion?.content}</Content>
 
-        <Footer>
-          <VoteButtons>
-            {/* Nút Upvote */}
+        <VoteButtons>
+          <Tooltip title="Upvote" placement="bottom">
             <VoteButton onClick={handleUpvote}>
-              <ArrowDropUpIcon fontSize="small" />
+              <ArrowDropUpIcon />
             </VoteButton>
-            <VoteCount>{discussion?.voteUp} Votes</VoteCount>
+          </Tooltip>
 
-            {/* Nút Downvote */}
+          <VoteCount>{discussion?.voteUp} </VoteCount>
+
+          <Tooltip title="Downvote" placement="bottom">
             <VoteButton onClick={handleDownvote}>
-              <ArrowDropDownIcon fontSize="small" />
+              <ArrowDropDownIcon />
             </VoteButton>
-          </VoteButtons>
+          </Tooltip>
+        </VoteButtons>
 
-          <CommentsSection>
-            <CommentInput
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Add a comment"
-            />
-            <CommentButton onClick={handleSubmitComment}>Submit</CommentButton>
-          </CommentsSection>
+        <CommentsSection>
+          <CommentInput
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Add a comment"
+          />
+          <CommentButton onClick={handleSubmitComment}>Submit</CommentButton>
+        </CommentsSection>
 
-          <CommentsList>
-            {comments.map((comments) => (
-              <CommentItem key={comments.id}>
-                <CommentUser>{comments.userName}</CommentUser>
-                <CommentContent>{comments.comments.content}</CommentContent>
-                <CommentDate>
-                  {new Date(comments.createdAt).toLocaleString()}
-                </CommentDate>
-              </CommentItem>
-            ))}
-          </CommentsList>
-        </Footer>
-      </DiscussionContainer>
+        <CommentsList>
+          <hr />
+
+          {comments.map((comments) => (
+            <CommentItem key={comments.id}>
+              <CommentUser>{comments.userName}</CommentUser>
+              <CommentContent>{comments.comments.content}</CommentContent>
+              <CommentDate>
+                {new Date(comments.createdAt).toLocaleString()}
+              </CommentDate>
+            </CommentItem>
+          ))}
+        </CommentsList>
+      </ContainerDis>
     </DefaultLayout>
   );
 };
 
 export default DiscussionDetail;
 
-const DiscussionContainer = styled.div`
+const ContainerDis = styled.div`
   max-width: 900px;
-  margin: 0 auto;
+  margin: 30px auto;
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
@@ -153,50 +157,41 @@ const DiscussionContainer = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 2rem;
+  font-size: 20px;
   font-weight: 600;
-  color: #333;
 `;
 
 const Content = styled.p`
   margin-top: 20px;
-  font-size: 1.1rem;
+  font-size: 16px;
   line-height: 1.6;
-`;
-
-const Footer = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-top: 30px;
 `;
 
 const VoteButtons = styled.div`
   display: flex;
   gap: 10px;
   align-items: center;
+  justify-content: end;
 `;
 
 const VoteButton = styled.button`
-  padding: 10px;
-  background-color: transparent;
-  border: 1px solid #007bff;
-  color: #007bff;
-  border-radius: 50%;
+  padding: 5px;
   cursor: pointer;
+  border: 1px solid #555; /* Viền cùng màu với nút */
+
   transition: background-color 0.3s, color 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
-
+  border-radius: 10px;
   &:hover {
-    background-color: #007bff;
-    color: white;
+    color: var(--orange-color);
+    border: 1px solid var(--orange-color); /* Viền cùng màu với nút */
   }
 `;
 
 const VoteCount = styled.span`
-  margin-left: 10px;
-  font-size: 1rem;
+  font-size: 14;
   color: #555;
 `;
 
@@ -216,15 +211,16 @@ const CommentInput = styled.textarea`
 
 const CommentButton = styled.button`
   padding: 10px 20px;
-  background-color: #28a745;
+  background-color: var(--grey-color);
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
 
+  transition: background-color 0.3s;
+  align-items: center;
   &:hover {
-    background-color: #218838;
+    background-color: var(--orange-color);
   }
 `;
 
@@ -239,6 +235,7 @@ const CommentItem = styled.div`
 
 const CommentUser = styled.div`
   font-weight: bold;
+  margin-bottom: 10px;
   color: #333;
 `;
 
@@ -250,6 +247,7 @@ const CommentContent = styled.p`
 
 const CommentDate = styled.div`
   margin-top: 5px;
-  font-size: 0.9rem;
+  font-size: 12px;
   color: #777;
+  text-align: right;
 `;
