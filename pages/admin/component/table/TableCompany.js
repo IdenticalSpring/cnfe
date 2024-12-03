@@ -131,7 +131,7 @@ const TableCompany = () => {
 
   const confirmDelete = async () => {
     try {
-      const response = await adminAPI.deleteTopic(deleteRecord.id);
+      const response = await adminAPI.deleteCompany(deleteRecord.id);
       if (response?.statusCode == 200 || response?.statusCode === 201) {
         notification.success({
           message: "Success",

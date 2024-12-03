@@ -34,7 +34,7 @@ const EditCompany = ({ companyId }) => {
       setLoading(true);
 
       try {
-        const response = await adminAPI.detailTopic(companyId);
+        const response = await adminAPI.detailCompany(companyId);
         if (response?.data) {
           setCompanyName(response?.data?.name);
         }

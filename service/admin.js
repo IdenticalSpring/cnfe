@@ -187,16 +187,20 @@ export const adminAPI = {
     });
     return response.data;
   },
-  // detailCompany: async (id) => {
-  //   const response = await request.get(`/admin/companies/${id}`);
-  //   return response.data;
-  // },
+  detailCompany: async (id) => {
+    const response = await request.get(`/admin/companies/${id}`);
+    return response.data;
+  },
   updateCompany: async (id, data) => {
     const response = await request.patch(`/admin/companies/${id}`, data, {
       headers: {
         "Content-Type": "application/json",
       },
     });
+    return response.data;
+  },
+  deleteCompany: async (id) => {
+    const response = await request.delete(`/admin/companies/${id}`);
     return response.data;
   },
 };
