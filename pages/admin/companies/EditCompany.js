@@ -23,25 +23,26 @@ const ButtonContainer = styled.div`
   justify-content: flex-end;
 `;
 
-const EditTopic = ({ topicId }) => {
-  const [topicName, setTopicName] = useState("");
+const EditCompany = ({ companyId }) => {
+  const [companyName, setCompanyName] = useState("");
   const [loading, setLoading] = useState(true);
 
   const router = useRouter();
 
   useEffect(() => {
-    const getTopicDetails = async () => {
+    const getCompanyDetails = async () => {
       setLoading(true);
 
       try {
-        const response = await adminAPI.detailTopic(topicId);
+        const response = await adminAPI.detailTopic(companyId);
         if (response?.data) {
-          setTopicName(response?.data?.name);
+          setCompanyName(response?.data?.name);
         }
       } catch (error) {
         notification.error({
           message: "Error",
-          description: "Failed to load topic details. Please try again later.",
+          description:
+            "Failed to load company details. Please try again later.",
           placement: "bottomRight",
           duration: 2,
         });
@@ -50,16 +51,16 @@ const EditTopic = ({ topicId }) => {
       }
     };
 
-    if (topicId) {
-      getTopicDetails();
+    if (companyId) {
+      getCompanyDetails();
     }
-  }, [topicId]);
+  }, [companyId]);
 
-  const handleEditTopic = async () => {
-    if (!topicName.trim()) {
+  const handleEditCompany = async () => {
+    if (!companyName.trim()) {
       notification.warning({
         message: "Warning",
-        description: "Topic name cannot be empty.",
+        description: "Company name cannot be empty.",
         placement: "bottomRight",
         duration: 2,
       });
@@ -67,20 +68,22 @@ const EditTopic = ({ topicId }) => {
     }
 
     try {
-      const response = await adminAPI.updateTopic(topicId, { name: topicName });
+      const response = await adminAPI.updateCompany(companyId, {
+        name: companyName,
+      });
       if (response?.statusCode === 200 || response?.statusCode === 201) {
         notification.success({
           message: "Success",
-          description: "Topic has been updated successfully.",
+          description: "Company has been updated successfully.",
           placement: "bottomRight",
           duration: 2,
         });
-        router.push("/admin/topics/");
+        router.push("/admin/companies/");
       }
     } catch (error) {
       notification.error({
         message: "Error",
-        description: "Failed to update topic. Please try again later.",
+        description: "Failed to update company. Please try again later.",
         placement: "bottomRight",
         duration: 2,
       });
@@ -90,7 +93,7 @@ const EditTopic = ({ topicId }) => {
   return (
     <DefaultLayout>
       <Container>
-        <Title>Edit Topic</Title>
+        <Title>Edit Company</Title>
         {loading ? (
           <div style={{ textAlign: "center", marginTop: "20px" }}>
             <Spin size="large" />
@@ -98,15 +101,15 @@ const EditTopic = ({ topicId }) => {
         ) : (
           <>
             <Input
-              value={topicName}
-              onChange={(e) => setTopicName(e.target.value)}
-              placeholder="Enter topic name"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              placeholder="Enter company name"
               style={{ width: "100%" }}
             />
             <ButtonContainer>
               <Button
                 type="primary"
-                onClick={handleEditTopic}
+                onClick={handleEditCompany}
                 style={{ marginTop: "20px" }}
               >
                 Save Changes
@@ -119,4 +122,4 @@ const EditTopic = ({ topicId }) => {
   );
 };
 
-export default EditTopic;
+export default EditCompany;
