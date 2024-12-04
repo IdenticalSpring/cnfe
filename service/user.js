@@ -301,13 +301,8 @@ export const userAPI = {
   },
 
   getDiscussionByID: async (id) => {
-    try {
-      const response = await request.get(`/discuss/getOne${id}`);
-      return response.data;
-    } catch (error) {
-      console.error("Lỗi khi lấy chi tiết thảo luận:", error);
-      throw error;
-    }
+    const response = await request.get(`/discuss/getOne${id}`);
+    return response.data;
   },
 
   upVoteDiscussion: async (userId, discussionId, data) => {

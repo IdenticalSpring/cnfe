@@ -62,11 +62,12 @@ const ButtonContainer = styled.div`
   margin-top: 16px;
 `;
 
-const TableCompany = () => {
+const TableCompany = ({ searchTerm }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [deleteRecord, setDeleteRecord] = useState(null);
+  const [filteredData, setFilteredData] = useState([]);
 
   const router = useRouter();
 
@@ -75,6 +76,7 @@ const TableCompany = () => {
       try {
         const response = await adminAPI.getAllCompany();
         setData(response?.data);
+        setFilteredData(response?.data);
         setLoading(false);
       } catch (error) {
         notification.error({
@@ -120,6 +122,13 @@ const TableCompany = () => {
     },
   ];
 
+  useEffect(() => {
+    const filtered = data.filter((company) =>
+      company?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredData(filtered);
+  }, [searchTerm, data]);
+
   const handleEdit = (record) => {
     router.push(`/admin/companies/${record.id}`);
   };
@@ -161,7 +170,7 @@ const TableCompany = () => {
       {loading ? (
         <Skeleton active paragraph={{ rows: 10 }} />
       ) : (
-        <StyledTable columns={columns} dataSource={data} rowKey="id" />
+        <StyledTable columns={columns} dataSource={filteredData} rowKey="id" />
       )}
       <Modal
         title={<ModalTitle>Delete information</ModalTitle>}

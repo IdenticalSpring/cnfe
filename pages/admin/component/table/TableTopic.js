@@ -62,11 +62,12 @@ const ButtonContainer = styled.div`
   margin-top: 16px;
 `;
 
-const TableTopic = () => {
+const TableTopic = ({ searchTerm }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [deleteRecord, setDeleteRecord] = useState(null);
+  const [filteredData, setFilteredData] = useState([]);
 
   const router = useRouter();
 
@@ -75,6 +76,7 @@ const TableTopic = () => {
       try {
         const response = await adminAPI.getAllTopic();
         setData(response?.data);
+        setFilteredData(response?.data);
         setLoading(false);
       } catch (error) {
         notification.error({
@@ -90,6 +92,13 @@ const TableTopic = () => {
 
     getAllTopic();
   }, []);
+
+  useEffect(() => {
+    const filtered = data.filter((topic) =>
+      topic?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredData(filtered);
+  }, [searchTerm, data]);
 
   const columns = [
     {
@@ -161,7 +170,7 @@ const TableTopic = () => {
       {loading ? (
         <Skeleton active paragraph={{ rows: 10 }} />
       ) : (
-        <StyledTable columns={columns} dataSource={data} rowKey="id" />
+        <StyledTable columns={columns} dataSource={filteredData} rowKey="id" />
       )}
       <Modal
         title={<ModalTitle>Delete information</ModalTitle>}

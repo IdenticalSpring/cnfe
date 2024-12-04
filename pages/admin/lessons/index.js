@@ -4,6 +4,8 @@ import TableLesson from "../component/table/TableLesson";
 import ButtonCustom from "components/button/Button";
 import { useRouter } from "next/router";
 import { ArrowRightOutlined } from "@ant-design/icons";
+import Search from "pages/admin/component/search/index";
+import { useState } from "react";
 
 const TableContainer = styled.div`
   margin: 0 20px;
@@ -25,6 +27,9 @@ const Title_Head = styled.h1`
 `;
 
 const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin: 20px 0;
 `;
 
@@ -33,11 +38,18 @@ const ContentWrapper = styled.div`
 `;
 
 const Index = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  
   const router = useRouter();
 
   const handleCreateLesson = () => {
     router.push("/admin/lessons/CreateLesson");
   };
+
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+  };
+
   return (
     <DefaultLayout>
       <TableContainer>
@@ -47,6 +59,7 @@ const Index = () => {
           </Title_Head>
         </ContentWrapper>
         <ButtonContainer>
+        <Search onSearch={handleSearch} />
           <ButtonCustom
             bgColor="var(--success-color)"
             color="#fff"
@@ -56,7 +69,7 @@ const Index = () => {
             Create Lesson
           </ButtonCustom>
         </ButtonContainer>
-        <TableLesson />
+        <TableLesson searchTerm={searchTerm}/>
       </TableContainer>
     </DefaultLayout>
   );

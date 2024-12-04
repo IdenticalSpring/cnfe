@@ -84,8 +84,8 @@ const CreateCourse = () => {
       const result = await adminAPI.createCourse(formData);
       if (result?.statusCode === 200 || result?.statusCode === 201) {
         notification.success({
-          message: "Tạo khóa học thành công",
-          description: "Khóa học đã được tạo thành công!",
+          message: "Course Created Successfully",
+          description: "The course has been created successfully!",
           placement: "bottomRight",
           duration: 2,
         });
@@ -93,8 +93,8 @@ const CreateCourse = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Tạo khóa học thất bại",
-        description: "Đã có lỗi xảy ra khi tạo khóa học. Vui lòng thử lại!",
+        message: "Course Creation Failed",
+        description: "An error occurred while creating the course. Please try again!",
         placement: "bottomRight",
         duration: 2,
       });
@@ -106,11 +106,11 @@ const CreateCourse = () => {
   return (
     <DefaultLayout>
       <Container>
-        <Title>Tạo khóa học</Title>
+        <Title>Create Course</Title>
         <Form onSubmit={handleSubmit} noValidate>
           <Input
             type="text"
-            placeholder="Tiêu đề"
+            placeholder="Title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
@@ -119,7 +119,7 @@ const CreateCourse = () => {
           <Editor
             value={description}
             onChange={(content) => setDescription(content)}
-            placeholder="Nhập mô tả cho khóa học..."
+            placeholder="Enter course description..."
           />
 
           <Input

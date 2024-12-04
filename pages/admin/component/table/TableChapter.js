@@ -76,7 +76,7 @@ const ButtonContainer = styled.div`
   margin-top: 16px;
 `;
 
-const TableChapter = () => {
+const TableChapter = ({ searchTerm }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
@@ -84,6 +84,7 @@ const TableChapter = () => {
   const [total, setTotal] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [filteredData, setFilteredData] = useState([]);
 
   const router = useRouter();
 
@@ -104,7 +105,7 @@ const TableChapter = () => {
             order: chapter?.order || 0,
           }));
           setData(formattedData);
-
+          setFilteredData(formattedData);
           setTotal(response?.data?.totalItems);
           if (response?.data?.totalPages) {
             setTotalPages(response?.data?.totalPages);
@@ -167,6 +168,13 @@ const TableChapter = () => {
     },
   ];
 
+  useEffect(() => {
+    const filtered = data.filter((chapter) =>
+      chapter?.title?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredData(filtered);
+  }, [searchTerm, data]);
+
   const truncateDescription = (description) => {
     if (description.length <= 50) return description;
 
@@ -187,12 +195,10 @@ const TableChapter = () => {
 
   const handleDelete = (record) => {
       setDeleteRecord(record);
-      console.log("Delete:", record);
     setIsDeleteModalVisible(true);
   };
 
   const confirmDelete = async () => {
-    console.log(deleteRecord?.id);
     if (!deleteRecord?.id) {
       notification.error({
         message: "Error",
@@ -217,7 +223,6 @@ const TableChapter = () => {
         );
       }
     } catch (error) {
-      console.log("🚀 ~ confirmDelete ~ error:", error);
       notification.error({
         message: "Error",
         description: `Failed to delete the chapter. Please try again later.`,
@@ -238,7 +243,7 @@ const TableChapter = () => {
         <>
           <StyledTable
             columns={columns}
-            dataSource={data}
+            dataSource={filteredData}
             pagination={false}
             rowKey="id"
           />
