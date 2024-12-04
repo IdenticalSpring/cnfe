@@ -1,6 +1,10 @@
 import styled from "styled-components";
 import DefaultLayout from "./layout/DefaultLayout";
 
+const TableContainer = styled.div`
+  margin: 0 20px;
+`;
+
 const Title_Head = styled.h1`
   font-size: 32px;
   font-weight: 600;
@@ -24,12 +28,14 @@ const assignments = () => {
   return (
     <>
       <DefaultLayout>
-        <ContentWrapper>
-          <Title_Head>Assignments management</Title_Head>
-        </ContentWrapper>
+        <TableContainer>
+          <ContentWrapper>
+            <Title_Head>Assignments management</Title_Head>
+          </ContentWrapper>
+        </TableContainer>
       </DefaultLayout>
     </>
   );
 };
 
-export default assignments;
+export default assignments; 

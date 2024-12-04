@@ -75,7 +75,7 @@ const ButtonContainer = styled.div`
   margin-top: 16px;
 `;
 
-const TableProblem = () => {
+const TableProblem = ({ searchTerm }) => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
@@ -84,6 +84,7 @@ const TableProblem = () => {
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [deleteProblemId, setDeleteProblemId] = useState(null);
+  const [filteredData, setFilteredData] = useState([]);
 
   const router = useRouter();
 
@@ -101,43 +102,50 @@ const TableProblem = () => {
     const fetchAllProblems = async (page) => {
       setLoading(true);
       try {
-        const [response, result] = await Promise.all([
+        const [response, result, coursesResult] = await Promise.all([
           adminAPI.getAllProblemsByPage(page),
           adminAPI.getAllDifficulties(),
+          adminAPI.getAllCourse(),
         ]);
         if (
           (response?.statusCode === 200 || response?.statusCode === 201) &&
           (result?.statusCode === 200 || result?.statusCode === 201)
         ) {
           const difficulties = result?.data;
+          const courses = coursesResult?.data;
           const difficultiesMap = difficulties?.reduce((acc, difficulty) => {
             acc[difficulty.id] = difficulty.name;
+            return acc;
+          }, {});
+
+          const coursesMap = courses?.reduce((acc, course) => {
+            acc[course.id] = course?.title;
             return acc;
           }, {});
 
           const formattedData = response?.data?.data?.map((problem) => ({
             key: problem?.id,
             title: problem?.title,
-            description: problem?.description || "Không xác định",
+            description: problem?.description || "Not specified",
             truncatedDescription: truncateDescription(
               problem?.description || ""
             ),
             difficultyId:
-              difficultiesMap[problem?.difficultyId] || "Không xác định",
-            courseId: problem?.courseId || "Không xác định",
+              difficultiesMap[problem?.difficultyId] || "Not specified",
+            courseId: coursesMap[problem?.courseId] || "Not specified",
             topic:
               problem?.topics?.map((t) => t.name).join(", ") ||
-              "Không xác định",
+              "Not specified",
             company:
               problem?.companies?.map((c) => c.name).join(", ") ||
-              "Không xác định",
+              "Not specified",
             likes: problem?.likes || 0,
             dislikes: problem?.dislikes || 0,
             rating: problem?.rating || 0,
-            acceptanceRate: problem?.acceptance_rate || "Không xác định",
+            acceptanceRate: problem?.acceptance_rate || "Not specified",
           }));
           setTableData(formattedData);
-
+          setFilteredData(formattedData);
           setTotal(response?.data?.totalItems);
           if (response?.data?.totalPages) {
             setTotalPages(response?.data?.totalPages);
@@ -158,6 +166,13 @@ const TableProblem = () => {
     };
     fetchAllProblems(currentPage);
   }, [currentPage]);
+
+  useEffect(() => {
+    const filtered = tableData.filter((problem) =>
+      problem?.title?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredData(filtered);
+  }, [searchTerm, tableData]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -246,7 +261,7 @@ const TableProblem = () => {
       width: "100px",
     },
     {
-      title: "Course ID",
+      title: "Course",
       dataIndex: "courseId",
       key: "courseId",
       width: "150px",
@@ -317,7 +332,7 @@ const TableProblem = () => {
         <>
           <StyledTable
             columns={columns}
-            dataSource={tableData}
+            dataSource={filteredData}
             pagination={false}
           />
           <PaginationContainer>

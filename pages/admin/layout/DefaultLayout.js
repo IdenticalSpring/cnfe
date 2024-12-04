@@ -9,6 +9,7 @@ const Main = styled.div`
   margin-left: ${({ collapsed }) => (collapsed ? "80px" : "200px")};
   padding-bottom: 10px;
   transition: margin-left 0.3s;
+  background-color: #fcfcfc;
 `;
 
 const DefaultLayoutadmin = ({ children }) => {

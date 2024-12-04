@@ -2,6 +2,10 @@ import React from "react";
 import DefaultLayout from "./layout/DefaultLayout";
 import styled from "styled-components";
 
+const TableContainer = styled.div`
+  margin: 0 20px;
+`;
+
 const Title_Head = styled.h1`
   font-size: 32px;
   font-weight: 600;
@@ -25,11 +29,13 @@ const dashboard = () => {
   return (
     <>
       <DefaultLayout>
-        <ContentWrapper>
-          <Title_Head>
-            Chào mừng bạn đã đến với trang admin master coding
-          </Title_Head>
-        </ContentWrapper>
+        <TableContainer>
+          <ContentWrapper>
+            <Title_Head>
+              Dashboard master Coding
+            </Title_Head>
+          </ContentWrapper>
+        </TableContainer>
       </DefaultLayout>
     </>
   );

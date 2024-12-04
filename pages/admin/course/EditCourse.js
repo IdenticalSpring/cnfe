@@ -47,8 +47,8 @@ const EditCourse = ({ courseId }) => {
     const fetchCourseData = async () => {
       if (!courseId) {
         notification.error({
-          message: "Lỗi",
-          description: "ID khóa học không hợp lệ.",
+          message: "Error",
+          description: "Invalid course ID.",
           placement: "bottomRight",
         });
         setLoadingData(false);
@@ -67,7 +67,7 @@ const EditCourse = ({ courseId }) => {
           setFileList([
             {
               uid: "-1",
-              name: "Hình ảnh khóa học",
+              name: "Course image",
               status: "done",
               url: data.imageUrl,
             },
@@ -75,8 +75,8 @@ const EditCourse = ({ courseId }) => {
         }
       } catch (error) {
         notification.error({
-          message: "Lỗi",
-          description: "Không thể tải dữ liệu khóa học.",
+          message: "Error",
+          description: "Unable to load course data.",
           placement: "bottomRight",
         });
       } finally {
@@ -98,9 +98,8 @@ const EditCourse = ({ courseId }) => {
         const fileSize = fileList[0].originFileObj.size / 1024 / 1024;
         if (fileSize > 5) {
           notification.error({
-            message: "Lỗi",
-            description:
-              "Hình ảnh quá lớn. Vui lòng chọn hình ảnh nhỏ hơn 5MB.",
+            message: "Error",
+            description: "Image is too large. Please select an image smaller than 5MB.",
             placement: "bottomRight",
           });
           setLoading(false);
@@ -111,8 +110,8 @@ const EditCourse = ({ courseId }) => {
         const fileType = fileList[0].originFileObj.type;
         if (!validFileTypes.includes(fileType)) {
           notification.error({
-            message: "Lỗi",
-            description: "Vui lòng chọn hình ảnh hợp lệ (JPG, PNG, GIF).",
+            message: "Error",
+            description: "Please select a valid image (JPG, PNG, GIF).",
             placement: "bottomRight",
           });
           setLoading(false);
@@ -128,16 +127,16 @@ const EditCourse = ({ courseId }) => {
     try {
       await adminAPI.updateCourse(courseId, formData);
       notification.success({
-        message: "Cập nhật thành công",
-        description: "Thông tin khóa học đã được cập nhật.",
+        message: "Update successful",
+        description: "Course information has been updated.",
         placement: "bottomRight",
       });
 
       router.push("/admin/courses");
     } catch (error) {
       notification.error({
-        message: "Lỗi",
-        description: "Không thể cập nhật thông tin khóa học.",
+        message: "Error",
+        description: "Unable to update course information.",
         placement: "bottomRight",
       });
       console.error("Error updating course:", error);
@@ -156,29 +155,29 @@ const EditCourse = ({ courseId }) => {
   return (
     <DefaultLayout>
       <Container>
-        <Title>Chỉnh sửa khóa học</Title>
+        <Title>Edit Course</Title>
         {loadingData ? (
           <Skeleton active paragraph={{ rows: 4 }} />
         ) : (
           <Form form={form} layout="vertical" onFinish={handleFinish}>
             <Form.Item
-              label="Tên khóa học"
+              label="Course Name"
               name="name"
-              rules={[{ required: true, message: "Vui lòng nhập tên khóa học" }]}
+              rules={[{ required: true, message: "Please enter the course name" }]}
               hasFeedback
             >
-              <Input placeholder="Nhập tên khóa học..." />
+              <Input placeholder="Enter course name..." />
             </Form.Item>
 
-            <Form.Item label="Mô tả" hasFeedback>
+            <Form.Item label="Description" hasFeedback>
               <Editor
                 value={description}
                 onChange={(newContent) => setDescription(newContent)}
-                placeholder="Nhập mô tả cho khóa học..."
+                placeholder="Enter course description..."
               />
             </Form.Item>
 
-            <Form.Item label="Hình ảnh">
+            <Form.Item label="Image">
               <Upload
                 listType="picture"
                 fileList={fileList}
@@ -187,7 +186,7 @@ const EditCourse = ({ courseId }) => {
                 accept="image/*"
               >
                 {fileList.length < 1 && (
-                  <Button icon={<PlusOutlined />}>Chọn ảnh</Button>
+                  <Button icon={<PlusOutlined />}>Select Image</Button>
                 )}
               </Upload>
             </Form.Item>
