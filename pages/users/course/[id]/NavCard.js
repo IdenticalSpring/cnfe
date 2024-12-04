@@ -3,8 +3,7 @@ import styled from "styled-components";
 import BookOutlined from "@mui/icons-material/BookOutlined";
 import PlayCircleOutlined from "@mui/icons-material/PlayCircleOutlined";
 import ChevronRight from "@mui/icons-material/ChevronRight";
-import CheckCircleOutline from "@mui/icons-material/CheckCircleOutline"; // Dấu tích
-
+import CheckCircleOutline from "@mui/icons-material/CheckCircleOutline";
 
 const NavCard = ({
   activeTab,
@@ -45,9 +44,13 @@ const NavCard = ({
                   setActiveTab("content");
                   fetchLessonDetails(chapter.id, lesson.id);
                 }}
-                $completed={lesson.progresses?.some(progress => progress.status === "completed")} // Kiểm tra trạng thái bài học
+                $completed={lesson.progresses?.some(
+                  (progress) => progress.status === "completed"
+                )} // Kiểm tra trạng thái bài học
               >
-                {lesson.progresses?.some(progress => progress.status === "completed") && (
+                {lesson.progresses?.some(
+                  (progress) => progress.status === "completed"
+                ) && (
                   <CheckCircleOutline
                     style={{
                       fontSize: "16px",
@@ -129,15 +132,20 @@ const LessonItem = styled.div`
   padding: 12px 16px;
   padding-left: 24px;
   cursor: pointer;
-  color: ${({ $completed }) => ($completed ? "#4CAF50" : "#666")};  // Màu xanh cho bài đã hoàn thành
-  background-color: ${({ $completed }) => ($completed ? "#e8f5e9" : "transparent")}; // Màu nền xanh nhạt cho bài đã hoàn thành
+  color: ${({ $completed }) =>
+    $completed ? "#4CAF50" : "#666"}; // Màu xanh cho bài đã hoàn thành
+  background-color: ${({ $completed }) =>
+    $completed
+      ? "#e8f5e9"
+      : "transparent"}; // Màu nền xanh nhạt cho bài đã hoàn thành
   display: flex;
   align-items: center;
   word-wrap: break-word;
   max-width: 100%;
 
   &:hover {
-    background-color: ${({ $completed }) => ($completed ? "#e8f5e9" : "#f0f7ff")};  // Hover hiệu ứng
+    background-color: ${({ $completed }) =>
+      $completed ? "#e8f5e9" : "#f0f7ff"}; // Hover hiệu ứng
   }
 `;
 

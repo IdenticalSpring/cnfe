@@ -142,7 +142,7 @@ export const userAPI = {
   },
   generateContent: async (message) => {
     try {
-      const response = await request.post('/gemini/generate-content', {
+      const response = await request.post("/gemini/generate-content", {
         prompt: message,
       });
       return response.data.data.result;
@@ -154,30 +154,31 @@ export const userAPI = {
   getSubmissionByUserAndProblem: async (userId, problemId) => {
     try {
       const response = await request.get(`/submissions/${userId}`, {
-        params: { problemId }
+        params: { problemId },
       });
-      console.log("API Response:", response);  
-      return response.data.data;  
+      console.log("API Response:", response);
+      return response.data.data;
     } catch (error) {
       console.error("Error fetching submission:", error);
       throw error;
     }
   },
-  getLessonProgress : async (courseId, userId) => {
+  getLessonProgress: async (courseId, userId) => {
     try {
-      const response = await axios.get(`/user_lesson_progress/${courseId}/${userId}`);
+      const response = await axios.get(
+        `/user_lesson_progress/${courseId}/${userId}`
+      );
 
       if (response.status === 200) {
         return response.data;
       } else {
-        throw new Error('Failed to fetch lesson progress');
+        throw new Error("Failed to fetch lesson progress");
       }
     } catch (error) {
-      console.error('Error fetching lesson progress:', error);
+      console.error("Error fetching lesson progress:", error);
       throw error;
     }
   },
-
 
   // -----------------------------EXPLORE-----------------------------------
   getCourseById: async (id) => {
@@ -190,7 +191,7 @@ export const userAPI = {
     }
   },
 
-  getChaptersAndLessonsByCourseId: async (courseId,userId) => {
+  getChaptersAndLessonsByCourseId: async (courseId, userId) => {
     try {
       const response = await request.get(`/chapters/course/${courseId}`);
       const chapters = response.data.data;
@@ -244,7 +245,10 @@ export const userAPI = {
     };
 
     try {
-      const response = await request.post("/user_lesson_progress", progressData);
+      const response = await request.post(
+        "/user_lesson_progress",
+        progressData
+      );
       if (response.status === 201) {
         return response.data;
       } else {
@@ -306,14 +310,32 @@ export const userAPI = {
     }
   },
 
-  upvoteDiscussion: async (id) => {
+  upVoteDiscussion: async (userId, discussionId, data) => {
     try {
-      const response = await request.patch(`/discuss/${id}/upvote`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await request.post(
+        `/user-votes/${userId}/${discussionId}/upvote`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  },
+  downVoteDiscussion: async (userId, discussionId, data) => {
+    try {
+      const response = await request.post(
+        `/user-votes/${userId}/${discussionId}/downvote`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
     } catch (error) {
       throw new Error(error.message);
     }
@@ -387,15 +409,17 @@ export const userAPI = {
     try {
       const response = await request.get(`/submissions/${userId}`);
       const data = response?.data?.data;
-      return data; 
+      return data;
     } catch (err) {
-      throw new Error(`Error fetching data: ${err.message}`);  
+      throw new Error(`Error fetching data: ${err.message}`);
     }
   },
-  fetchCompletedCoursesByUserId :async (userId) => {
+  fetchCompletedCoursesByUserId: async (userId) => {
     try {
       const response = await request.get(`/orders/user/${userId}`);
-      const completedOrders = response.data.data.filter(order => order.paymentStatus === 'completed');
+      const completedOrders = response.data.data.filter(
+        (order) => order.paymentStatus === "completed"
+      );
       return completedOrders;
     } catch (error) {
       console.error("Error fetching completed courses", error);
@@ -404,12 +428,11 @@ export const userAPI = {
   },
   fetchProfile: async () => {
     try {
-      const response = await request.get('/auth/profile');
+      const response = await request.get("/auth/profile");
       return response.data.data;
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error("Error fetching profile:", error);
       throw error;
     }
   },
-
 };

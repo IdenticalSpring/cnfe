@@ -22,7 +22,7 @@ request.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     } else {
-      console.warn("Token không tồn tại");
+      console.warn("Token does not exist");
     }
     return config;
   },

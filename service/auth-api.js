@@ -21,44 +21,46 @@ export const registerUser = async (payload) => {
     console.log("API response:", response.data);
 
     if (response.status === 200 || response.status === 201) {
-      // Hiển thị modal đăng ký thành công
+      // Display successful registration modal
       return new Promise((resolve) => {
         Modal.success({
-          title: "Đăng ký thành công",
-          content: "Người dùng đã được đăng ký thành công. Bấm OK để tiếp tục.",
+          title: "Registration Successful",
+          content:
+            "User has been successfully registered. Click OK to continue.",
           onOk: () => {
             resolve({ success: true, data: response.data });
           },
         });
       });
     } else {
-      // Hiển thị modal khi đăng ký thất bại
+      // Display modal when registration fails
       Modal.error({
-        title: "Đăng ký thất bại",
-        content: response.data.message || "Có lỗi xảy ra khi đăng ký.",
+        title: "Registration Failed",
+        content:
+          response.data.message || "An error occurred during registration.",
       });
       return { success: false, message: response.data.message };
     }
   } catch (error) {
     console.error("Error:", error);
     if (error.response) {
-      // Hiển thị modal khi có lỗi từ server
+      // Display modal when there's an error from the server
       Modal.error({
-        title: "Lỗi",
+        title: "Error",
         content:
           error.response.data.message ||
-          "Có lỗi xảy ra từ máy chủ. Vui lòng thử lại.",
+          "An error occurred from the server. Please try again.",
       });
       return { success: false, message: error.response.data.message };
     } else {
-      // Hiển thị modal khi có lỗi kết nối hoặc lỗi khác
+      // Display modal when there's a connection error or other error
       Modal.error({
-        title: "Lỗi",
-        content: "Có lỗi xảy ra. Vui lòng thử lại sau.",
+        title: "Error",
+        content: "An error occurred. Please try again later.",
       });
       return {
         success: false,
-        message: "Có lỗi xảy ra. Vui lòng thử lại sau.",
+        message: "An error occurred. Please try again later.",
       };
     }
   }
@@ -75,62 +77,61 @@ export const loginUser = async (payload) => {
     });
 
     if (response.status === 201) {
-      // Lưu JWT vào cookie
+      // Save JWT to cookie
       const token = response.data.data.access_token;
       Cookies.set("token", token);
 
-      // Hiển thị modal và đợi người dùng bấm "OK"
+      // Display modal and wait for user to click "OK"
       return new Promise((resolve) => {
         Modal.success({
-          title: "Đăng nhập thành công",
-          content: "Bạn đã đăng nhập thành công. Bấm OK để tiếp tục.",
+          title: "Login Successful",
+          content: "You have successfully logged in. Click OK to continue.",
           onOk: () => {
             resolve({ success: true, data: response.data.data });
           },
         });
       });
     } else {
-      // Hiển thị modal khi đăng nhập thất bại
+      // Display modal when login fails
       Modal.error({
-        title: "Đăng nhập thất bại",
-        content: response.data.message || "Có lỗi xảy ra khi đăng nhập.",
+        title: "Login Failed",
+        content: response.data.message || "An error occurred during login.",
       });
       return { success: false, message: response.data.message };
     }
   } catch (error) {
-    console.error("Lỗi đăng nhập:", error);
+    console.error("Login error:", error);
     if (error.response) {
-      // Hiển thị modal lỗi từ server
+      // Display error modal from server
       Modal.error({
-        title: "Lỗi",
+        title: "Error",
         content:
-          error.response.data.message || "Có lỗi xảy ra. Vui lòng thử lại.",
+          error.response.data.message || "An error occurred. Please try again.",
       });
       return { success: false, message: error.response.data.message };
     } else {
-      // Hiển thị modal lỗi kết nối
+      // Display connection error modal
       Modal.error({
-        title: "Lỗi",
-        content: "Có lỗi xảy ra. Vui lòng thử lại sau.",
+        title: "Error",
+        content: "An error occurred. Please try again later.",
       });
       return {
         success: false,
-        message: "Có lỗi xảy ra. Vui lòng thử lại sau.",
+        message: "An error occurred. Please try again later.",
       };
     }
   }
 };
-
 export const logoutUser = async (router) => {
   const url = `${baseURL}/auth/logout`;
   const token = Cookies.get("token");
 
   if (!token) {
     Modal.error({
-      title: "Lỗi",
-      content: "Không tìm thấy token. Vui lòng đăng nhập lại.",
+      title: "Error",
+      content: "Token not found. Please log in again.",
     });
-    return { success: false, message: "Không tìm thấy token" };
+    return { success: false, message: "Token not found" };
   }
 
   try {
@@ -144,8 +145,8 @@ export const logoutUser = async (router) => {
     if (response.status === 200 || response.status === 204) {
       Cookies.remove("token");
       Modal.success({
-        title: "Đăng xuất thành công",
-        content: "Bạn đã đăng xuất thành công. Bấm OK để tiếp tục.",
+        title: "Logout Successful",
+        content: "You have successfully logged out. Click OK to continue.",
         onOk: () => {
           router.push("/auth/login");
         },
@@ -153,15 +154,18 @@ export const logoutUser = async (router) => {
       return { success: true };
     }
   } catch (error) {
+    console.error("Logout error:", error);
     Modal.error({
-      title: "Lỗi",
+      title: "Error",
       content:
-        error.response?.data?.message || "Có lỗi xảy ra. Vui lòng thử lại sau.",
+        error.response?.data?.message ||
+        "An error occurred. Please try again later.",
     });
     return {
       success: false,
       message:
-        error.response?.data?.message || "Có lỗi xảy ra. Vui lòng thử lại sau.",
+        error.response?.data?.message ||
+        "An error occurred. Please try again later.",
     };
   }
 };
@@ -242,25 +246,27 @@ export const resetPassword = async ({
     );
     return { success: true };
   } catch (error) {
-    console.error("Lỗi đăng xuất:", error);
+    console.error("Logout error:", error);
     Modal.error({
-      title: "Lỗi",
+      title: "Error",
       content:
-        error.response?.data?.message || "Có lỗi xảy ra. Vui lòng thử lại sau.",
+        error.response?.data?.message ||
+        "An error occurred. Please try again later.",
     });
     return {
       success: false,
       message:
-        error.response?.data?.message || "Có lỗi xảy ra. Vui lòng thử lại sau.",
+        error.response?.data?.message ||
+        "An error occurred. Please try again later.",
     };
   }
 };
 export const loginWithGoogle = async () => {
   const googleAuthUrl = `${baseURL}/auth/google`;
-  window.location.href = googleAuthUrl; 
+  window.location.href = googleAuthUrl;
 };
 
 export const loginWithGitHub = async () => {
   const githubAuthUrl = `${baseURL}/auth/github`;
-  window.location.href = githubAuthUrl;;
+  window.location.href = githubAuthUrl;
 };

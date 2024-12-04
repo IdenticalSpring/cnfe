@@ -7,10 +7,9 @@ const Container = styled.div`
   display: flex;
   gap: 10px;
   width: 100%;
-  padding: 10px 0px;
+  margin-bottom: 10px;
   background-color: var(--background-hover-color);
   justify-content: space-between;
-  flex-wrap: wrap;
 `;
 
 // Từng tab

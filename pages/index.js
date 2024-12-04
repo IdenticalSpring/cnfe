@@ -6,9 +6,14 @@ import Image from "next/image";
 
 // Styled components
 const Section = styled.section`
+  position: relative;
   padding: 32px 0;
   width: 100%;
-  height: auto;
+  background-image: url("/assets/img/nen.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
 
   @media (max-width: 768px) {
     padding: 16px 0;
@@ -124,6 +129,15 @@ const StyledLink = styled.a`
   @media (max-width: 768px) {
     font-size: 14px;
   }
+`;
+const BackgroundVideo = styled.video`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
 `;
 
 const features = [

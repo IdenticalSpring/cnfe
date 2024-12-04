@@ -8,7 +8,7 @@ import {
   BookOutlined,
   ExperimentOutlined,
 } from "@ant-design/icons";
-import DescriptionContent from "./DescriptionContent"; 
+import DescriptionContent from "./DescriptionContent";
 import Submissions from "./Submissions";
 import Editorial from "./Editorial";
 import Solutions from "./Solutions";
@@ -56,22 +56,22 @@ const Description = ({ id, title, description }) => {
               icon: <ReloadOutlined />,
               label: "Submissions",
             },
-            { key: "editorial", icon: <BookOutlined />, label: "Editorial" },
-            {
-              key: "solutions",
-              icon: <ExperimentOutlined />,
-              label: "Solutions",
-            },
+            // { key: "editorial", icon: <BookOutlined />, label: "Editorial" },
+            // {
+            //   key: "solutions",
+            //   icon: <ExperimentOutlined />,
+            //   label: "Solutions",
+            // },
           ]}
         />
       </ProblemHeader>
       <ProblemContent>
         {activeTab === "description" && (
-          <DescriptionContent id={id} title={title} description={description} /> 
+          <DescriptionContent id={id} title={title} description={description} />
         )}
         {activeTab === "submissions" && <Submissions problemId={id} />}
-        {activeTab === "editorial" && <Editorial />}
-        {activeTab === "solutions" && <Solutions />}
+        {/* {activeTab === "editorial" && <Editorial />}
+        {activeTab === "solutions" && <Solutions />} */}
       </ProblemContent>
     </DescriptionContainer>
   );
