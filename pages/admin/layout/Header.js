@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Dropdown, Modal } from "antd";
-import { DownOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+import { MenuUnfoldOutlined } from "@ant-design/icons";
 import Cookies from "js-cookie";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/router";
 import { logoutUser } from "service/auth-api";
 
@@ -58,7 +58,7 @@ const Header = ({ toggleSidebar, collapsed }) => {
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        setDisplayName(decoded.username || "Người Dùng");
+        setDisplayName(decoded.name || "Người Dùng");
       } catch (error) {
         console.error("Lỗi khi giải mã token:", error);
       }
@@ -67,11 +67,10 @@ const Header = ({ toggleSidebar, collapsed }) => {
 
   const handleLogout = async () => {
     const result = await logoutUser(router);
-    sessionStorage.removeItem("userName");
+    sessionStorage.removeItem("name");
     sessionStorage.removeItem("userId");
     sessionStorage.removeItem("userRole");
     if (!result.success) {
-
       Modal.error({
         title: "Lỗi",
         content: result.message || "Có lỗi xảy ra khi đăng xuất.",
@@ -92,7 +91,7 @@ const Header = ({ toggleSidebar, collapsed }) => {
       </ToggleSidebarButton>
       <Dropdown menu={{ items: menuItems }}>
         <AccountName>
-          {displayName} <DownOutlined />
+          {displayName} 
         </AccountName>
       </Dropdown>
     </HeaderContainer>

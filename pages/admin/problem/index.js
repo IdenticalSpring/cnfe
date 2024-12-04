@@ -10,6 +10,7 @@ import ButtonCustom from "components/button/Button";
 import React, { Suspense, lazy, useState, useEffect } from "react";
 import { Skeleton, Dropdown, Menu, Input } from "antd";
 import { adminAPI } from "service/admin";
+import Search from "pages/admin/component/search/index";
 
 const TableProblem = lazy(() => import("../component/table/TableProblem"));
 
@@ -33,10 +34,10 @@ const ContentWrapper = styled.div`
 `;
 
 const ButtonContainer = styled.div`
-  margin: 20px 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin: 20px 0;
 `;
 
 const FilterGroup = styled.div`
@@ -65,10 +66,16 @@ const StyledSearch = styled(Input)`
 `;
 
 const Index = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+
   const router = useRouter();
 
   const handleCreateProblem = () => {
     router.push("/admin/problem/CreateProblem");
+  };
+
+  const handleSearch = (term) => {
+    setSearchTerm(term);
   };
 
   return (
@@ -79,6 +86,7 @@ const Index = () => {
             Problem management <ArrowRightOutlined className="icon" />
           </Title_Head>
           <ButtonContainer>
+            <Search onSearch={handleSearch} />
             <ButtonCustom
               bgColor="var(--success-color)"
               color="#fff"
@@ -90,7 +98,7 @@ const Index = () => {
           </ButtonContainer>
 
           <Suspense fallback={<Skeleton active paragraph={{ rows: 5 }} />}>
-            <TableProblem />
+            <TableProblem searchTerm={searchTerm} />
           </Suspense>
         </ContentWrapper>
       </TableContainer>

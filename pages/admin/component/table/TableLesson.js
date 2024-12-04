@@ -73,7 +73,7 @@ const PaginationContainer = styled.div`
   margin-top: 20px;
 `;
 
-const TableLesson = () => {
+const TableLesson = ({ searchTerm }) => {
   const [data, setData] = useState([]);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -83,6 +83,7 @@ const TableLesson = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [filteredData, setFilteredData] = useState([]);
 
   const router = useRouter();
 
@@ -93,6 +94,7 @@ const TableLesson = () => {
       setData(
         response?.data?.data?.map((item, index) => ({ ...item, key: index }))
       );
+      setFilteredData(response?.data?.data?.map((item, index) => ({ ...item, key: index })));
       setTotal(response?.data?.totalItems);
       setTotalPages(response?.data?.totalPages);
     } catch (error) {
@@ -248,6 +250,13 @@ const TableLesson = () => {
     },
   ];
 
+  useEffect(() => {
+    const filtered = data.filter((lesson) =>
+      lesson?.title?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredData(filtered);
+  }, [searchTerm, data]);
+
   const handleEdit = async (key) => {
     const lessonToEdit = data?.find((item) => item.key === key);
   
@@ -268,7 +277,7 @@ const TableLesson = () => {
         <Skeleton active paragraph={{ rows: 15 }} />
       ) : (
         <>
-          <StyledTable columns={columns} dataSource={data} pagination={false} />
+          <StyledTable columns={columns} dataSource={filteredData} pagination={false} />
           <PaginationContainer>
             <Pagination
               total={total}

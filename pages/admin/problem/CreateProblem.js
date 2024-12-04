@@ -97,9 +97,8 @@ const CreateProblem = () => {
         setCourseOptions(result?.data);
       } catch (error) {
         notification.error({
-          message: "Lỗi khi lấy danh sách khóa học",
-          description:
-            "Không thể tải danh sách khóa học. Vui lòng thử lại sau!",
+          message: "Error fetching courses",
+          description: "Unable to load courses. Please try again later!",
           placement: "bottomRight",
           duration: 2,
         });
@@ -112,8 +111,8 @@ const CreateProblem = () => {
         setDifficultyOptions(result?.data);
       } catch (error) {
         notification.error({
-          message: "Lỗi khi lấy danh sách độ khó",
-          description: "Không thể tải danh sách độ khó. Vui lòng thử lại sau!",
+          message: "Error fetching difficulties",
+          description: "Unable to load difficulties. Please try again later!",
           placement: "bottomRight",
           duration: 2,
         });
@@ -128,9 +127,8 @@ const CreateProblem = () => {
         setCompanyOptions(response?.data);
       } catch (error) {
         notification.error({
-          message: "Lỗi khi lấy dữ liệu",
-          description:
-            "Không thể tải dữ liệu các tùy chọn. Vui lòng thử lại sau!",
+          message: "Error fetching data",
+          description: "Unable to load options. Please try again later!",
           placement: "bottomRight",
           duration: 2,
         });
@@ -162,8 +160,8 @@ const CreateProblem = () => {
       const result = await adminAPI.createProblem(formData);
       if (result?.statusCode === 200 || result?.statusCode === 201) {
         notification.success({
-          message: "Tạo bài tập thành công",
-          description: "Bài tập đã được tạo thành công!",
+          message: "Problem created successfully",
+          description: "The problem has been created successfully!",
           placement: "bottomRight",
           duration: 2,
         });
@@ -171,8 +169,8 @@ const CreateProblem = () => {
       }
     } catch (error) {
       notification.error({
-        message: "Tạo bài tập thất bại",
-        description: "Đã có lỗi xảy ra khi tạo bài tập. Vui lòng thử lại!",
+        message: "Problem creation failed",
+        description: "An error occurred while creating the problem. Please try again!",
         placement: "bottomRight",
         duration: 2,
       });
@@ -184,31 +182,31 @@ const CreateProblem = () => {
   return (
     <DefaultLayout>
       <Container>
-        <Title>Tạo bài tập</Title>
+        <Title>Create Problem</Title>
         <Form onSubmit={handleSubmit} noValidate>
-          <Label htmlFor="title">Tiêu đề</Label>
+          <Label htmlFor="title">Title</Label>
           <Input
             id="title"
             type="text"
-            placeholder="Tiêu đề"
+            placeholder="Title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
           />
 
-          <Label htmlFor="description">Mô tả</Label>
+          <Label htmlFor="description">Description</Label>
           <Editor
             value={description}
             onChange={setDescription}
-            placeholder="Nhập mô tả bài tập"
+            placeholder="Enter problem description"
           />
-          <Label htmlFor="upload">Upload ảnh</Label>
+          <Label htmlFor="upload">Upload Image</Label>
           <CloudinaryUpload />
 
-          <Label htmlFor="difficulty">Độ khó</Label>
+          <Label htmlFor="difficulty">Difficulty</Label>
           <Select
             id="difficulty"
-            placeholder="Chọn độ khó"
+            placeholder="Select difficulty"
             value={difficulty}
             onChange={(value) => {
               setDifficulty(value);
@@ -223,7 +221,7 @@ const CreateProblem = () => {
             required
           >
             <Option value="" disabled>
-              Chọn độ khó
+              Select difficulty
             </Option>
             {difficultyOptions.map((difficulty) => (
               <Option key={difficulty.id} value={difficulty?.name}>
@@ -232,10 +230,10 @@ const CreateProblem = () => {
             ))}
           </Select>
 
-          <Label htmlFor="courseId">Khóa học</Label>
+          <Label htmlFor="courseId">Course</Label>
           <Select
             id="course"
-            placeholder="Chọn khóa học"
+            placeholder="Select course"
             value={courseId}
             onChange={(value) => setCourseId(value)}
             showSearch
@@ -245,7 +243,7 @@ const CreateProblem = () => {
             required
           >
             <Option value="" disabled>
-              Chọn khóa học
+              Select course
             </Option>
             {courseOptions.map((course) => (
               <Option key={course.id} value={course.id}>
@@ -258,7 +256,7 @@ const CreateProblem = () => {
           <Select
             id="topic"
             mode="multiple"
-            placeholder="Chọn topic"
+            placeholder="Select topics"
             value={topic}
             onChange={(value) => setTopic(value)}
             required
@@ -274,7 +272,7 @@ const CreateProblem = () => {
           <Select
             id="Company"
             mode="multiple"
-            placeholder="Chọn Company"
+            placeholder="Select companies"
             value={company}
             onChange={(value) => setCompany(value)}
             required
@@ -286,7 +284,7 @@ const CreateProblem = () => {
             ))}
           </Select>
 
-          <Label htmlFor="likes">Lượt thích</Label>
+          <Label htmlFor="likes">Likes</Label>
           <Input
             id="likes"
             type="number"
@@ -296,7 +294,7 @@ const CreateProblem = () => {
             required
           />
 
-          <Label htmlFor="dislikes">Lượt không thích</Label>
+          <Label htmlFor="dislikes">Dislikes</Label>
           <Input
             id="dislikes"
             type="number"
@@ -306,7 +304,7 @@ const CreateProblem = () => {
             required
           />
 
-          <Label htmlFor="rating">Xếp hạng</Label>
+          <Label htmlFor="rating">Rating</Label>
           <Input
             id="rating"
             type="number"
@@ -316,7 +314,7 @@ const CreateProblem = () => {
             required
           />
 
-          <Label htmlFor="acceptanceRate">Tỉ lệ chấp nhận</Label>
+          <Label htmlFor="acceptanceRate">Acceptance Rate</Label>
           <Input
             id="acceptanceRate"
             type="number"
@@ -328,7 +326,8 @@ const CreateProblem = () => {
 
           <ButtonContainer>
             <Button type="submit" disabled={loading}>
-              {loading ? <Spin /> : "Create"}
+              {loading && <Spin size="small" />}
+              {loading ? "Creating..." : "Create"}
             </Button>
           </ButtonContainer>
         </Form>

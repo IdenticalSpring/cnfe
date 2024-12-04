@@ -1,8 +1,9 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useState } from "react";
 import styled from "styled-components";
 import DefaultLayout from "./layout/DefaultLayout";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { Skeleton } from "antd";
+import Search from "./component/search/index";
 
 const TableContainer = styled.div`
   margin: 0 20px;
@@ -27,9 +28,21 @@ const ContentWrapper = styled.div`
   padding-top: 70px;
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+`;
+
 const TableAccount = lazy(() => import("./component/table/TableAccount"));
 
 const Users = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+  };
   return (
     <DefaultLayout>
       <TableContainer>
@@ -38,8 +51,10 @@ const Users = () => {
             <Title_Head>
               User management <ArrowRightOutlined className="icon" />
             </Title_Head>
-
-            <TableAccount />
+            <ButtonContainer>
+              <Search onSearch={handleSearch} />
+            </ButtonContainer>
+            <TableAccount searchTerm={searchTerm} />
           </ContentWrapper>
         </Suspense>
       </TableContainer>

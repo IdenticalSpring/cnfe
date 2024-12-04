@@ -1,10 +1,18 @@
 import React from "react";
 import { Layout, Menu } from "antd";
-import { DashboardOutlined, TeamOutlined, ReadOutlined, SolutionOutlined, FormOutlined, ExclamationCircleOutlined, BookOutlined } from "@ant-design/icons";
+import {
+  DashboardOutlined,
+  TeamOutlined,
+  ReadOutlined,
+  SolutionOutlined,
+  FormOutlined,
+  ExclamationCircleOutlined,
+  BookOutlined,
+} from "@ant-design/icons";
 import styled from "styled-components";
-import { useRouter } from 'next/router';
-import TopicOutlinedIcon from '@mui/icons-material/TopicOutlined';
-import BusinessOutlinedIcon from '@mui/icons-material/BusinessOutlined';
+import { useRouter } from "next/router";
+import TopicOutlinedIcon from "@mui/icons-material/TopicOutlined";
+import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 
 const { Sider } = Layout;
 
@@ -13,17 +21,16 @@ const StyledSider = styled(Sider)`
   height: 100vh;
   position: fixed;
   left: 0;
-  width: ${({ collapsed }) => (collapsed ? '80px' : '200px')};
-  background-color: #E63946;
-  overflow: hidden;
+  width: ${({ collapsed }) => (collapsed ? "80px" : "200px")};
+  background-color: #f5f6fa;
+  overflow-y: auto;
   transition: width 0.3s;
 `;
 
 export const Title = styled.span`
   font-family: cursive;
-  font-size: calc(0.7rem + 0.5vw);
-  font-weight: ${({ theme }) => theme.typography.h1.fontWeight};
-  color: #fff;
+  font-size: calc(0.8rem + 0.5vw);
+  color: #0b0e14;
 `;
 
 export const LogoWrapper = styled.div`
@@ -50,26 +57,36 @@ const StyledMenu = styled(Menu)`
 `;
 
 const StyledMenuItem = styled(Menu.Item)`
-  background-color: ${(props) => (props.$isSelected ? "#A05252" : "inherit")} !important;
-  color: ${(props) => (props.$isSelected ? "#fff" : "#000")} !important;
+  background-color: ${(props) =>
+    props.$isSelected ? "#eceff4" : "inherit"} !important;
+  color: ${(props) => (props.$isSelected ? "#0b0e14" : "#000")} !important;
+  font-weight: ${(props) => (props.$isSelected ? "bold" : "#000")} !important;
 `;
 
 const AdminSidebar = ({ collapsed }) => {
   const router = useRouter();
 
   const getSelectedKey = (pathname) => {
-    if (pathname.includes('/admin/dashboard')) return '/admin/dashboard';
-    if (pathname.includes('/admin/users')) return '/admin/users';
-    if (pathname.includes('/admin/courses') || pathname.includes('/admin/course/CreateCourse') || pathname.includes('/admin/course/')) {
-      return '/admin/courses';
+    if (pathname.includes("/admin/dashboard")) return "/admin/dashboard";
+    if (pathname.includes("/admin/users")) return "/admin/users";
+    if (
+      pathname.includes("/admin/courses") ||
+      pathname.includes("/admin/course/CreateCourse") ||
+      pathname.includes("/admin/course/")
+    ) {
+      return "/admin/courses";
     }
-    if (pathname.includes('/admin/lessons')) return '/admin/lessons';
-    if (pathname.includes('/admin/assignments')) return '/admin/assignments';
-    if (pathname.includes('/admin/problem') || pathname.includes('/admin/problem/CreateProblem')) return '/admin/problem';
-    if (pathname.includes('/admin/chapters')) return '/admin/chapters';
-    if (pathname.includes('/admin/companies')) return '/admin/companies';
-    if (pathname.includes('/admin/topics')) return '/admin/topics';
-    return '/admin/dashboard';
+    if (pathname.includes("/admin/lessons")) return "/admin/lessons";
+    if (pathname.includes("/admin/assignments")) return "/admin/assignments";
+    if (
+      pathname.includes("/admin/problem") ||
+      pathname.includes("/admin/problem/CreateProblem")
+    )
+      return "/admin/problem";
+    if (pathname.includes("/admin/chapters")) return "/admin/chapters";
+    if (pathname.includes("/admin/companies")) return "/admin/companies";
+    if (pathname.includes("/admin/topics")) return "/admin/topics";
+    return "/admin/dashboard";
   };
 
   const selectedKey = getSelectedKey(router.pathname);
@@ -84,32 +101,72 @@ const AdminSidebar = ({ collapsed }) => {
         <Logo src="/assets/img/logo-nobg.png" alt="Logo" />
         {!collapsed && <Title>admin panel</Title>}
       </LogoContainer>
-      <StyledMenu mode="inline" selectedKeys={[selectedKey]} onClick={handleMenuClick}>
-        <StyledMenuItem key="/admin/dashboard" icon={<DashboardOutlined />} $isSelected={selectedKey === "/admin/dashboard"}>
+      <StyledMenu
+        mode="inline"
+        selectedKeys={[selectedKey]}
+        onClick={handleMenuClick}
+      >
+        <StyledMenuItem
+          key="/admin/dashboard"
+          icon={<DashboardOutlined />}
+          $isSelected={selectedKey === "/admin/dashboard"}
+        >
           Dashboard
         </StyledMenuItem>
-        <StyledMenuItem key="/admin/users" icon={<TeamOutlined />} $isSelected={selectedKey === "/admin/users"}>
+        <StyledMenuItem
+          key="/admin/users"
+          icon={<TeamOutlined />}
+          $isSelected={selectedKey === "/admin/users"}
+        >
           User
         </StyledMenuItem>
-        <StyledMenuItem key="/admin/courses" icon={<ReadOutlined />} $isSelected={selectedKey === "/admin/courses"}>
+        <StyledMenuItem
+          key="/admin/courses"
+          icon={<ReadOutlined />}
+          $isSelected={selectedKey === "/admin/courses"}
+        >
           Course
         </StyledMenuItem>
-        <StyledMenuItem key="/admin/lessons" icon={<SolutionOutlined />} $isSelected={selectedKey === "/admin/lessons"}>
+        <StyledMenuItem
+          key="/admin/lessons"
+          icon={<SolutionOutlined />}
+          $isSelected={selectedKey === "/admin/lessons"}
+        >
           Lesson
         </StyledMenuItem>
-        <StyledMenuItem key="/admin/assignments" icon={<FormOutlined />} $isSelected={selectedKey === "/admin/assignments"}>
+        <StyledMenuItem
+          key="/admin/assignments"
+          icon={<FormOutlined />}
+          $isSelected={selectedKey === "/admin/assignments"}
+        >
           Assignments
         </StyledMenuItem>
-        <StyledMenuItem key="/admin/problem" icon={<ExclamationCircleOutlined />} $isSelected={selectedKey === "/admin/problem"}>
+        <StyledMenuItem
+          key="/admin/problem"
+          icon={<ExclamationCircleOutlined />}
+          $isSelected={selectedKey === "/admin/problem"}
+        >
           Problem
         </StyledMenuItem>
-        <StyledMenuItem key="/admin/chapters" icon={<BookOutlined />} $isSelected={selectedKey === "/admin/chapters"}>
+        <StyledMenuItem
+          key="/admin/chapters"
+          icon={<BookOutlined />}
+          $isSelected={selectedKey === "/admin/chapters"}
+        >
           Chapter
         </StyledMenuItem>
-        <StyledMenuItem key="/admin/topics" icon={<TopicOutlinedIcon />} $isSelected={selectedKey === "/admin/topics"}>
+        <StyledMenuItem
+          key="/admin/topics"
+          icon={<TopicOutlinedIcon />}
+          $isSelected={selectedKey === "/admin/topics"}
+        >
           Topic
         </StyledMenuItem>
-        <StyledMenuItem key="/admin/companies" icon={<BusinessOutlinedIcon />} $isSelected={selectedKey === "/admin/companies"}>
+        <StyledMenuItem
+          key="/admin/companies"
+          icon={<BusinessOutlinedIcon />}
+          $isSelected={selectedKey === "/admin/companies"}
+        >
           Company
         </StyledMenuItem>
       </StyledMenu>

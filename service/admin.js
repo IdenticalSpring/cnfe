@@ -11,7 +11,7 @@ export const adminAPI = {
     return response.data;
   },
   //------------------------ user----------------------------------------
-  gelAllAccount: async () => {
+  getAllAccount: async () => {
     const response = await request.get("/admin/users/list");
     return response.data;
   },

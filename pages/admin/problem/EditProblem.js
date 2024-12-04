@@ -54,9 +54,8 @@ const EditProblem = ({ problemId }) => {
         setCourses(result?.data);
       } catch (error) {
         notification.error({
-          message: "Lỗi khi lấy danh sách khóa học",
-          description:
-            "Không thể tải danh sách khóa học. Vui lòng thử lại sau!",
+          message: "Error fetching courses",
+          description: "Unable to load course list. Please try again later.",
           placement: "bottomRight",
           duration: 2,
         });
@@ -69,7 +68,7 @@ const EditProblem = ({ problemId }) => {
         const [topicResult, companyResult, response, difficultyResult] =
           await Promise.all([
             adminAPI.getAllTopics(),
-            adminAPI.getAllCompanies(),
+            adminAPI.getAllCompany(),
             adminAPI.detailProblem(problemId),
             adminAPI.getAllDifficulties(),
           ]);
@@ -105,8 +104,8 @@ const EditProblem = ({ problemId }) => {
         }
       } catch (error) {
         notification.error({
-          message: "Lỗi",
-          description: "Không thể tải chi tiết bài toán.",
+          message: "Error",
+          description: "Unable to load problem details.",
           placement: "bottomRight",
         });
       } finally {
@@ -134,15 +133,15 @@ const EditProblem = ({ problemId }) => {
     try {
       await adminAPI.updateProblem(problemId, dataToSend);
       notification.success({
-        message: "Thành công",
-        description: "Đã cập nhật bài toán thành công!",
+        message: "Success",
+        description: "Problem updated successfully!",
         placement: "bottomRight",
       });
       router.push("/admin/problem/");
     } catch (error) {
       notification.error({
-        message: "Lỗi",
-        description: "Cập nhật bài toán không thành công.",
+        message: "Error",
+        description: "Failed to update the problem.",
         placement: "bottomRight",
       });
     }
@@ -151,42 +150,30 @@ const EditProblem = ({ problemId }) => {
   return (
     <DefaultLayout>
       <Container>
-        <Title>Chỉnh sửa Problem</Title>
+        <Title>Edit Problem</Title>
         {loading ? (
           <Spin style={{ display: "block", margin: "auto", padding: "50px" }} />
         ) : (
           <Form form={form} layout="vertical" onFinish={handleSubmit}>
-            <Form.Item
-              label="Tiêu đề"
-              name="title"
-              rules={[{ required: true, message: "Vui lòng nhập tiêu đề" }]}
-            >
+            <Form.Item label="Title" name="title">
               <Input />
             </Form.Item>
 
-            <Form.Item
-              label="Mô tả"
-              name="description"
-              rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
-            >
+            <Form.Item label="Description" name="description">
               <Editor
                 value={form.getFieldValue("description") || ""}
                 onChange={(content) =>
                   form.setFieldsValue({ description: content })
                 }
-                placeholder="Nhập nội dung mô tả..."
+                placeholder="Enter description..."
               />
             </Form.Item>
 
-            <Form.Item label="images" name="images">
+            <Form.Item label="Images" name="images">
               <CloudinaryUpload />
             </Form.Item>
 
-            <Form.Item
-              label="Độ khó"
-              name="difficultyId"
-              rules={[{ required: true, message: "Vui lòng chọn độ khó" }]}
-            >
+            <Form.Item label="Difficulty" name="difficultyId">
               <Select>
                 {difficulties.map((difficulty) => (
                   <Option key={difficulty.id} value={difficulty.id}>
@@ -196,12 +183,11 @@ const EditProblem = ({ problemId }) => {
               </Select>
             </Form.Item>
 
-            <Form.Item
-              label="Khóa học"
-              name="courseId"
-              rules={[{ required: true, message: "Vui lòng chọn khóa học" }]}
-            >
+            <Form.Item label="Course" name="courseId">
               <Select>
+                <Option value="" disabled>
+                  Select course
+                </Option>
                 {courses.map((course) => (
                   <Option key={course.id} value={course.id}>
                     {course.title}
@@ -210,11 +196,7 @@ const EditProblem = ({ problemId }) => {
               </Select>
             </Form.Item>
 
-            <Form.Item
-              label="Chủ đề"
-              name="topicId"
-              rules={[{ required: true, message: "Vui lòng chọn chủ đề" }]}
-            >
+            <Form.Item label="Topics" name="topicId">
               <Select mode="multiple">
                 {topics?.map((topic) => (
                   <Option key={topic?.id} value={topic?.id}>
@@ -224,11 +206,7 @@ const EditProblem = ({ problemId }) => {
               </Select>
             </Form.Item>
 
-            <Form.Item
-              label="Công ty"
-              name="companyId"
-              rules={[{ required: true, message: "Vui lòng chọn công ty" }]}
-            >
+            <Form.Item label="Companies" name="companyId">
               <Select mode="multiple">
                 {companies?.map((company) => (
                   <Option key={company?.id} value={company?.id}>
@@ -247,24 +225,24 @@ const EditProblem = ({ problemId }) => {
             </Form.Item>
 
             <Form.Item label="Likes" name="likes">
-              <Input type="number" />
+              <Input type="number" readOnly />
             </Form.Item>
 
             <Form.Item label="Dislikes" name="dislikes">
-              <Input type="number" />
+              <Input type="number" readOnly />
             </Form.Item>
 
-            <Form.Item label="Đánh giá" name="rating">
-              <Input type="number" step="0.1" />
+            <Form.Item label="Rating" name="rating">
+              <Input type="number" step="0.1" readOnly />
             </Form.Item>
 
-            <Form.Item label="Tỉ lệ chấp nhận" name="acceptance_rate">
-              <Input type="number" step="0.1" />
+            <Form.Item label="Acceptance Rate" name="acceptance_rate">
+              <Input type="number" step="0.1" readOnly />
             </Form.Item>
 
             <Form.Item>
               <StyledButton type="primary" htmlType="submit">
-                Lưu thay đổi
+                Save Changes
               </StyledButton>
             </Form.Item>
           </Form>

@@ -63,11 +63,12 @@ const ButtonContainer = styled.div`
   margin-top: 16px;
 `;
 
-const TableCourse = () => {
+const TableCourse = ({ searchTerm }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedKey, setSelectedKey] = useState(null);
   const [expandedKeys, setExpandedKeys] = useState(new Set());
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -91,8 +92,8 @@ const TableCourse = () => {
                 title: course?.title,
                 description: course?.description,
                 img: course?.imageUrl,
-                createAt: formatDate(course?.createdAt),
-                updateAt: formatDate(course?.updatedAt),
+                price: formatCurrencyVND(course?.price) || 0,
+                status: course?.status,
               })
             );
             allCourses = [...allCourses, ...formattedData];
@@ -102,10 +103,11 @@ const TableCourse = () => {
           currentPage += 1;
         }
         setData(allCourses);
+        setFilteredData(allCourses);
       } catch (error) {
         notification.error({
           message: "Error getting all courses",
-          description: "Failed to load course!",
+          description: "Failed to load courses!",
           placement: "bottomRight",
           duration: 2,
         });
@@ -117,11 +119,17 @@ const TableCourse = () => {
     fetchAllCourses();
   }, []);
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const options = { year: "numeric", month: "2-digit", day: "2-digit" };
-    return date.toLocaleDateString("vi-VN", options);
+  const formatCurrencyVND = (amount) => {
+    const formattedAmount = new Intl.NumberFormat("vi-VN").format(amount);
+    return `${formattedAmount} VND`;
   };
+
+  useEffect(() => {
+    const filtered = data.filter((course) =>
+      course?.title?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredData(filtered);
+  }, [searchTerm, data]);
 
   const truncateDescription = (description) => {
     if (description.length <= 50) return description;
@@ -179,19 +187,19 @@ const TableCourse = () => {
       ),
     },
     {
-      title: "Ngày tạo",
-      dataIndex: "createAt",
-      key: "createAt",
-      width: 150,
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
+      width: 200,
     },
     {
-      title: "Ngày chỉnh sửa",
-      dataIndex: "updateAt",
-      key: "updateAt",
-      width: 150,
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: 200,
     },
     {
-      title: "Action",
+      title: "Actions",
       key: "action",
       width: 150,
       render: (text, record) => (
@@ -262,7 +270,7 @@ const TableCourse = () => {
       } else {
         notification.error({
           message: "Delete failed",
-          description: "Can not delete the course.",
+          description: "Cannot delete the course.",
           placement: "bottomRight",
           duration: 2,
         });
@@ -270,7 +278,7 @@ const TableCourse = () => {
     } catch (error) {
       notification.error({
         message: "Error deleting the course",
-        description: "Error occurs when calling API.",
+        description: "An error occurred when calling the API.",
         placement: "bottomRight",
         duration: 2,
       });
@@ -285,18 +293,19 @@ const TableCourse = () => {
       {loading ? (
         <Skeleton active paragraph={{ rows: 5 }} />
       ) : (
-        <StyledTable columns={columns} dataSource={data} />
+        <StyledTable columns={columns} dataSource={filteredData} />
       )}
       <Modal
-        title={<ModalTitle>Delete information</ModalTitle>}
+        title={<ModalTitle>Delete Confirmation</ModalTitle>}
         open={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={null}
       >
         <ModalContent>
-          <ConfirmText>Are you sure?</ConfirmText>
+          <ConfirmText>Are you sure you want to delete this course?</ConfirmText>
           <WarningText>
-            Once deleted, you will not be able to recover. Are you sure?
+            Once deleted, you will not be able to recover this course. Are you
+            certain?
           </WarningText>
         </ModalContent>
         <ButtonContainer>

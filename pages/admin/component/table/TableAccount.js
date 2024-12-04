@@ -39,19 +39,21 @@ const StyledTable = styled(Table)`
   }
 `;
 
-const TableAccount = () => {
+const TableAccount = ({ searchTerm }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [filteredData, setFilteredData] = useState([]);
 
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        const users = await adminAPI.gelAllAccount();
+        const users = await adminAPI.getAllAccount();
         if (users?.statusCode === 200 || users?.statusCode === 201) {
           const formattedUsers = users?.data?.map((user) => ({
+
             id: user.id,
             name: user.name,
             username: user.username,
@@ -60,11 +62,13 @@ const TableAccount = () => {
             active: user.isActive,
           }));
           setData(formattedUsers);
+          setFilteredData(formattedUsers);
         }
-      } catch (error) {
+      } catch (error) {  
+        console.log("🚀 ~ fetchUsers ~ error:", error)
         notification.error({
-          message: "Lỗi",
-          description: "Không thể tải danh sách người dùng.",
+          message: "Error",
+          description: "Unable to load the user list.",
           placement: "bottomRight",
           duration: 2,
         });
@@ -105,29 +109,36 @@ const TableAccount = () => {
       dataIndex: "active",
       key: "active",
       width: 150,
-      render: (active) => <span>{active ? "Đang hoạt động" : "Vô hiệu"}</span>,
+      render: (active) => <span>{active ? "Active" : "Inactive"}</span>,
     },
-    {
-      title: "Action",
-      key: "action",
-      width: 100,
-      render: (_, record) => (
-        <span>
-          <Button
-            type="link"
-            icon={<EditOutlined className="custom-iconEdit" />}
-            onClick={() => handleEdit(record.id)}
-          />
-          <Divider type="vertical" />
-          <Button
-            type="link"
-            icon={<DeleteOutlined className="custom-iconDelete" />}
-            onClick={() => showDeleteModal(record.id)}
-          />
-        </span>
-      ),
-    },
+    // {
+    //   title: "Action",
+    //   key: "action",
+    //   width: 100,
+    //   render: (_, record) => (
+    //     <span>
+    //       <Button
+    //         type="link"
+    //         icon={<EditOutlined className="custom-iconEdit" />}
+    //         onClick={() => handleEdit(record.id)}
+    //       />
+    //       <Divider type="vertical" />
+    //       <Button
+    //         type="link"
+    //         icon={<DeleteOutlined className="custom-iconDelete" />}
+    //         onClick={() => showDeleteModal(record.id)}
+    //       />
+    //     </span>
+    //   ),
+    // },
   ];
+
+  useEffect(() => {
+    const filtered = data.filter((acc) =>
+      acc?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredData(filtered);
+  }, [searchTerm, data]);
 
   const showDeleteModal = (id) => {
     setSelectedUserId(id);
@@ -143,8 +154,8 @@ const TableAccount = () => {
     setIsModalVisible(false);
 
     notification.success({
-      message: "Xóa thành công",
-      description: "Tài khoản đã được xóa thành công.",
+      message: "Deleted successfully",
+      description: "The account has been successfully deleted.",
       placement: "bottomRight",
       duration: 2,
     });
@@ -160,21 +171,21 @@ const TableAccount = () => {
         <Skeleton active paragraph={{ rows: 5 }} />
       ) : (
         <StyledTable
-          dataSource={data}
+          dataSource={filteredData}
           columns={columns}
           pagination={{ pageSize: 5 }}
           rowKey="id"
         />
       )}
       <Modal
-        title="Xác nhận xóa"
+        title="Confirm Deletion"
         open={isModalVisible}
         onOk={handleDelete}
         onCancel={handleCancel}
-        okText="Xác nhận"
-        cancelText="Hủy"
+        okText="Confirm"
+        cancelText="Cancel"
       >
-        <p>Bạn có chắc chắn muốn xóa tài khoản này?</p>
+        <p>Are you sure you want to delete this account?</p>
       </Modal>
     </>
   );
