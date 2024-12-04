@@ -174,7 +174,6 @@ export const Header = () => {
   const [username, setUsername] = useState(null);
 
   useEffect(() => {
-    // Lấy username từ sessionStorage khi trang được tải
     const storedUsername = sessionStorage.getItem("userName");
     if (storedUsername) {
       setUsername(storedUsername);

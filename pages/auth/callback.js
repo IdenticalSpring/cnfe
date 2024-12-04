@@ -24,24 +24,20 @@ const AuthCallbackPage = () => {
         return;
       }
 
-      // Lưu token vào cookies
       Cookies.set("token", token);
 
       try {
-        // Giải mã token JWT để lấy thông tin người dùng
         const decodedToken = jwtDecode(token);
         const userId = decodedToken.sub;
         const userName = decodedToken.username;
         const userRole = decodedToken.role;
         const tokenExpiration = decodedToken.exp;
 
-        // Lưu thông tin người dùng vào sessionStorage
         sessionStorage.setItem("userId", userId);
         sessionStorage.setItem("userName", userName);
         sessionStorage.setItem("userRole", userRole);
         sessionStorage.setItem("tokenExpiration", tokenExpiration);
 
-        // Điều hướng người dùng dựa trên vai trò
         if (userRole === "admin") {
           router.push("/admin/dashboard");
         } else if (userRole === "user") {

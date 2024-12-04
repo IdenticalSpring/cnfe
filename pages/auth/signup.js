@@ -1,12 +1,12 @@
-import React, { useState, useCallback, memo } from 'react';
-import Link from 'next/link';
-import styled from 'styled-components';
-import { IconButton, InputAdornment, TextField } from '@mui/material';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import DefaultLayout from '@/layout/DefaultLayout';
-import { registerUser } from '@/service/auth-api';
-import { notification } from 'antd';
+import React, { useState, useCallback, memo } from "react";
+import Link from "next/link";
+import styled from "styled-components";
+import { IconButton, InputAdornment, TextField } from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import DefaultLayout from "@/layout/DefaultLayout";
+import { registerUser } from "@/service/auth-api";
+import { notification } from "antd";
 
 const StyledLink = styled.a`
   text-decoration: none;
@@ -84,29 +84,31 @@ const ButtonGroup = styled.div`
     }
   }
 `;
-const PasswordField = memo(({ label, value, onChange, showPassword, handleClickShowPassword, name }) => (
-  <TextField
-    label={label}
-    variant="outlined"
-    type={showPassword ? 'text' : 'password'}
-    value={value}
-    name={name}
-    onChange={onChange}
-    fullWidth
-    required
-    margin="normal"
-    InputProps={{
-      endAdornment: (
-        <InputAdornment position="end">
-          <IconButton onClick={handleClickShowPassword} edge="end">
-            {showPassword ? <VisibilityOff /> : <Visibility />}
-          </IconButton>
-        </InputAdornment>
-      ),
-    }}
-  />
-));
-PasswordField.displayName = 'PasswordField';
+const PasswordField = memo(
+  ({ label, value, onChange, showPassword, handleClickShowPassword, name }) => (
+    <TextField
+      label={label}
+      variant="outlined"
+      type={showPassword ? "text" : "password"}
+      value={value}
+      name={name}
+      onChange={onChange}
+      fullWidth
+      required
+      margin="normal"
+      InputProps={{
+        endAdornment: (
+          <InputAdornment position="end">
+            <IconButton onClick={handleClickShowPassword} edge="end">
+              {showPassword ? <VisibilityOff /> : <Visibility />}
+            </IconButton>
+          </InputAdornment>
+        ),
+      }}
+    />
+  )
+);
+PasswordField.displayName = "PasswordField";
 
 const EmailField = memo(({ value, onChange, name }) => (
   <TextField
@@ -121,7 +123,7 @@ const EmailField = memo(({ value, onChange, name }) => (
     margin="normal"
   />
 ));
-EmailField.displayName = 'EmailField'; // Thêm displayName
+EmailField.displayName = "EmailField"; // Thêm displayName
 
 const TextFieldComponent = memo(({ label, value, onChange, name }) => (
   <TextField
@@ -136,15 +138,15 @@ const TextFieldComponent = memo(({ label, value, onChange, name }) => (
     margin="normal"
   />
 ));
-TextFieldComponent.displayName = 'TextFieldComponent'; // Thêm displayName
+TextFieldComponent.displayName = "TextFieldComponent"; // Thêm displayName
 
 const Signup = () => {
   const [state, setState] = useState({
-    username: '',
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    username: "",
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
     showPassword: false,
     showConfirmPassword: false,
   });
@@ -173,7 +175,6 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted'); // Kiểm tra xem hàm có bị gọi không
 
     const payload = {
       username: state.username,
@@ -185,19 +186,26 @@ const Signup = () => {
     const result = await registerUser(payload);
   };
 
-  const { username, name, email, password, confirmPassword, showPassword, showConfirmPassword } = state;
+  const {
+    username,
+    name,
+    email,
+    password,
+    confirmPassword,
+    showPassword,
+    showConfirmPassword,
+  } = state;
 
   return (
     <DefaultLayout>
       <Container>
         <FormWrapper>
           <LogoWrapper>
-            <Logo src="/assets/img/iconLogo.png" alt="Logo" />
+            <Logo src="/assets/img/logo-nobg.png" alt="Logo" />
           </LogoWrapper>
 
           <Title>Sign Up</Title>
           <form onSubmit={handleSubmit}>
-            {/* Username Field */}
             <TextFieldComponent
               label="Username"
               value={username}
@@ -205,7 +213,6 @@ const Signup = () => {
               name="username"
             />
 
-            {/* Name Field */}
             <TextFieldComponent
               label="Name"
               value={name}

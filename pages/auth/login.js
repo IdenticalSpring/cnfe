@@ -81,6 +81,7 @@ const LoginButton = styled.button`
   cursor: pointer;
   transition: background-color 0.3s;
   margin-top: 20px;
+  max-height: 50px;
 `;
 
 const ButtonGroup = styled.div`
@@ -110,7 +111,6 @@ const LinkButton = styled.button`
   color: #1890ff;
   cursor: pointer;
   text-decoration: underline;
-  padding: 0;
   font-size: 14px;
 
   &:hover {
@@ -119,9 +119,10 @@ const LinkButton = styled.button`
 `;
 const OAuthButtons = styled.div`
   display: flex;
-  gap: 10px; // Creates space between buttons
-  justify-content: center; // Centers buttons horizontally
-  width: 100%; // Ensures full width usage
+  gap: 10px;
+  justify-content: center;
+  width: 100%;
+  max-height: 50px;
 `;
 const OAuthButton = styled(LoginButton)`
   display: flex;
@@ -129,7 +130,7 @@ const OAuthButton = styled(LoginButton)`
   justify-content: center;
   background-color: #f5f5f5;
   color: #333;
-  flex: 1; // Allows buttons to grow equally
+  flex: 1;
   margin-top: 10px;
 
   &:hover {
@@ -258,7 +259,7 @@ const Login = () => {
       <Container>
         <FormWrapper>
           <LogoWrapper>
-            <Logo src="/assets/img/iconLogo.png" alt="Logo" />
+            <Logo src="/assets/img/logo-nobg.png" alt="Logo" />
           </LogoWrapper>
 
           <Title>Login</Title>
@@ -294,7 +295,10 @@ const Login = () => {
 
           <OAuthButtons>
             <OAuthButton onClick={loginWithGoogle}>
-              <GoogleIconImage src="/assets/img/google.png" alt="Google Icon" />
+              <GoogleIconImage
+                src="/assets/img/google-done.png"
+                alt="Google Icon"
+              />
               Google
             </OAuthButton>
 
@@ -309,7 +313,6 @@ const Login = () => {
               Forgot Password
             </LinkButton>
 
-            {/* Modal quên mật khẩu */}
             <ForgotPassword
               open={isForgotPasswordVisible}
               onClose={closeForgotPassword}
@@ -320,7 +323,6 @@ const Login = () => {
               }}
             />
 
-            {/* Modal đặt lại mật khẩu */}
             <ResetPassword
               open={isResetPasswordVisible}
               onClose={closeResetPassword}
