@@ -89,11 +89,6 @@ export const adminAPI = {
     const response = await request.get("/topics");
     return response.data;
   },
-  //------------------------ company----------------------------------------
-  getAllCompanies: async () => {
-    const response = await request.get("/admin/companies");
-    return response.data;
-  },
   //------------------------ lesson----------------------------------------
   getAllLesson: async (page) => {
     const response = await request.get(
@@ -180,4 +175,61 @@ export const adminAPI = {
     return response.data;
   },
   //------------------------ company----------------------------------------
+  getAllCompany: async () => {
+    const response = await request.get("/admin/companies");
+    return response.data;
+  },
+  createCompany: async (data) => {
+    const response = await request.post("/admin/companies", data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  },
+  detailCompany: async (id) => {
+    const response = await request.get(`/admin/companies/${id}`);
+    return response.data;
+  },
+  updateCompany: async (id, data) => {
+    const response = await request.patch(`/admin/companies/${id}`, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  },
+  deleteCompany: async (id) => {
+    const response = await request.delete(`/admin/companies/${id}`);
+    return response.data;
+  },
+  //------------------------ chapter----------------------------------------
+  getAllChapter: async (page) => {
+    const response = await request.get(`/admin/chapters?page=${page}`);
+    return response.data;
+  },
+  createChapter: async (data) => {
+    const response = await request.post("/admin/chapters", data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  },
+  detailChapter: async (id) => {
+    const response = await request.get(`/admin/chapters/${id}`);
+    return response.data;
+  },
+  updateChapter: async (id, data) => {
+    const response = await request.patch(`/admin/chapters/${id}`, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  },
+  deleteChapter: async (id) => {
+    const response = await request.delete(`/admin/chapters/${id}`);
+    return response.data;
+  },
 };

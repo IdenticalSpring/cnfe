@@ -14,6 +14,7 @@ const Container = styled.div`
 const Title = styled.h1`
   font-size: 2rem;
   margin-bottom: 20px;
+  text-align: center;
 `;
 
 const Form = styled.form`
@@ -69,7 +70,7 @@ const ButtonContainer = styled.div`
   margin-top: 20px;
 `;
 
-const CreateTopic = () => {
+const CreateCompany = () => {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const router = useRouter();
@@ -80,19 +81,19 @@ const CreateTopic = () => {
     const dataToSend = { name };
 
     try {
-      const response = await adminAPI.createTopic(dataToSend);
+      const response = await adminAPI.createCompany(dataToSend);
       if (response?.statusCode === 201 ||  response?.statusCode === 201) {
         notification.success({
           message: "Success",
-          description: "Topic created successfully",
+          description: "Company created successfully",
           placement: "bottomRight",
           duration: 2,
         });
-        router.push("/admin/topics");
+        router.push("/admin/companies");
       } else {
         notification.error({
           message: "Error",
-          description: "Failed to create topic",
+          description: "Failed to create company",
           placement: "bottomRight",
           duration: 2,
         });
@@ -112,13 +113,13 @@ const CreateTopic = () => {
   return (
     <DefaultLayout>
       <Container>
-        <Title>Create New Topic</Title>
+        <Title>Create New Company</Title>
         <Form onSubmit={handleSubmit} noValidate>
           <Label htmlFor="name">Name</Label>
           <Input
             type="text"
             id="name"
-            placeholder="Enter topic name"
+            placeholder="Enter company name"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -133,4 +134,4 @@ const CreateTopic = () => {
   );
 };
 
-export default CreateTopic;
+export default CreateCompany;

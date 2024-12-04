@@ -7,10 +7,13 @@ import {
   ThumbUpAltOutlined,
   VisibilityOutlined,
   SearchOutlined,
+  Cookie,
 } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
 import EjectIcon from "@mui/icons-material/Eject";
 import PostDiscussion from "./create_discussion";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 const DiscussionItem = styled.div`
   display: flex;
@@ -98,7 +101,22 @@ const ListDiscuss = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
   const [searchText, setSearchText] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [userId, setUserId] = useState(null);
 
+  // Hàm giải mã token
+  const getUserIdFromToken = () => {
+    try {
+      const token = Cookies.get("token");
+      const decodedToken = jwtDecode(token);
+      return decodedToken?.sub || null;
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return null;
+    }
+  };
+
+  // Fetch danh sách thảo luận
   const fetchDiscussions = async (currentPage) => {
     try {
       setLoading(true);
@@ -121,17 +139,14 @@ const ListDiscuss = () => {
     }
   };
 
-  // useEffect cho việc fetch dữ liệu
   useEffect(() => {
     fetchDiscussions(page);
   }, [page]);
 
+  // Lấy userId từ token khi component mount
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-
-    return () => clearTimeout(timer);
+    const id = getUserIdFromToken();
+    setUserId(id);
   }, []);
 
   const handlePageChange = (page) => {
@@ -141,6 +156,15 @@ const ListDiscuss = () => {
   const filteredDiscussions = discussions.filter((discussion) =>
     discussion.title.toLowerCase().includes(searchText.toLowerCase())
   );
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalVisible(false);
+    fetchDiscussions(page);
+  };
 
   if (error) return <ErrorMessage>{error}</ErrorMessage>;
 
@@ -154,7 +178,9 @@ const ListDiscuss = () => {
             style={{ width: 100, height: 36 }}
           />
         ) : (
-          <NewButton icon={<AddIcon />}>New</NewButton>
+          <NewButton icon={<AddIcon />} onClick={showModal}>
+            New
+          </NewButton>
         )}
 
         {loading ? (
@@ -219,6 +245,13 @@ const ListDiscuss = () => {
           showSizeChanger={false}
         />
       </PaginationWrapper>
+
+      {/* Modal PostDiscussion */}
+      <PostDiscussion
+        visible={isModalVisible}
+        onClose={handleModalClose}
+        userId={userId}
+      />
     </div>
   );
 };

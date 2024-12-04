@@ -124,7 +124,7 @@ const CreateProblem = () => {
       try {
         const result = await adminAPI.getAllTopics();
         setTopicOptions(result?.data);
-        const response = await adminAPI.getAllCompanies();
+        const response = await adminAPI.getAllCompany();
         setCompanyOptions(response?.data);
       } catch (error) {
         notification.error({
