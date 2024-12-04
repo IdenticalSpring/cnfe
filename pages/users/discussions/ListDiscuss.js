@@ -14,7 +14,7 @@ import EjectIcon from "@mui/icons-material/Eject";
 import PostDiscussion from "./create_discussion";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import { formatDate } from "pages/users/components/utils/dateUtils";
+// import { FormatDate } from "users/components/utils/dateUtils";
 
 const DiscussionItem = styled.div`
   display: flex;
@@ -220,13 +220,12 @@ const ListDiscuss = () => {
             {console.log("Discussion User:", discussion.user)}{" "}
             <StyledLink href={`discussions/${discussion.id}`} passHref>
               <DiscussionItem>
-                <div>
+                {/* <div>
                   <DiscussionTitle>{discussion.title}</DiscussionTitle>
                   created by: {discussion.user?.name ||
                     "No name available"}{" "}
-                  {/* Nếu không có name, hiển thị "No name available" */}
-                  {formatDate(discussion.createdAt)}
-                </div>
+                  {FormatDate(discussion.createdAt)}
+                </div> */}
                 <StatsWrapper>
                   <StatItem>
                     <EjectIcon fontSize="small" />
