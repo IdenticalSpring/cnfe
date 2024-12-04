@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import styled from "styled-components";
-import { Pagination, Skeleton, Button, Input } from "antd";
+import { Pagination, Skeleton, Button, Input, Divider } from "antd";
 import { userAPI } from "service/user";
 import {
   ThumbUpAltOutlined,
@@ -14,6 +14,7 @@ import EjectIcon from "@mui/icons-material/Eject";
 import PostDiscussion from "./create_discussion";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import {formatDate } from "pages/users/components/utils/dateUtils";
 
 const DiscussionItem = styled.div`
   display: flex;
@@ -219,6 +220,9 @@ const ListDiscuss = () => {
               <DiscussionItem>
                 <div>
                   <DiscussionTitle>{discussion.title}</DiscussionTitle>
+                  created at: {formatDate(discussion.createdAt)}
+                  <Divider type="vertical" />
+                  replay {formatDate(discussion.updatedAt)}
                 </div>
 
                 <StatsWrapper>
