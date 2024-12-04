@@ -167,7 +167,7 @@ const DescriptionContent = ({ id, title, description }) => {
     {
       key: "3",
       label: "Hint",
-      children: <p>Think about edge cases.</p>, 
+      children: <p>Think about edge cases.</p>,
     },
   ];
 
@@ -209,9 +209,9 @@ const DescriptionContent = ({ id, title, description }) => {
         <StyledTag onClick={toggleCompaniesCollapse} clickable color="default">
           Companies
         </StyledTag>
-        <StyledTag onClick={toggleHintCollapse} clickable color="default">
+        {/* <StyledTag onClick={toggleHintCollapse} clickable color="default">
           Hint
-        </StyledTag>
+        </StyledTag> */}
       </TagContainer>
       <ProblemDescription dangerouslySetInnerHTML={{ __html: description }} />
 
@@ -231,13 +231,13 @@ const DescriptionContent = ({ id, title, description }) => {
         />
       </div>
 
-      <div ref={hintRef}>
+      {/* <div ref={hintRef}>
         <CollapseContainer
           activeKey={isHintOpen ? ["3"] : []}
           onChange={(keys) => setIsHintOpen(keys.includes("3"))}
           items={hintItems}
         />
-      </div>
+      </div> */}
     </ProblemContent>
   );
 };

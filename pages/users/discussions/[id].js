@@ -5,7 +5,11 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { userAPI } from "service/user";
 import styled from "styled-components";
-
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { Tooltip } from "antd";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 const DiscussionDetail = () => {
   const router = useRouter();
   const { id } = router.query;
@@ -13,9 +17,25 @@ const DiscussionDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState(""); // State lưu comment mới
+  const [newComment, setNewComment] = useState("");
+  const [userIdtoken, setUserId] = useState(null);
 
-  // Fetch dữ liệu thảo luận và danh sách bình luận
+  // Hàm giải mã token
+  const getUserIdFromToken = () => {
+    try {
+      const token = Cookies.get("token");
+      const decodedToken = jwtDecode(token);
+      return decodedToken?.sub || null;
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return null;
+    }
+  };
+  useEffect(() => {
+    const id = getUserIdFromToken();
+    setUserId(id);
+  }, []);
+
   useEffect(() => {
     if (id) {
       const fetchDiscussion = async () => {
@@ -24,7 +44,7 @@ const DiscussionDetail = () => {
           setDiscussion(discussionData.data);
           setLoading(false);
         } catch (err) {
-          setError("Lỗi khi tải chi tiết thảo luận");
+          setError("Error loading discussion details");
           setLoading(false);
         }
       };
@@ -55,84 +75,100 @@ const DiscussionDetail = () => {
   // Hàm xử lý upvote
   const handleUpvote = async () => {
     try {
-      await userAPI.upvoteDiscussion(id);
+      await userAPI.upVoteDiscussion(userIdtoken, id);
       setDiscussion((prevDiscussion) => ({
         ...prevDiscussion,
         voteUp: prevDiscussion.voteUp + 1,
       }));
     } catch (err) {
-      console.error("Lỗi khi upvote thảo luận:", err);
-      setError("Không thể upvote thảo luận");
+      console.error("Error upvoting the discussion:", err);
+      setError("Unable to upvote the discussion");
     }
   };
-
+  const handleDownvote = async () => {
+    try {
+      await userAPI.downVoteDiscussion(userIdtoken, id); // Cần thêm hàm downvote trong API của bạn
+      setDiscussion((prevDiscussion) => ({
+        ...prevDiscussion,
+        voteUp: prevDiscussion.voteUp - 1,
+      }));
+    } catch (err) {
+      console.error("Error downvoting the discussion:", err);
+      setError("Unable to downvote the discussion");
+    }
+  };
   // Submit new comment
   const handleSubmitComment = async () => {
     if (newComment.trim() === "") return;
 
-    const discussionId = parseInt(id, 10); // Ensure ID is an integer
-    const userId = 123; // Replace with actual userId
+    const discussionId = parseInt(id, 10);
+    const userId = userIdtoken;
 
     try {
       const data = await userAPI.submitComment(discussionId, userId, {
         content: newComment,
       });
-      setComments((prevComments) => [...prevComments, data.data]); // Add new comment to the list
-      setNewComment(""); // Clear the input field
+      setComments((prevComments) => [...prevComments, data.data]);
+      setNewComment("");
     } catch (err) {
       console.error("Error submitting comment:", err);
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
-
   return (
-    <DefaultLayout title={discussion.title}>
-      <DiscussionContainer>
-        <Title>{discussion.title}</Title>
-        <Content>{discussion.content}</Content>
+    <DefaultLayout title={discussion?.title}>
+      <ContainerDis>
+        <Title>{discussion?.title}</Title>
+        <Content>{discussion?.content}</Content>
 
-        <Footer>
-          <VoteButtons>
-            <VoteButton onClick={handleUpvote}>Upvote</VoteButton>
-            <VoteCount>{discussion.voteUp} Upvotes</VoteCount>
-          </VoteButtons>
+        <VoteButtons>
+          <Tooltip title="Upvote" placement="bottom">
+            <VoteButton onClick={handleUpvote}>
+              <ArrowDropUpIcon />
+            </VoteButton>
+          </Tooltip>
 
-          {/* Section gửi comment mới */}
-          <CommentsSection>
-            <CommentInput
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              placeholder="Add a comment"
-            />
-            <CommentButton onClick={handleSubmitComment}>Submit</CommentButton>
-          </CommentsSection>
+          <VoteCount>{discussion?.voteUp} </VoteCount>
 
-          {/* Hiển thị danh sách comment */}
-          <CommentsList>
-            {comments.map((comments) => (
-              <CommentItem key={comments.id}>
-                <CommentUser>{comments.userName}</CommentUser>
-                <CommentContent>{comments.comments.content}</CommentContent>
-                <CommentDate>
-                  {new Date(comments.createdAt).toLocaleString()}
-                </CommentDate>
-              </CommentItem>
-            ))}
-          </CommentsList>
-        </Footer>
-      </DiscussionContainer>
+          <Tooltip title="Downvote" placement="bottom">
+            <VoteButton onClick={handleDownvote}>
+              <ArrowDropDownIcon />
+            </VoteButton>
+          </Tooltip>
+        </VoteButtons>
+
+        <CommentsSection>
+          <CommentInput
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Add a comment"
+          />
+          <CommentButton onClick={handleSubmitComment}>Submit</CommentButton>
+        </CommentsSection>
+
+        <CommentsList>
+          <hr />
+
+          {comments.map((comments) => (
+            <CommentItem key={comments.id}>
+              <CommentUser>{comments.userName}</CommentUser>
+              <CommentContent>{comments.comments?.content}</CommentContent>
+              <CommentDate>
+                {new Date(comments.createdAt).toLocaleString()}
+              </CommentDate>
+            </CommentItem>
+          ))}
+        </CommentsList>
+      </ContainerDis>
     </DefaultLayout>
   );
 };
 
 export default DiscussionDetail;
 
-// Styled-components
-const DiscussionContainer = styled.div`
+const ContainerDis = styled.div`
   max-width: 900px;
-  margin: 0 auto;
+  margin: 30px auto;
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
@@ -140,45 +176,41 @@ const DiscussionContainer = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 2rem;
+  font-size: 20px;
   font-weight: 600;
-  color: #333;
 `;
 
 const Content = styled.p`
   margin-top: 20px;
-  font-size: 1.1rem;
+  font-size: 16px;
   line-height: 1.6;
-`;
-
-const Footer = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-top: 30px;
 `;
 
 const VoteButtons = styled.div`
   display: flex;
   gap: 10px;
+  align-items: center;
+  justify-content: end;
 `;
 
 const VoteButton = styled.button`
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
+  padding: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  border: 1px solid #555; /* Viền cùng màu với nút */
 
+  transition: background-color 0.3s, color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
   &:hover {
-    background-color: #0056b3;
+    color: var(--orange-color);
+    border: 1px solid var(--orange-color); /* Viền cùng màu với nút */
   }
 `;
 
 const VoteCount = styled.span`
-  margin-left: 10px;
-  font-size: 1rem;
+  font-size: 14;
   color: #555;
 `;
 
@@ -198,15 +230,16 @@ const CommentInput = styled.textarea`
 
 const CommentButton = styled.button`
   padding: 10px 20px;
-  background-color: #28a745;
+  background-color: var(--grey-color);
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
 
+  transition: background-color 0.3s;
+  align-items: center;
   &:hover {
-    background-color: #218838;
+    background-color: var(--orange-color);
   }
 `;
 
@@ -221,6 +254,7 @@ const CommentItem = styled.div`
 
 const CommentUser = styled.div`
   font-weight: bold;
+  margin-bottom: 10px;
   color: #333;
 `;
 
@@ -232,6 +266,7 @@ const CommentContent = styled.p`
 
 const CommentDate = styled.div`
   margin-top: 5px;
-  font-size: 0.9rem;
+  font-size: 12px;
   color: #777;
+  text-align: right;
 `;

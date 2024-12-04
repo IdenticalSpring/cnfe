@@ -7,8 +7,13 @@ import {
   ThumbUpAltOutlined,
   VisibilityOutlined,
   SearchOutlined,
+  Cookie,
 } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
+import EjectIcon from "@mui/icons-material/Eject";
+import PostDiscussion from "./create_discussion";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
 const DiscussionItem = styled.div`
   display: flex;
@@ -45,9 +50,9 @@ const StyledLink = styled(Link)`
 
 const StatsWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 40px;
+  gap: 20px;
+  width: 10%;
 `;
 
 const StatItem = styled.div`
@@ -75,7 +80,19 @@ const NavWrapper = styled.div`
   border-bottom: 1px solid var(--background-hover-color);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 `;
+const NewButton = styled(Button)`
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  background-color: var(--orange-color);
+  border: none;
+  color: white;
 
+  &:hover {
+    background-color: var(--background-hover-color) !important;
+    color: black;
+  }
+`;
 const ListDiscuss = () => {
   const [discussions, setDiscussions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -84,7 +101,22 @@ const ListDiscuss = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
   const [searchText, setSearchText] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [userId, setUserId] = useState(null);
 
+  // Hàm giải mã token
+  const getUserIdFromToken = () => {
+    try {
+      const token = Cookies.get("token");
+      const decodedToken = jwtDecode(token);
+      return decodedToken?.sub || null;
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return null;
+    }
+  };
+
+  // Fetch danh sách thảo luận
   const fetchDiscussions = async (currentPage) => {
     try {
       setLoading(true);
@@ -111,6 +143,12 @@ const ListDiscuss = () => {
     fetchDiscussions(page);
   }, [page]);
 
+  // Lấy userId từ token khi component mount
+  useEffect(() => {
+    const id = getUserIdFromToken();
+    setUserId(id);
+  }, []);
+
   const handlePageChange = (page) => {
     setPage(page);
   };
@@ -119,36 +157,48 @@ const ListDiscuss = () => {
     discussion.title.toLowerCase().includes(searchText.toLowerCase())
   );
 
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalVisible(false);
+    fetchDiscussions(page);
+  };
+
   if (error) return <ErrorMessage>{error}</ErrorMessage>;
 
   return (
     <div>
-      {/* Nút "New" */}
       <NavWrapper>
-        <Button
-          icon={<AddIcon />}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            borderRadius: "8px",
-            backgroundColor: "#FC8F54",
-          }}
-        >
-          New
-        </Button>
+        {loading ? (
+          <Skeleton.Button
+            active={true}
+            size="large"
+            style={{ width: 100, height: 36 }}
+          />
+        ) : (
+          <NewButton icon={<AddIcon />} onClick={showModal}>
+            New
+          </NewButton>
+        )}
 
-        <Input
-          placeholder="Search for discussions..."
-          suffix={<SearchOutlined />}
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          style={{ borderRadius: "8px", width: "25%" }}
-        />
+        {loading ? (
+          <Skeleton.Input
+            active={true}
+            style={{ width: "25%", borderRadius: "8px" }}
+          />
+        ) : (
+          <Input
+            placeholder="Search for discussions..."
+            suffix={<SearchOutlined />}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            style={{ borderRadius: "8px", width: "25%" }}
+          />
+        )}
       </NavWrapper>
 
-      {/* Thanh tìm kiếm */}
-
-      {/* Danh sách các cuộc thảo luận */}
       {loading ? (
         <>
           {Array.from({ length: 3 }).map((_, index) => (
@@ -173,7 +223,7 @@ const ListDiscuss = () => {
 
                 <StatsWrapper>
                   <StatItem>
-                    <ThumbUpAltOutlined fontSize="small" />
+                    <EjectIcon fontSize="small" />
                     {discussion.voteUp}
                   </StatItem>
                   <StatItem>
@@ -195,6 +245,13 @@ const ListDiscuss = () => {
           showSizeChanger={false}
         />
       </PaginationWrapper>
+
+      {/* Modal PostDiscussion */}
+      <PostDiscussion
+        visible={isModalVisible}
+        onClose={handleModalClose}
+        userId={userId}
+      />
     </div>
   );
 };

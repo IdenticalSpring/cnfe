@@ -19,9 +19,9 @@ const HeaderContainer = styled.div`
   padding: 5px 10px;
   background-color: var(--background-hover-color);
   border-bottom: 1px solid #ddd;
-  position: sticky; /* Đặt vị trí sticky */
-  top: 0; /* Giữ header ở đầu khi cuộn */
-  z-index: 9999; /* Đảm bảo header nằm trên các thành phần khác khi cuộn */
+  position: sticky;
+  top: 0;
+  z-index: 9999;
 `;
 
 const LeftSection = styled.div`
@@ -75,7 +75,7 @@ const CustomTooltip = styled(Tooltip)``;
 const Header = ({ onRunCode, onSubmitCode }) => {
   const router = useRouter();
   const handleClickBack = () => {
-    router.push("/users/problems"); 
+    router.push("/users/problems");
   };
 
   return (
@@ -89,14 +89,11 @@ const Header = ({ onRunCode, onSubmitCode }) => {
         <CustomTooltip title="Back to Problems">
           <IconButton onClick={handleClickBack} icon={<ArrowLeftOutlined />} />
         </CustomTooltip>
-        <CustomTooltip title="Show list Problems">
-          <IconButton icon={<MenuOutlined />} />
-        </CustomTooltip>
       </LeftSection>
 
       <CenterSection>
         <CustomTooltip title="Run Code">
-          <IconButton onClick={onRunCode} icon={<PlayCircleOutlined />}> {/* Gọi hàm onRunCode */}
+          <IconButton onClick={onRunCode} icon={<PlayCircleOutlined />}>
             <span>Run</span>
           </IconButton>
         </CustomTooltip>
@@ -108,12 +105,8 @@ const Header = ({ onRunCode, onSubmitCode }) => {
       </CenterSection>
 
       <RightSection>
-        <CustomTooltip title="Notifications">
-          <IconButton icon={<BellOutlined />} />
-        </CustomTooltip>
-        <CustomTooltip title="Upgrade to Premium">
-          <Button>Premium</Button>
-        </CustomTooltip>
+        <CustomTooltip title="Notifications"></CustomTooltip>
+        <CustomTooltip title="Upgrade to Premium"></CustomTooltip>
       </RightSection>
     </HeaderContainer>
   );
