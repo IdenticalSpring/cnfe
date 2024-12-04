@@ -8,6 +8,8 @@ import styled from "styled-components";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { Tooltip } from "antd";
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 const DiscussionDetail = () => {
   const router = useRouter();
   const { id } = router.query;
@@ -16,6 +18,23 @@ const DiscussionDetail = () => {
   const [error, setError] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [userIdtoken, setUserId] = useState(null);
+
+  // Hàm giải mã token
+  const getUserIdFromToken = () => {
+    try {
+      const token = Cookies.get("token");
+      const decodedToken = jwtDecode(token);
+      return decodedToken?.sub || null;
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return null;
+    }
+  };
+  useEffect(() => {
+    const id = getUserIdFromToken();
+    setUserId(id);
+  }, []);
 
   useEffect(() => {
     if (id) {
@@ -56,7 +75,7 @@ const DiscussionDetail = () => {
   // Hàm xử lý upvote
   const handleUpvote = async () => {
     try {
-      await userAPI.upvoteDiscussion(id);
+      await userAPI.upVoteDiscussion(userIdtoken, id);
       setDiscussion((prevDiscussion) => ({
         ...prevDiscussion,
         voteUp: prevDiscussion.voteUp + 1,
@@ -68,7 +87,7 @@ const DiscussionDetail = () => {
   };
   const handleDownvote = async () => {
     try {
-      await userAPI.downvoteDiscussion(id); // Cần thêm hàm downvote trong API của bạn
+      await userAPI.downVoteDiscussion(userIdtoken, id); // Cần thêm hàm downvote trong API của bạn
       setDiscussion((prevDiscussion) => ({
         ...prevDiscussion,
         voteUp: prevDiscussion.voteUp - 1,
@@ -83,7 +102,7 @@ const DiscussionDetail = () => {
     if (newComment.trim() === "") return;
 
     const discussionId = parseInt(id, 10);
-    const userId = 123;
+    const userId = userIdtoken;
 
     try {
       const data = await userAPI.submitComment(discussionId, userId, {
@@ -133,7 +152,7 @@ const DiscussionDetail = () => {
           {comments.map((comments) => (
             <CommentItem key={comments.id}>
               <CommentUser>{comments.userName}</CommentUser>
-              <CommentContent>{comments.comments.content}</CommentContent>
+              <CommentContent>{comments.comments?.content}</CommentContent>
               <CommentDate>
                 {new Date(comments.createdAt).toLocaleString()}
               </CommentDate>
