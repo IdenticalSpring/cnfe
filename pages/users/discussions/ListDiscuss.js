@@ -14,7 +14,8 @@ import EjectIcon from "@mui/icons-material/Eject";
 import PostDiscussion from "./create_discussion";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import {formatDate } from "pages/users/components/utils/dateUtils";
+import {formatDate } from "@/utils/dateUtils";
+import { useRouter } from "next/router";
 
 const DiscussionItem = styled.div`
   display: flex;
@@ -22,7 +23,7 @@ const DiscussionItem = styled.div`
   justify-content: space-between;
   padding: 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
+  
 
   transition: transform 0.2s ease;
   border-bottom: 2px solid var(--background-hover-color);
@@ -32,6 +33,10 @@ const DiscussionTitle = styled.h2`
   font-size: 16px;
   color: var(--primary-color);
   margin-bottom: 10px;
+  cursor: pointer;
+  user-select: none;
+  padding: 0;
+  width: fit-content;
 `;
 
 const ErrorMessage = styled.p`
@@ -85,14 +90,20 @@ const NewButton = styled(Button)`
   display: flex;
   align-items: center;
   border-radius: 8px;
-  background-color: var(--orange-color);
+  background-color: var(--orange-color) !important;
   border: none;
-  color: white;
+  color: white !important;
+`;
+const StyledDivider = styled(Divider)`
+  border-color: var(--grey-color) !important;
+  border-width: 2px !important;
+`;
+const DateText = styled.span`
+  font-size: 12px;
+  color: #666; 
+  display: inline-block;
+  cursor: text;
 
-  &:hover {
-    background-color: var(--background-hover-color) !important;
-    color: black;
-  }
 `;
 const ListDiscuss = () => {
   const [discussions, setDiscussions] = useState([]);
@@ -105,6 +116,11 @@ const ListDiscuss = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [userId, setUserId] = useState(null);
 
+  const router = useRouter();
+
+  const handleTitleClick = (discussionId) => {
+    router.push(`/users/discussions/${discussionId}`);
+  };
   // Hàm giải mã token
   const getUserIdFromToken = () => {
     try {
@@ -216,13 +232,13 @@ const ListDiscuss = () => {
       ) : (
         filteredDiscussions.map((discussion) => (
           <div key={discussion.id}>
-            <StyledLink href={`discussions/${discussion.id}`} passHref>
+
               <DiscussionItem>
                 <div>
-                  <DiscussionTitle>{discussion.title}</DiscussionTitle>
-                  created at: {formatDate(discussion.createdAt)}
-                  <Divider type="vertical" />
-                  replay {formatDate(discussion.updatedAt)}
+                  <DiscussionTitle onClick={() => handleTitleClick(discussion.id)}>{discussion.title}</DiscussionTitle>
+                  <DateText>Create by: {discussion.username} </DateText> 
+                  <StyledDivider type="vertical" />
+                  <DateText>Created at: {formatDate(discussion.createdAt)} </DateText> 
                 </div>
 
                 <StatsWrapper>
@@ -236,7 +252,7 @@ const ListDiscuss = () => {
                   </StatItem>
                 </StatsWrapper>
               </DiscussionItem>
-            </StyledLink>
+
           </div>
         ))
       )}
