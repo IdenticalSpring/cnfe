@@ -67,9 +67,11 @@ const Header = ({ toggleSidebar, collapsed }) => {
 
   const handleLogout = async () => {
     const result = await logoutUser(router);
-    sessionStorage.removeItem("name");
+  
+    sessionStorage.removeItem("userName");
     sessionStorage.removeItem("userId");
     sessionStorage.removeItem("userRole");
+    sessionStorage.removeItem("tokenExpiration");
     if (!result.success) {
       Modal.error({
         title: "Lỗi",
