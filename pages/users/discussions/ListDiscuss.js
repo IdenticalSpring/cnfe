@@ -14,7 +14,7 @@ import EjectIcon from "@mui/icons-material/Eject";
 import PostDiscussion from "./create_discussion";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
-import {formatDate } from "@/utils/dateUtils";
+import { formatDate } from "@/utils/dateUtils";
 import { useRouter } from "next/router";
 
 const DiscussionItem = styled.div`
@@ -23,7 +23,6 @@ const DiscussionItem = styled.div`
   justify-content: space-between;
   padding: 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  
 
   transition: transform 0.2s ease;
   border-bottom: 2px solid var(--background-hover-color);
@@ -100,10 +99,9 @@ const StyledDivider = styled(Divider)`
 `;
 const DateText = styled.span`
   font-size: 12px;
-  color: #666; 
+  color: #666;
   display: inline-block;
   cursor: text;
-
 `;
 const ListDiscuss = () => {
   const [discussions, setDiscussions] = useState([]);
@@ -138,6 +136,8 @@ const ListDiscuss = () => {
     try {
       setLoading(true);
       const response = await userAPI.getAllDiscussionsByPage(currentPage);
+      console.log("API response:", response);
+
       const {
         data,
         currentPage: serverPage,
@@ -160,7 +160,6 @@ const ListDiscuss = () => {
     fetchDiscussions(page);
   }, [page]);
 
-  // Lấy userId từ token khi component mount
   useEffect(() => {
     const id = getUserIdFromToken();
     setUserId(id);
@@ -215,7 +214,6 @@ const ListDiscuss = () => {
           />
         )}
       </NavWrapper>
-
       {loading ? (
         <>
           {Array.from({ length: 3 }).map((_, index) => (
@@ -232,27 +230,31 @@ const ListDiscuss = () => {
       ) : (
         filteredDiscussions.map((discussion) => (
           <div key={discussion.id}>
+            <DiscussionItem>
+              <div>
+                <DiscussionTitle
+                  onClick={() => handleTitleClick(discussion.id)}
+                >
+                  {discussion.title}
+                </DiscussionTitle>
+                <DateText>Create by: {discussion.username} </DateText>
+                <StyledDivider type="vertical" />
+                <DateText>
+                  Created at: {formatDate(discussion.createdAt)}{" "}
+                </DateText>
+              </div>
 
-              <DiscussionItem>
-                <div>
-                  <DiscussionTitle onClick={() => handleTitleClick(discussion.id)}>{discussion.title}</DiscussionTitle>
-                  <DateText>Create by: {discussion.username} </DateText> 
-                  <StyledDivider type="vertical" />
-                  <DateText>Created at: {formatDate(discussion.createdAt)} </DateText> 
-                </div>
-
-                <StatsWrapper>
-                  <StatItem>
-                    <EjectIcon fontSize="small" />
-                    {discussion.voteUp}
-                  </StatItem>
-                  <StatItem>
-                    <VisibilityOutlined fontSize="small" />
-                    {discussion.views}
-                  </StatItem>
-                </StatsWrapper>
-              </DiscussionItem>
-
+              <StatsWrapper>
+                <StatItem>
+                  <EjectIcon fontSize="small" />
+                  {discussion.voteUp}
+                </StatItem>
+                <StatItem>
+                  <VisibilityOutlined fontSize="small" />
+                  {discussion.views}
+                </StatItem>
+              </StatsWrapper>
+            </DiscussionItem>
           </div>
         ))
       )}
@@ -265,7 +267,6 @@ const ListDiscuss = () => {
           showSizeChanger={false}
         />
       </PaginationWrapper>
-
       {/* Modal PostDiscussion */}
       <PostDiscussion
         visible={isModalVisible}

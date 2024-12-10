@@ -301,13 +301,8 @@ export const userAPI = {
   },
 
   getDiscussionByID: async (id) => {
-    try {
-      const response = await request.get(`/discuss/getOne${id}`);
-      return response.data;
-    } catch (error) {
-      console.error("Lỗi khi lấy chi tiết thảo luận:", error);
-      throw error;
-    }
+    const response = await request.get(`/discuss/getOne${id}`);
+    return response.data;
   },
 
   upVoteDiscussion: async (userId, discussionId, data) => {
@@ -341,7 +336,7 @@ export const userAPI = {
     }
   },
 
-  getCommentsByDiscussionID: async (id, page = 1) => {
+  getCommentsByDiscussionID: async (id, page) => {
     try {
       const response = await request.get(
         `/discussion-comments/${id}?page=${page}`
@@ -357,7 +352,12 @@ export const userAPI = {
     try {
       const response = await request.post(
         `/comments/${discussionId}/${userId}`,
-        commentData
+        commentData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
       return response.data;
     } catch (error) {
@@ -377,12 +377,8 @@ export const userAPI = {
   },
   // ---------------------------- Order ----------------------------
   createOrder: async (orderData) => {
-    try {
-      const response = await request.post("/orders", orderData);
-      return response.data;
-    } catch (error) {
-      alert("Có lỗi xảy ra khi mua khóa học. Vui lòng thử lại sau.");
-    }
+    const response = await request.post("/orders", orderData);
+    return response.data;
   },
   getCouponByCode: async (code) => {
     const response = await request.get(`/coupons/code/${code}`);

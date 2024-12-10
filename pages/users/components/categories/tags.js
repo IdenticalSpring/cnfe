@@ -10,7 +10,6 @@ const ContentBox = styled.div`
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
-  /* Responsive styles */
   @media (max-width: 768px) {
     padding: 15px;
   }
@@ -38,7 +37,6 @@ const TagList = styled.div`
   max-height: 400px;
   overflow-y: auto;
 
-  /* Responsive styles */
   @media (max-width: 768px) {
     gap: 8px;
     max-height: 300px;
@@ -54,7 +52,6 @@ const CustomTag = styled(Tag)`
   background-color: #f0f0f0;
   border-radius: 8px;
 
-  /* Responsive font size and padding */
   @media (max-width: 768px) {
     font-size: 12px;
     padding: 4px 8px;

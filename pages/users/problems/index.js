@@ -286,7 +286,6 @@ const Index = () => {
         setAllProblems(formattedData);
         setTotalProblems(totalItems);
       } catch (error) {
-        console.error("Lỗi khi tải danh sách vấn đề:", error);
       } finally {
         setLoading(false);
       }
@@ -304,18 +303,14 @@ const Index = () => {
         }, {});
         setDifficultyLabels(difficulties);
         setIsDifficultyLoaded(true);
-      } catch (error) {
-        console.error("Error fetching difficulties:", error);
-      }
+      } catch (error) {}
     };
 
     const fetchTopics = async () => {
       try {
         const response = await userAPI.getAllTopics();
         setTopics(response.data);
-      } catch (error) {
-        console.error("Error fetching topics:", error);
-      }
+      } catch (error) {}
     };
 
     fetchDifficulties();

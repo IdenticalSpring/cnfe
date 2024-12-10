@@ -30,13 +30,6 @@ const EditChapter = ({ chapterId }) => {
   const [form] = Form.useForm();
   const router = useRouter();
 
-  useEffect(() => {
-    if (chapterId) {
-      loadChapterData(chapterId);
-    }
-    fetchCourses();
-  }, [chapterId, form]);
-
   const fetchCourses = async () => {
     try {
       const response = await adminAPI.getAllCourse();
@@ -59,28 +52,30 @@ const EditChapter = ({ chapterId }) => {
     }
   };
 
-  const loadChapterData = async (id) => {
-    setLoading(true);
-    try {
-      const response = await adminAPI.detailChapter(id);
-      if (response?.statusCode === 200 || response?.statusCode === 201) {
-        form.setFieldsValue({
-          courseId: response?.data?.courseId || "",
-          title: response?.data?.title || "",
-          description: response?.data?.description || "",
-          order: Number(response?.data?.order) || "",
+  const loadChapterData =
+    (async (id) => {
+      setLoading(true);
+      try {
+        const response = await adminAPI.detailChapter(id);
+        if (response?.statusCode === 200 || response?.statusCode === 201) {
+          form.setFieldsValue({
+            courseId: response?.data?.courseId || "",
+            title: response?.data?.title || "",
+            description: response?.data?.description || "",
+            order: Number(response?.data?.order) || "",
+          });
+        }
+      } catch (error) {
+        notification.error({
+          message: "Error",
+          description: "Failed to load chapter data. Please try again later.",
+          placement: "bottomRight",
         });
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      notification.error({
-        message: "Error",
-        description: "Failed to load chapter data. Please try again later.",
-        placement: "bottomRight",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [form]);
 
   const handleSave = async (values) => {
     setLoading(true);
@@ -104,6 +99,13 @@ const EditChapter = ({ chapterId }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (chapterId) {
+      loadChapterData(chapterId);
+    }
+    fetchCourses();
+  }, [chapterId, loadChapterData]);
 
   return (
     <DefaultLayout>

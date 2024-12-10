@@ -8,20 +8,13 @@ export const registerUser = async (payload) => {
   const url = `${baseURL}/auth/register`;
 
   try {
-    console.log("Sending payload:", payload);
-
-    // Sử dụng axios để gửi POST request
     const response = await axios.post(url, payload, {
       headers: {
         "Content-Type": "application/json",
       },
     });
 
-    console.log("Response Status:", response.status);
-    console.log("API response:", response.data);
-
     if (response.status === 200 || response.status === 201) {
-      // Display successful registration modal
       return new Promise((resolve) => {
         Modal.success({
           title: "Registration Successful",
@@ -33,7 +26,6 @@ export const registerUser = async (payload) => {
         });
       });
     } else {
-      // Display modal when registration fails
       Modal.error({
         title: "Registration Failed",
         content:
@@ -44,7 +36,6 @@ export const registerUser = async (payload) => {
   } catch (error) {
     console.error("Error:", error);
     if (error.response) {
-      // Display modal when there's an error from the server
       Modal.error({
         title: "Error",
         content:
@@ -53,7 +44,6 @@ export const registerUser = async (payload) => {
       });
       return { success: false, message: error.response.data.message };
     } else {
-      // Display modal when there's a connection error or other error
       Modal.error({
         title: "Error",
         content: "An error occurred. Please try again later.",
@@ -77,11 +67,9 @@ export const loginUser = async (payload) => {
     });
 
     if (response.status === 201) {
-      // Save JWT to cookie
       const token = response.data.data.access_token;
       Cookies.set("token", token);
 
-      // Display modal and wait for user to click "OK"
       return new Promise((resolve) => {
         Modal.success({
           title: "Login Successful",
@@ -92,7 +80,6 @@ export const loginUser = async (payload) => {
         });
       });
     } else {
-      // Display modal when login fails
       Modal.error({
         title: "Login Failed",
         content: response.data.message || "An error occurred during login.",
@@ -100,9 +87,7 @@ export const loginUser = async (payload) => {
       return { success: false, message: response.data.message };
     }
   } catch (error) {
-    console.error("Login error:", error);
     if (error.response) {
-      // Display error modal from server
       Modal.error({
         title: "Error",
         content:
@@ -110,7 +95,6 @@ export const loginUser = async (payload) => {
       });
       return { success: false, message: error.response.data.message };
     } else {
-      // Display connection error modal
       Modal.error({
         title: "Error",
         content: "An error occurred. Please try again later.",
@@ -154,7 +138,6 @@ export const logoutUser = async (router) => {
       return { success: true };
     }
   } catch (error) {
-    console.error("Logout error:", error);
     Modal.error({
       title: "Error",
       content:
@@ -246,7 +229,6 @@ export const resetPassword = async ({
     );
     return { success: true };
   } catch (error) {
-    console.error("Logout error:", error);
     Modal.error({
       title: "Error",
       content:
