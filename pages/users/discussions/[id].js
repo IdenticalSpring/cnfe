@@ -61,38 +61,42 @@ const DiscussionDetail = () => {
     return true; // Nếu đã đăng nhập, trả về true
   };
 
-  const fetchDiscussion = async () => {
-    try {
-      const discussionData = await userAPI.getDiscussionByID(id);
-      setDiscussion(discussionData.data);
-      setLoading(false);
-    } catch (err) {
-      setError("Error loading discussion details");
-      setLoading(false);
-    }
-  };
+  const fetchDiscussion =
+    (async () => {
+      try {
+        const discussionData = await userAPI.getDiscussionByID(id);
+        setDiscussion(discussionData.data);
+        setLoading(false);
+      } catch (err) {
+        setError("Error loading discussion details");
+        setLoading(false);
+      }
+    },
+    [id]);
 
   // Hàm fetch các comment
-  const fetchComments = async (page = 1) => {
-    try {
-      const commentsData = await userAPI.getCommentsByDiscussionID(id, page);
-      const enrichedComments = await Promise.all(
-        commentsData.data.map(async (comment) => {
-          const commentDetail = await userAPI.getCommentsByCommentID(
-            comment.commentId
-          );
-          return { ...comment, userName: commentDetail[0]?.user.name };
-        })
-      );
+  const fetchComments =
+    (async (page = 1) => {
+      try {
+        const commentsData = await userAPI.getCommentsByDiscussionID(id, page);
+        const enrichedComments = await Promise.all(
+          commentsData.data.map(async (comment) => {
+            const commentDetail = await userAPI.getCommentsByCommentID(
+              comment.commentId
+            );
+            return { ...comment, userName: commentDetail[0]?.user.name };
+          })
+        );
 
-      setComments(enrichedComments);
-      setCurrentPage(page); // Cập nhật trang hiện tại
-      setTotalPages(Math.ceil(commentsData.total / commentsData.limit)); // Tính tổng số trang
-    } catch (err) {
-      console.error("Error loading comments:", err);
-      setError("Error loading comments");
-    }
-  };
+        setComments(enrichedComments);
+        setCurrentPage(page); // Cập nhật trang hiện tại
+        setTotalPages(Math.ceil(commentsData.total / commentsData.limit)); // Tính tổng số trang
+      } catch (err) {
+        console.error("Error loading comments:", err);
+        setError("Error loading comments");
+      }
+    },
+    [id]);
 
   // Hàm submit comment
   const handleSubmitComment = async () => {
@@ -139,7 +143,7 @@ const DiscussionDetail = () => {
       fetchDiscussion();
       fetchComments(currentPage); // Lấy comments cho trang hiện tại
     }
-  }, [id, currentPage]);
+  }, [id, currentPage, fetchDiscussion, fetchComments]);
 
   const handleUpvote = async () => {
     if (!checkIfLoggedIn()) return;
