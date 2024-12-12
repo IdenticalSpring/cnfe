@@ -194,7 +194,7 @@ const TableChapter = ({ searchTerm }) => {
   };
 
   const handleDelete = (record) => {
-      setDeleteRecord(record);
+    setDeleteRecord(record);
     setIsDeleteModalVisible(true);
   };
 

@@ -386,7 +386,7 @@ const Explore = () => {
       <PageWrapper>
         <Title>
           <WelcomeText>Welcome to</WelcomeText>
-          <ExploreText>Master Coding Explore</ExploreText>
+          <ExploreText>Master Coding Courses</ExploreText>
         </Title>
         {renderCourses(learnCourses, "Learn Courses", learnRef)}
         {renderCourses(featuredCourses, "Featured Courses", featuredRef)}
