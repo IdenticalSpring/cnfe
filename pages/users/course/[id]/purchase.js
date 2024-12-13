@@ -80,8 +80,8 @@ const PurchaseCourse = ({ onClose }) => {
                 <div>
                     <h1>{course.title}</h1>
                     <p>{course.description}</p>
-                    <p>Original Price: ${course.price}</p>
-                    <p>Final Price: ${finalPrice}</p>
+                    <p>Original Price: {course.price} VND</p>
+                    <p>Final Price: {finalPrice} VND</p>
 
                     <Select
                         placeholder="Select a discount"
