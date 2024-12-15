@@ -70,6 +70,11 @@ const DetailProblem = ({ problemId }) => {
   const [testResult, setTestResult] = useState(null);
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("javascript");
+  const [submissionCode, setSubmissionCode] = useState(null);
+  const handleLoadSubmissionCode = ({ code: newCode, language: newLanguage }) => {
+    setCode(newCode);
+    setLanguage(newLanguage);
+  };
 
   useEffect(() => {
     const fetchProblemDetails = async () => {
@@ -244,6 +249,7 @@ const DetailProblem = ({ problemId }) => {
     }
   };
 
+
   return (
     <>
       <GlobalStyle />
@@ -256,6 +262,7 @@ const DetailProblem = ({ problemId }) => {
                 id={problem?.id}
                 title={problem?.title}
                 description={problem?.description}
+                onLoadSubmissionCode={handleLoadSubmissionCode}
               />
             </ContentContainer>
           </DescriptionContainer>

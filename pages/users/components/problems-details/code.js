@@ -14,12 +14,6 @@ const languages = [
   { label: "C#", value: "csharp" },
   { label: "Java", value: "java" },
   { label: "Python", value: "python" },
-  { label: "Dart", value: "dart" },
-  { label: "PHP", value: "php" },
-  { label: "Ruby", value: "ruby" },
-  { label: "Kotlin", value: "kotlin" },
-  { label: "Lua", value: "lua" },
-  { label: "Assembly", value: "assembly" },
 ];
 
 const EditorContainer = styled.div`
@@ -103,6 +97,11 @@ const CodeEditorComponent = ({ code, setCode, language, setLanguage }) => {
       setCode(languageContent[language] || "// Write your code here...");
     }
   }, [language, setCode]);
+  useEffect(() => {
+    if (code === "" || code === "// Write your code here...") {
+      setCode(languageContent[language] || "// Write your code here...");
+    }
+  }, [language]);
 
   const handleLanguageChange = (value) => {
     setLanguage(value);

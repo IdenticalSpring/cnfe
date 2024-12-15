@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { userAPI } from "service/user";
-import { Card, Tag, Typography, Space, Alert, Spin } from "antd";
+import { Card, Tag, Typography, Space, Alert, Spin, Button } from "antd";
 import styled from "styled-components";
 import { CodeOutlined, CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 
@@ -35,7 +35,7 @@ const ErrorBlock = styled(CodeBlock)`
   color: #cf1322;
 `;
 
-const Submissions = ({ problemId }) => {
+const Submissions = ({ problemId, onLoadSubmissionCode }) => {
   const [submission, setSubmission] = useState(null);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
@@ -48,10 +48,13 @@ const Submissions = ({ problemId }) => {
         if (userId && problemId) {
           const response = await userAPI.getSubmissionByUserAndProblem(userId, problemId);
           const submissionData = response.data;
-          console.log("Submission data:", submissionData);
 
           if (submissionData) {
             setSubmission(submissionData);
+            onLoadSubmissionCode?.({
+              code: submissionData.code,
+              language: submissionData.language
+            });
           } else {
             setFetchError("No submission data found for this problem.");
           }
@@ -67,8 +70,13 @@ const Submissions = ({ problemId }) => {
     };
 
     fetchSubmission();
-  }, [problemId]);
+  }, [problemId, onLoadSubmissionCode]);
 
+  const handleLoadCode = () => {
+    if (onLoadSubmissionCode && submission) {
+      onLoadSubmissionCode({ code: submission.code, language: submission.language });
+    }
+  };
   const getStatusTag = () => {
     switch (submission?.status) {
       case "completed":
@@ -140,8 +148,6 @@ const Submissions = ({ problemId }) => {
             {submission.output || "No output generated"}
           </CodeBlock>
         </div>
-
-        {/* Hiển thị lỗi chỉ khi có thông báo lỗi thực sự */}
         {submission?.error && submission.error !== "Unknown error occurred" && (
           <div>
             <Text strong type="danger">

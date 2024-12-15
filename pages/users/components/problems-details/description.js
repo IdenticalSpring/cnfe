@@ -30,7 +30,7 @@ const ProblemContent = styled.div`
   overflow-y: auto;
 `;
 
-const Description = ({ id, title, description }) => {
+const Description = ({ id, title, description, onLoadSubmissionCode }) => {
   const [activeTab, setActiveTab] = useState("description");
 
   const handleMenuClick = (e) => {
@@ -46,22 +46,8 @@ const Description = ({ id, title, description }) => {
           onClick={handleMenuClick}
           defaultSelectedKeys={["description"]}
           items={[
-            {
-              key: "description",
-              icon: <FileTextOutlined />,
-              label: "Description",
-            },
-            {
-              key: "submissions",
-              icon: <ReloadOutlined />,
-              label: "Submissions",
-            },
-            // { key: "editorial", icon: <BookOutlined />, label: "Editorial" },
-            // {
-            //   key: "solutions",
-            //   icon: <ExperimentOutlined />,
-            //   label: "Solutions",
-            // },
+            { key: "description", icon: <FileTextOutlined />, label: "Description" },
+            { key: "submissions", icon: <ReloadOutlined />, label: "Submissions" },
           ]}
         />
       </ProblemHeader>
@@ -69,9 +55,10 @@ const Description = ({ id, title, description }) => {
         {activeTab === "description" && (
           <DescriptionContent id={id} title={title} description={description} />
         )}
-        {activeTab === "submissions" && <Submissions problemId={id} />}
-        {/* {activeTab === "editorial" && <Editorial />}
-        {activeTab === "solutions" && <Solutions />} */}
+        {/* Truyền onLoadSubmissionCode xuống Submissions */}
+        {activeTab === "submissions" && (
+          <Submissions problemId={id} onLoadSubmissionCode={onLoadSubmissionCode} />
+        )}
       </ProblemContent>
     </DescriptionContainer>
   );
