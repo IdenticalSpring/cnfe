@@ -322,23 +322,25 @@ const Explore = () => {
         >
           {loading
             ? Array.from({ length: skeletonCount }).map((_, index) => (
-                <SlideCard key={index}>
-                  <Skeleton.Image
-                    style={{
-                      width: "100%",
-                      height: "200px",
-                      borderRadius: "16px",
-                    }}
-                  />
-                  <Skeleton
-                    active
-                    paragraph={{ rows: 1 }}
-                    title={false}
-                    style={{ padding: "16px" }}
-                  />
-                </SlideCard>
-              ))
-            : courses.map((course) => (
+              <SlideCard key={index}>
+                <Skeleton.Image
+                  style={{
+                    width: "100%",
+                    height: "200px",
+                    borderRadius: "16px",
+                  }}
+                />
+                <Skeleton
+                  active
+                  paragraph={{ rows: 1 }}
+                  title={false}
+                  style={{ padding: "16px" }}
+                />
+              </SlideCard>
+            ))
+            : courses.map((course) => {
+              const completionPercentage = course.itemCount > 0 ? (course.completedLessons / course.itemCount) * 100 : 0;
+              return (
                 <SlideCard key={course.id}>
                   <CourseHeader>
                     <CourseImage
@@ -365,13 +367,14 @@ const Explore = () => {
                       <StatValue>{course.chapterCount || "0"}</StatValue>
                     </StatGroup>
                     <StatGroup>
-                      <StatLabel>Items</StatLabel>
-                      <StatValue>{course.itemCount || "0"}</StatValue>
+                      <StatLabel>Lessons</StatLabel>
+                      <StatValue>{course.completedLessons} / {course.itemCount}</StatValue>
                     </StatGroup>
                   </CourseStats>
-                  <Progress progress={`${course.progress || 0}%`} />
+                  <Progress progress={`${completionPercentage}%`} />
                 </SlideCard>
-              ))}
+              );
+            })}
         </SlideWrapper>
 
         <NavigationButton direction="next" onClick={() => scroll(ref, "next")}>

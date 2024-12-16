@@ -223,9 +223,16 @@ export const userAPI = {
   },
   fetchCoursesByType: async (type) => {
     try {
+      const userId = sessionStorage.getItem('userId'); 
       const response = await requestNoTK.get(
-        `/courses/getByType`,
-        { params: { type, page: 1 } },
+        '/courses/getByType',
+        {
+          params: {
+            type,
+            page: 1,
+            userId, 
+          }
+        },
         { noToken: true }
       );
       return response.data?.data?.data || [];
