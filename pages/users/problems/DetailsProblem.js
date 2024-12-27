@@ -135,7 +135,6 @@ const DetailProblem = ({ problemId }) => {
           }
     
           const result = await userAPI.executeCode(userId, code, language, testCase.input);
-          console.log("API Response:", result.data);
           const actualOutput = result.data?.output?.trim();
           const expectedOutput = testCase.output?.trim();
           const isCorrect = actualOutput === expectedOutput;
@@ -151,9 +150,7 @@ const DetailProblem = ({ problemId }) => {
         })
       );
 
-      console.log("Test Case Results (Before setTestResult):", results);
       setTestResult(results);
-      console.log("Test Result State Updated:", results);
 
       notification.success({
         message: "Code Execution Successful",
@@ -209,8 +206,6 @@ const DetailProblem = ({ problemId }) => {
         problemId,
         problem?.testCases[0]?.input
       );
-
-      console.log("API Response:", response);
 
       const submissionStatus = response?.data.acceptanceSubmission?.status;
 

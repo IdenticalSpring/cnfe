@@ -18,7 +18,6 @@ const ContentCard = ({
         <TabContent>
           {selectedLesson ? (
             <div>
-              {console.log("Displaying selected lesson:", selectedLesson)}
               <h3>{selectedLesson.title}</h3>
               <p>{selectedLesson.content}</p>
               <CompleteButton

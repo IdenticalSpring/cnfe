@@ -136,8 +136,6 @@ const ListDiscuss = () => {
     try {
       setLoading(true);
       const response = await userAPI.getAllDiscussionsByPage(currentPage);
-      console.log("API response:", response);
-
       const {
         data,
         currentPage: serverPage,

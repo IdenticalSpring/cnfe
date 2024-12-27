@@ -156,7 +156,6 @@ export const userAPI = {
       const response = await request.get(`/submissions/${userId}`, {
         params: { problemId },
       });
-      console.log("API Response:", response);
       return response.data.data;
     } catch (error) {
       console.error("Error fetching submission:", error);
@@ -280,7 +279,6 @@ export const userAPI = {
   getAllTags: async () => {
     try {
       const response = await request.get("/tags");
-      console.log(response.data);
       return response.data.data;
     } catch (error) {
       console.error("Error fetching tags:", error);
@@ -400,7 +398,6 @@ export const userAPI = {
       const response = await request.get(
         `/orders/check-purchase-status/${userId}/${courseId}`
       );
-      console.log("Response from check-purchase-status API:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error checking purchase status:", error);

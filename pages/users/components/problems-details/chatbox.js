@@ -265,10 +265,8 @@ const ChatBox = ({ code, problemTitle, problemDescription }) => {
           .join("\n") + `\nUser ${userMessage}`;
 
       try {
-        console.log("Prompt sent to API:", prompt);
         // Gửi prompt tới API
         const result = await userAPI.generateContent(prompt);
-        console.log("API Response:", result);
         setMessages((prevMessages) => [
           ...prevMessages,
           { text: result, type: "gemini" },
