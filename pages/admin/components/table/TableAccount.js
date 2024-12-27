@@ -65,7 +65,6 @@ const TableAccount = ({ searchTerm }) => {
           setFilteredData(formattedUsers);
         }
       } catch (error) {  
-        console.log("🚀 ~ fetchUsers ~ error:", error)
         notification.error({
           message: "Error",
           description: "Unable to load the user list.",
@@ -143,10 +142,6 @@ const TableAccount = ({ searchTerm }) => {
   const showDeleteModal = (id) => {
     setSelectedUserId(id);
     setIsModalVisible(true);
-  };
-
-  const handleEdit = (id) => {
-    console.log("Edit record:", id);
   };
 
   const handleDelete = () => {

@@ -45,7 +45,6 @@ const CreateLesson = () => {
     const lessonData = { ...values, content };
     try {
       const response = await adminAPI.createLesson(lessonData);
-      console.log("Lesson created:", response);
       if (response?.statusCode === 200 || response?.statusCode === 201) {
         notification.success({
           message: "thành công",

@@ -11,7 +11,6 @@ const useCheckTokenExpiration = () => {
             const currentTime = Math.floor(Date.now() / 1000);
 
             if (tokenExpiration && currentTime > tokenExpiration) {
-                console.log('Token has expired, logging out...');
                 notification.warning({
                     message: 'Session Expired',
                     description: 'Your session has expired. Please log in again.',
@@ -26,7 +25,6 @@ const useCheckTokenExpiration = () => {
     }, [router]);
 
     const logoutUser = () => {
-        console.log('Logging out user...');
         sessionStorage.removeItem('userId');
         sessionStorage.removeItem('userName');
         sessionStorage.removeItem('userRole');

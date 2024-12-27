@@ -83,7 +83,6 @@ const CreateChapter = () => {
   }, []);
 
   const handleSubmit = async (values) => {
-    console.log("🚀 ~ handleSubmit ~ values:", values);
     const formattedValues = {
       ...values,
       order: Number(values.order),
@@ -91,7 +90,6 @@ const CreateChapter = () => {
     setLoading(true);
     try {
       const response = await adminAPI.createChapter(formattedValues);
-      console.log("API response:", response);
       if (response?.statusCode === 200 || response?.statusCode === 201) {
         notification.success({
           message: "Success",
