@@ -5,7 +5,7 @@ import { adminAPI } from "service/admin";
 import { notification, Spin, Select } from "antd";
 import { useRouter } from "next/router";
 import Editor from "components/textEditor/Editor";
-import CloudinaryUpload from "../component/CloudinaryUpload";
+import CloudinaryUpload from "../components/CloudinaryUpload";
 
 const { Option } = Select;
 
@@ -170,7 +170,8 @@ const CreateProblem = () => {
     } catch (error) {
       notification.error({
         message: "Problem creation failed",
-        description: "An error occurred while creating the problem. Please try again!",
+        description:
+          "An error occurred while creating the problem. Please try again!",
         placement: "bottomRight",
         duration: 2,
       });

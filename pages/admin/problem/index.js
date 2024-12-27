@@ -10,9 +10,9 @@ import ButtonCustom from "components/button/Button";
 import React, { Suspense, lazy, useState, useEffect } from "react";
 import { Skeleton, Dropdown, Menu, Input } from "antd";
 import { adminAPI } from "service/admin";
-import Search from "pages/admin/component/search/index";
+import Search from "@/pages/admin/components/search/index";
 
-const TableProblem = lazy(() => import("../component/table/TableProblem"));
+const TableProblem = lazy(() => import("../components/table/TableProblem"));
 
 const Title_Head = styled.h1`
   font-size: 32px;
