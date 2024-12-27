@@ -51,7 +51,6 @@ const AuthCallbackPage = () => {
           });
         }
       } catch (error) {
-        console.error("JWT Decode Error:", error);
         notification.error({
           Message: "Error",
           Description: "Invalid token!",

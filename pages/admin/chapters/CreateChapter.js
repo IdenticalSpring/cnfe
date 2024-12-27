@@ -70,7 +70,6 @@ const CreateChapter = () => {
           });
         }
       } catch (error) {
-        console.error("Error fetching courses:", error);
         notification.error({
           message: "Error",
           description: "There was an error loading courses.",
@@ -99,7 +98,6 @@ const CreateChapter = () => {
         router.push("/admin/chapters");
       }
     } catch (error) {
-      console.error("Error creating chapter:", error);
       notification.error({
         message: "Error",
         description: "There was an error creating the chapter.",

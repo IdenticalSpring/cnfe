@@ -63,7 +63,6 @@ const Submissions = ({ problemId, onLoadSubmissionCode }) => {
         }
       } catch (error) {
         setFetchError("Error fetching submission.");
-        console.error("Error fetching submission:", error);
       } finally {
         setLoading(false);
       }

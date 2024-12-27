@@ -49,7 +49,6 @@ const Categories = () => {
         setCategories(data);
         setError(false);
       } catch (error) {
-        console.error("Error fetching categories:", error);
         setError(true);
       } finally {
         setLoading(false);

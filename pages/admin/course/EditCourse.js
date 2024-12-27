@@ -139,7 +139,6 @@ const EditCourse = ({ courseId }) => {
         description: "Unable to update course information.",
         placement: "bottomRight",
       });
-      console.error("Error updating course:", error);
     } finally {
       setLoading(false);
     }

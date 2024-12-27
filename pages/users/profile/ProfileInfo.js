@@ -20,7 +20,12 @@ const ProfileInfo = () => {
                 const profileData = await userAPI.fetchProfile();
                 setProfile(profileData);  // Lưu dữ liệu profile
             } catch (error) {
-                console.error('Error fetching profile:', error);
+                notification.error({
+                    message: 'Error',
+                    description: `Error fetching profile`,
+                    duration: 5,
+                    placement: 'bottomRight',
+                  });
             } finally {
                 setLoading(false); // Đảm bảo loading = false sau khi đã gọi API
             }

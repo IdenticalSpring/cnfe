@@ -60,14 +60,19 @@ const Header = ({ toggleSidebar, collapsed }) => {
         const decoded = jwtDecode(token);
         setDisplayName(decoded.name || "Người Dùng");
       } catch (error) {
-        console.error("Lỗi khi giải mã token:", error);
+        notification.error({
+          message: "Error decoding token",
+          description: `Failed to decode token`,
+          duration: 5,
+          placement: "bottomRight",
+        });
       }
     }
   }, []);
 
   const handleLogout = async () => {
     const result = await logoutUser(router);
-  
+
     sessionStorage.removeItem("userName");
     sessionStorage.removeItem("userId");
     sessionStorage.removeItem("userRole");
@@ -92,9 +97,7 @@ const Header = ({ toggleSidebar, collapsed }) => {
         <MenuUnfoldOutlined />
       </ToggleSidebarButton>
       <Dropdown menu={{ items: menuItems }}>
-        <AccountName>
-          {displayName} 
-        </AccountName>
+        <AccountName>{displayName}</AccountName>
       </Dropdown>
     </HeaderContainer>
   );

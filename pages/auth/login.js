@@ -220,7 +220,6 @@ const Login = () => {
           });
         }
       } catch (error) {
-        console.error("JWT Decode Error:", error);
         notification.error({
           message: "Error",
           description: "Invalid token!",
@@ -236,7 +235,6 @@ const Login = () => {
         setUserId(userIdResult.data.data.userId);
         setModalVisible(true);
       } catch (error) {
-        console.error("Error fetching user ID:", error);
         notification.error({
           message: "Error",
           description: "Failed to fetch user ID for activation!",

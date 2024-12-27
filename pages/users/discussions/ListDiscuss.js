@@ -126,7 +126,6 @@ const ListDiscuss = () => {
       const decodedToken = jwtDecode(token);
       return decodedToken?.sub || null;
     } catch (error) {
-      console.error("Error decoding token:", error);
       return null;
     }
   };

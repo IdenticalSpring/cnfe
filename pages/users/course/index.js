@@ -273,7 +273,12 @@ const Explore = () => {
         setFeaturedCourses(featured);
         setInterviewCourses(interview);
       } catch (error) {
-        console.error("Error loading courses:", error);
+        notification.error({
+          message: 'Error',
+          description: `Error loading courses`,
+          duration: 5,
+          placement: 'bottomRight',
+        });
       } finally {
         setLoading(false);
       }

@@ -63,7 +63,6 @@ const CreateLesson = () => {
   };
 
   const onFinishFailed = (errorInfo) => {
-    console.error("Failed:", errorInfo);
     notification.error({
       message: "Lỗi",
       description: "vui lòng check lại các field trong form!!!",

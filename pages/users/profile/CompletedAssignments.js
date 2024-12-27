@@ -29,7 +29,6 @@ const CompletedAssignments = () => {
           setSubmissionData(acceptedSubmissions);
         }
       } catch (error) {
-        console.error('Error fetching submission data:', error);
       } finally {
         setLoading(false);
       }

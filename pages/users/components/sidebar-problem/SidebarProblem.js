@@ -102,10 +102,20 @@ const Sidebar = ({ onCompanyFilter }) => {
         if (Array.isArray(data)) {
           setCompanies(data);
         } else {
-          console.error("Expected an array but received:", data);
+          notification.error({
+            message: 'Error',
+            description: `Expected an array but received`,
+            duration: 5,
+            placement: 'bottomRight',
+          });
         }
       } catch (error) {
-        console.error("Error fetching companies:", error);
+        notification.error({
+          message: 'Error',
+          description: `Error fetching companies`,
+          duration: 5,
+          placement: 'bottomRight',
+        });
       } finally {
         setLoading(false);
       }

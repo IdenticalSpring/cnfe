@@ -34,7 +34,6 @@ export const registerUser = async (payload) => {
       return { success: false, message: response.data.message };
     }
   } catch (error) {
-    console.error("Error:", error);
     if (error.response) {
       Modal.error({
         title: "Error",

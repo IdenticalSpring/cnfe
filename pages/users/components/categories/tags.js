@@ -70,7 +70,12 @@ const Tags = () => {
         const data = await userAPI.getAllTags();
         setTags(data);
       } catch (error) {
-        console.error("Error fetching tags:", error);
+        notification.error({
+          message: 'Error',
+          description: `Error fetching tags`,
+          duration: 5,
+          placement: 'bottomRight',
+        });
       } finally {
         setLoading(false);
       }

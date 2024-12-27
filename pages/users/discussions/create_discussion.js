@@ -57,7 +57,6 @@ const PostDiscussion = ({ visible, onClose }) => {
         });
       }
     } catch (error) {
-      console.error("Error posting discussion:", error);
       notification.error({
         message: "Error Occurred!",
         description:
