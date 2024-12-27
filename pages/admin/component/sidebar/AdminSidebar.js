@@ -134,13 +134,13 @@ const AdminSidebar = ({ collapsed }) => {
         >
           Lesson
         </StyledMenuItem>
-        <StyledMenuItem
+        {/* <StyledMenuItem
           key="/admin/assignments"
           icon={<FormOutlined />}
           $isSelected={selectedKey === "/admin/assignments"}
         >
           Assignments
-        </StyledMenuItem>
+        </StyledMenuItem> */}
         <StyledMenuItem
           key="/admin/problem"
           icon={<ExclamationCircleOutlined />}
