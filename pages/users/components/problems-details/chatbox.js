@@ -272,7 +272,6 @@ const ChatBox = ({ code, problemTitle, problemDescription }) => {
           { text: result, type: "gemini" },
         ]);
       } catch (error) {
-        console.error("Error while sending message to API:", error);
         setMessages((prevMessages) => [
           ...prevMessages,
           {

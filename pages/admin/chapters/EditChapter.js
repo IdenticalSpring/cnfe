@@ -43,7 +43,6 @@ const EditChapter = ({ chapterId }) => {
         });
       }
     } catch (error) {
-      console.error("Error fetching courses:", error);
       notification.error({
         message: "Error",
         description: "There was an error loading courses.",

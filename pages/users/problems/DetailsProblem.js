@@ -60,8 +60,8 @@ const ContentContainer = styled.div`
 `;
 notification.config({
   placement: "topRight",
-  top: 80, 
-  duration: 4, 
+  top: 80,
+  duration: 4,
 });
 
 const DetailProblem = ({ problemId }) => {
@@ -71,7 +71,10 @@ const DetailProblem = ({ problemId }) => {
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("javascript");
   const [submissionCode, setSubmissionCode] = useState(null);
-  const handleLoadSubmissionCode = ({ code: newCode, language: newLanguage }) => {
+  const handleLoadSubmissionCode = ({
+    code: newCode,
+    language: newLanguage,
+  }) => {
     setCode(newCode);
     setLanguage(newLanguage);
   };
@@ -84,7 +87,12 @@ const DetailProblem = ({ problemId }) => {
         const testCases = await userAPI.getTestCasesByProblemId(problemId);
         setProblem({ ...problemResponse.data, testCases });
       } catch (error) {
-        console.error("Error fetching problem details:", error);
+        notification.error({
+          message: "Error",
+          description: `Error fetching problem details`,
+          duration: 5,
+          placement: "bottomRight",
+        });
       } finally {
         setLoading(false);
       }
@@ -124,7 +132,6 @@ const DetailProblem = ({ problemId }) => {
       const results = await Promise.all(
         problem.testCases.map(async (testCase) => {
           if (!testCase.input) {
-            console.error("Test Case Input Missing:", testCase);
             return {
               input: testCase.input,
               expectedOutput: testCase.output,
@@ -133,8 +140,13 @@ const DetailProblem = ({ problemId }) => {
               isCorrect: false,
             };
           }
-    
-          const result = await userAPI.executeCode(userId, code, language, testCase.input);
+
+          const result = await userAPI.executeCode(
+            userId,
+            code,
+            language,
+            testCase.input
+          );
           const actualOutput = result.data?.output?.trim();
           const expectedOutput = testCase.output?.trim();
           const isCorrect = actualOutput === expectedOutput;
@@ -154,13 +166,14 @@ const DetailProblem = ({ problemId }) => {
 
       notification.success({
         message: "Code Execution Successful",
-        description: "Your code ran successfully. Check the test case results below.",
+        description:
+          "Your code ran successfully. Check the test case results below.",
       });
     } catch (error) {
-      console.error("Error running code:", error);
       notification.error({
         message: "Code Execution Failed",
-        description: "An error occurred while running your code. Please try again later.",
+        description:
+          "An error occurred while running your code. Please try again later.",
       });
     }
   }, [code, language, problem?.testCases]);
@@ -172,7 +185,8 @@ const DetailProblem = ({ problemId }) => {
       if (!userId || !code || !language) {
         notification.warning({
           message: "Missing Information",
-          description: "Please fill in all required information before submitting.",
+          description:
+            "Please fill in all required information before submitting.",
         });
         return;
       }
@@ -180,7 +194,8 @@ const DetailProblem = ({ problemId }) => {
       if (!testResult || !testResult.length) {
         notification.warning({
           message: "Code Not Executed",
-          description: "Please run the code and check the test cases before submitting.",
+          description:
+            "Please run the code and check the test cases before submitting.",
         });
         return;
       }
@@ -194,7 +209,8 @@ const DetailProblem = ({ problemId }) => {
       if (!allPassed) {
         notification.error({
           message: "Cannot Submit",
-          description: "Your code did not pass all test cases. Please fix the errors and try again.",
+          description:
+            "Your code did not pass all test cases. Please fix the errors and try again.",
         });
         return;
       }
@@ -212,12 +228,16 @@ const DetailProblem = ({ problemId }) => {
       if (response.status === 200) {
         notification.warning({
           message: "Duplicate Submission",
-          description: response?.message || "Your submission has already been completed and accepted.",
+          description:
+            response?.message ||
+            "Your submission has already been completed and accepted.",
         });
       } else if (response.status === 201) {
         notification.success({
           message: "New Submission Created",
-          description: response?.message || "Your new submission was created successfully.",
+          description:
+            response?.message ||
+            "Your new submission was created successfully.",
         });
       } else if (submissionStatus === "rejected") {
         notification.error({
@@ -232,18 +252,18 @@ const DetailProblem = ({ problemId }) => {
       } else {
         notification.warning({
           message: "Unknown Status",
-          description: "Unable to determine submission status. Please try again.",
+          description:
+            "Unable to determine submission status. Please try again.",
         });
       }
     } catch (error) {
-      console.error("Error during Submit Code:", error);
       notification.error({
         message: "System Error",
-        description: "An error occurred during submission. Please try again later.",
+        description:
+          "An error occurred during submission. Please try again later.",
       });
     }
   };
-
 
   return (
     <>
@@ -271,15 +291,18 @@ const DetailProblem = ({ problemId }) => {
               />
             </ContentContainer>
             <ContentContainer>
-              <TestCaseComponent testCases={problem?.testCases} result={testResult} />
+              <TestCaseComponent
+                testCases={problem?.testCases}
+                result={testResult}
+              />
             </ContentContainer>
           </EditorContainer>
         </LayoutContainer>
       </PageWrapper>
       <ChatBox
         code={code}
-        problemTitle={problem?.title || 'No title'}
-        problemDescription={problem?.description || 'No description'}
+        problemTitle={problem?.title || "No title"}
+        problemDescription={problem?.description || "No description"}
       />
     </>
   );

@@ -29,7 +29,12 @@ const ActivateAccountModal = ({ visible, onClose, userId, initialEmail }) => {
             const result = await checkActivationCode(payload);
             if (result.success) onClose();
         } catch (error) {
-            console.error('Activation failed:', error);
+          notification.error({
+            message: 'Activation Failed',
+            description: `Activation failed`,
+            duration: 5,
+            placement: 'bottomRight',
+          });
         }
         setLoading(false);
     };
@@ -41,7 +46,12 @@ const ActivateAccountModal = ({ visible, onClose, userId, initialEmail }) => {
             await resendActivationCode(email);
             setCountdown(60);
         } catch (error) {
-            console.error('Resend failed:', error);
+          notification.error({
+            message: 'Resend Failed',
+            description: `Resend failed`,
+            duration: 5,
+            placement: 'bottomRight',
+          });
         }
         setIsResending(false);
     };

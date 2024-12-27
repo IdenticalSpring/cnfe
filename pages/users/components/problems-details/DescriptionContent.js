@@ -92,7 +92,12 @@ const DescriptionContent = ({ id, title, description }) => {
           difficulties[problemResponse.data.difficultyId] || "Unknown"
         );
       } catch (error) {
-        console.error("Error fetching problem details:", error);
+        notification.error({
+          message: 'Error',
+          description: `Error fetching problems details`,
+          duration: 5,
+          placement: 'bottomRight',
+        });
       } finally {
         setLoading(false);
       }
@@ -103,7 +108,12 @@ const DescriptionContent = ({ id, title, description }) => {
         const response = await userAPI.getTopicProblem(id);
         setTopics(response.data || []);
       } catch (error) {
-        console.error("Error fetching topics:", error);
+        notification.error({
+          message: 'Error',
+          description: `Error fetching topic`,
+          duration: 5,
+          placement: 'bottomRight',
+        });
       }
     };
 
@@ -112,7 +122,12 @@ const DescriptionContent = ({ id, title, description }) => {
         const response = await userAPI.getCompaniesProblem(id);
         setCompanies(response.data || []);
       } catch (error) {
-        console.error("Error fetching companies:", error);
+        notification.error({
+          message: 'Error',
+          description: `Error fetching companies`,
+          duration: 5,
+          placement: 'bottomRight',
+        });
       }
     };
 

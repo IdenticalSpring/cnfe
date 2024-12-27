@@ -282,7 +282,6 @@ const TableCourse = ({ searchTerm }) => {
         placement: "bottomRight",
         duration: 2,
       });
-      console.error(error);
     } finally {
       setIsModalVisible(false);
     }

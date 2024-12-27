@@ -50,7 +50,8 @@ const CourseDetail = () => {
       setLoading(true);
       Promise.all([
         userAPI.getCourseById(id).then(setCourse),
-        userAPI.getChaptersAndLessonsByCourseId(id, userId)
+        userAPI
+          .getChaptersAndLessonsByCourseId(id, userId)
           .then((chaptersData) => {
             setChapters(chaptersData);
           }),
@@ -59,7 +60,14 @@ const CourseDetail = () => {
           setHasPurchased(purchaseStatus);
         }),
       ])
-        .catch((error) => console.error("Error fetching data:", error))
+        .catch((error) =>
+          notification.error({
+            message: "Error",
+            description: `Error fetching data`,
+            duration: 5,
+            placement: "bottomRight",
+          })
+        )
         .finally(() => setLoading(false));
     } else {
       setLoading(false);
@@ -89,7 +97,14 @@ const CourseDetail = () => {
     userAPI
       .getLessonById(chapterId, lessonId)
       .then(setSelectedLesson)
-      .catch((error) => console.error("Error fetching lesson details:", error));
+      .catch((error) =>
+        notification.error({
+          message: "Error",
+          description: `Error fetching`,
+          duration: 5,
+          placement: "bottomRight",
+        })
+      );
   };
 
   const handleShare = () => {
@@ -154,7 +169,7 @@ const CourseDetail = () => {
                     activeTab={activeTab}
                     courseDescription={course?.description}
                     selectedLesson={selectedLesson}
-                    onCompleteLesson={handleLessonCompletion} 
+                    onCompleteLesson={handleLessonCompletion}
                   />
                 </>
               ) : !isLoggedIn ? (
@@ -175,7 +190,7 @@ const CourseDetail = () => {
                     activeTab={activeTab}
                     courseDescription={course?.description}
                     selectedLesson={selectedLesson}
-                    onCompleteLesson={handleLessonCompletion} 
+                    onCompleteLesson={handleLessonCompletion}
                   />
                 </>
               )}
@@ -188,7 +203,10 @@ const CourseDetail = () => {
             onCancel={closePurchaseModal}
             footer={null}
           >
-            <PurchaseCourse price={course?.price} onClose={closePurchaseModal} />
+            <PurchaseCourse
+              price={course?.price}
+              onClose={closePurchaseModal}
+            />
           </Modal>
         </>
       )}

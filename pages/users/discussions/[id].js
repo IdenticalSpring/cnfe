@@ -90,7 +90,6 @@ const DiscussionDetail = () => {
       setCurrentPage(page); // Update current page
       setTotalPages(Math.ceil(commentsData.total / commentsData.limit)); // Calculate total pages
     } catch (err) {
-      console.error("Error loading comments:", err);
       setError("Error loading comments");
     }
   };
@@ -121,11 +120,8 @@ const DiscussionDetail = () => {
         placement: "bottomRight",
       });
 
-      // Gọi lại fetchComments để cập nhật danh sách comment mới nhất
       fetchComments(); // Thực hiện lại fetch để lấy danh sách comments mới nhất
     } catch (err) {
-      console.error("Error submitting comment:", err);
-      // Hiển thị thông báo lỗi
       notification.error({
         message: "Error Occurred",
         description: "Unable to post your comment. Please try again.",
@@ -156,7 +152,6 @@ const DiscussionDetail = () => {
 
       message.success("You have successfully upvoted this discussion.");
     } catch (err) {
-      console.error("Error upvoting the discussion:", err);
       message.error("Unable to upvote the discussion. Please try again.");
     }
   };
@@ -175,7 +170,6 @@ const DiscussionDetail = () => {
 
       message.success("You have successfully downvoted this discussion.");
     } catch (err) {
-      console.error("Error downvoting the discussion:", err);
       message.error("Unable to downvote the discussion. Please try again.");
     }
   };
