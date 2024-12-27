@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import DefaultLayout from "../layout/DefaultLayout";
 import styled from "styled-components";
-import TableTopic from "../component/table/TableTopic";
+import TableTopic from "../components/table/TableTopic";
 import ButtonCustom from "components/button/Button";
 import { useRouter } from "next/router";
 import { ArrowRightOutlined } from "@ant-design/icons";
-import Search from "pages/admin/component/search/index";
+import Search from "@/pages/admin/components/search/index";
 
 const TableContainer = styled.div`
   margin: 0 20px;
@@ -70,7 +70,7 @@ const Index = () => {
               </ButtonCustom>
             </ButtonContainer>
           </ContentWrapper>
-          <TableTopic searchTerm={searchTerm}/>
+          <TableTopic searchTerm={searchTerm} />
         </TableContainer>
       </DefaultLayout>
     </>

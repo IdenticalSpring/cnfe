@@ -3,9 +3,9 @@ import DefaultLayout from "../layout/DefaultLayout";
 import styled from "styled-components";
 import ButtonCustom from "components/button/Button";
 import { useRouter } from "next/router";
-import TableCompany from "../component/table/TableCompany";
+import TableCompany from "../components/table/TableCompany";
 import { ArrowRightOutlined } from "@ant-design/icons";
-import Search from "pages/admin/component/search/index";
+import Search from "@/pages/admin/components/search/index";
 
 const TableContainer = styled.div`
   margin: 0 20px;
@@ -70,7 +70,7 @@ const Index = () => {
               </ButtonCustom>
             </ButtonContainer>
           </ContentWrapper>
-          <TableCompany searchTerm={searchTerm}/>
+          <TableCompany searchTerm={searchTerm} />
         </TableContainer>
       </DefaultLayout>
     </>

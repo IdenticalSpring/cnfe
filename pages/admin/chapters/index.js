@@ -3,9 +3,9 @@ import DefaultLayout from "../layout/DefaultLayout";
 import styled from "styled-components";
 import ButtonCustom from "components/button/Button";
 import { useRouter } from "next/router";
-import TableChapter from "../component/table/TableChapter";
+import TableChapter from "../components/table/TableChapter";
 import { ArrowRightOutlined } from "@ant-design/icons";
-import Search from "pages/admin/component/search/index";
+import Search from "@/pages/admin/components/search/index";
 
 const TableContainer = styled.div`
   margin: 0 20px;
@@ -59,7 +59,7 @@ const Index = () => {
               Chapter management <ArrowRightOutlined className="icon" />{" "}
             </Title_Head>
             <ButtonContainer>
-            <Search onSearch={handleSearch} />
+              <Search onSearch={handleSearch} />
               <ButtonCustom
                 bgColor="var(--success-color)"
                 color="#fff"
@@ -70,7 +70,7 @@ const Index = () => {
               </ButtonCustom>
             </ButtonContainer>
           </ContentWrapper>
-          <TableChapter searchTerm={searchTerm}/>
+          <TableChapter searchTerm={searchTerm} />
         </TableContainer>
       </DefaultLayout>
     </>

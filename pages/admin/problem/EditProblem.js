@@ -5,7 +5,7 @@ import Editor from "components/textEditor/Editor";
 import DefaultLayout from "/pages/admin/layout/DefaultLayout";
 import styled from "styled-components";
 import { useRouter } from "next/router";
-import CloudinaryUpload from "../component/CloudinaryUpload";
+import CloudinaryUpload from "../components/CloudinaryUpload";
 
 const { Option } = Select;
 

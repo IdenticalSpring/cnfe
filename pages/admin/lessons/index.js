@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import DefaultLayout from "../layout/DefaultLayout";
-import TableLesson from "../component/table/TableLesson";
+import TableLesson from "../components/table/TableLesson";
 import ButtonCustom from "components/button/Button";
 import { useRouter } from "next/router";
 import { ArrowRightOutlined } from "@ant-design/icons";
-import Search from "pages/admin/component/search/index";
+import Search from "@/pages/admin/components/search/index";
 import { useState } from "react";
 
 const TableContainer = styled.div`
@@ -39,7 +39,7 @@ const ContentWrapper = styled.div`
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  
+
   const router = useRouter();
 
   const handleCreateLesson = () => {
@@ -59,7 +59,7 @@ const Index = () => {
           </Title_Head>
         </ContentWrapper>
         <ButtonContainer>
-        <Search onSearch={handleSearch} />
+          <Search onSearch={handleSearch} />
           <ButtonCustom
             bgColor="var(--success-color)"
             color="#fff"
@@ -69,7 +69,7 @@ const Index = () => {
             Create Lesson
           </ButtonCustom>
         </ButtonContainer>
-        <TableLesson searchTerm={searchTerm}/>
+        <TableLesson searchTerm={searchTerm} />
       </TableContainer>
     </DefaultLayout>
   );

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import DefaultLayout from "./layout/DefaultLayout";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import { Skeleton } from "antd";
-import Search from "./component/search/index";
+import Search from "./components/search/index";
 
 const TableContainer = styled.div`
   margin: 0 20px;
@@ -35,7 +35,7 @@ const ButtonContainer = styled.div`
   margin: 20px 0;
 `;
 
-const TableAccount = lazy(() => import("./component/table/TableAccount"));
+const TableAccount = lazy(() => import("./components/table/TableAccount"));
 
 const Users = () => {
   const [searchTerm, setSearchTerm] = useState("");

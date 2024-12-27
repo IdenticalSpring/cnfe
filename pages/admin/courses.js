@@ -4,9 +4,9 @@ import { Suspense, lazy, useState } from "react";
 import { Skeleton } from "antd";
 import { useRouter } from "next/router";
 import { ArrowRightOutlined } from "@ant-design/icons";
-import Search from "./component/search/index";
+import Search from "./components/search/index";
 
-const TableCourses = lazy(() => import("./component/table/TableCourse"));
+const TableCourses = lazy(() => import("./components/table/TableCourse"));
 const ButtonCustom = lazy(() => import("components/button/Button"));
 
 const TableContainer = styled.div`
@@ -61,7 +61,7 @@ const Courses = () => {
             </Title_Head>
 
             <ButtonContainer>
-            <Search onSearch={handleSearch} />
+              <Search onSearch={handleSearch} />
               <ButtonCustom
                 bgColor="var(--success-color)"
                 color="#fff"
@@ -72,7 +72,7 @@ const Courses = () => {
               </ButtonCustom>
             </ButtonContainer>
 
-            <TableCourses searchTerm={searchTerm}/>
+            <TableCourses searchTerm={searchTerm} />
           </ContentWrapper>
         </Suspense>
       </TableContainer>

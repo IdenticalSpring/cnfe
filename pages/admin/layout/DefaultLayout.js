@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import Sidebar from "../component/sidebar/AdminSidebar.js";
+import Sidebar from "../components/sidebar/AdminSidebar.js";
 import Header from "./Header.js";
 import Footer from "./Footer.js";
 import { useState } from "react";
@@ -24,7 +24,7 @@ const DefaultLayoutadmin = ({ children }) => {
       <Header toggleSidebar={toggleSidebar} collapsed={collapsed} />
       <Sidebar collapsed={collapsed} />
       <Main collapsed={collapsed}>{children}</Main>
-      <Footer collapsed={collapsed}/>
+      <Footer collapsed={collapsed} />
     </>
   );
 };
