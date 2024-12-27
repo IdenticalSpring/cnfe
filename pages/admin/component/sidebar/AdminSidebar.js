@@ -106,13 +106,13 @@ const AdminSidebar = ({ collapsed }) => {
         selectedKeys={[selectedKey]}
         onClick={handleMenuClick}
       >
-        <StyledMenuItem
+        {/* <StyledMenuItem
           key="/admin/dashboard"
           icon={<DashboardOutlined />}
           $isSelected={selectedKey === "/admin/dashboard"}
         >
           Dashboard
-        </StyledMenuItem>
+        </StyledMenuItem> */}
         <StyledMenuItem
           key="/admin/users"
           icon={<TeamOutlined />}
