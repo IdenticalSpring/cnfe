@@ -8,6 +8,7 @@ export const request = axios.create({
   },
   baseURL: ` ${baseURL}`,
   timeout: 50000,
+  withCredentials: true,
 });
 
 request.defaults.paramsSerializer = {

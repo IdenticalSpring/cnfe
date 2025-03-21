@@ -8,6 +8,7 @@ export const requestNoTK = axios.create({
   },
   baseURL: ` ${baseURL}`,
   timeout: 50000,
+  withCredentials: true,
 });
 
 requestNoTK.defaults.paramsSerializer = {
