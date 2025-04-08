@@ -8,6 +8,7 @@ import DefaultLayout from "@/layout/DefaultLayout";
 import { registerUser } from "@/service/auth-api";
 import { notification } from "antd";
 
+// Styled components
 const StyledLink = styled.a`
   text-decoration: none;
   color: #1890ff;
@@ -84,61 +85,84 @@ const ButtonGroup = styled.div`
     }
   }
 `;
+
+const ErrorMessage = styled.p`
+  color: #f44336;
+  margin: 0;
+  font-size: 12px;
+  margin-top: 4px;
+  text-align: left;
+`;
+
+// Components
 const PasswordField = memo(
-  ({ label, value, onChange, showPassword, handleClickShowPassword, name, error }) => (
-    <TextField
-      label={label}
-      variant="outlined"
-      type={showPassword ? "text" : "password"}
-      value={value}
-      name={name}
-      onChange={onChange}
-      fullWidth
-      required
-      margin="normal"
-      error={!!error}
-      helperText={error}
-      InputProps={{
-        endAdornment: (
-          <InputAdornment position="end">
-            <IconButton onClick={handleClickShowPassword} edge="end">
-              {showPassword ? <VisibilityOff /> : <Visibility />}
-            </IconButton>
-          </InputAdornment>
-        ),
-      }}
-    />
+  ({ label, value, onChange, onBlur, showPassword, handleClickShowPassword, name, error }) => (
+    <div style={{ marginBottom: "16px" }}>
+      <TextField
+        label={label}
+        variant="outlined"
+        type={showPassword ? "text" : "password"}
+        value={value}
+        name={name}
+        onChange={onChange}
+        onBlur={onBlur}
+        fullWidth
+        required
+        margin="normal"
+        error={!!error}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton onClick={handleClickShowPassword} edge="end">
+                {showPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+      />
+      {error && <ErrorMessage>{error}</ErrorMessage>}
+    </div>
   )
 );
 PasswordField.displayName = "PasswordField";
 
-const EmailField = memo(({ value, onChange, name }) => (
-  <TextField
-    label="Email"
-    variant="outlined"
-    type="email"
-    name={name}
-    value={value}
-    onChange={onChange}
-    fullWidth
-    required
-    margin="normal"
-  />
+const EmailField = memo(({ value, onChange, onBlur, name, error }) => (
+  <div style={{ marginBottom: "16px" }}>
+    <TextField
+      label="Email"
+      variant="outlined"
+      type="email"
+      name={name}
+      value={value}
+      onChange={onChange}
+      onBlur={onBlur}
+      fullWidth
+      required
+      margin="normal"
+      error={!!error}
+    />
+    {error && <ErrorMessage>{error}</ErrorMessage>}
+  </div>
 ));
 EmailField.displayName = "EmailField";
 
-const TextFieldComponent = memo(({ label, value, onChange, name }) => (
-  <TextField
-    label={label}
-    variant="outlined"
-    type="text"
-    value={value}
-    name={name}
-    onChange={onChange}
-    fullWidth
-    required
-    margin="normal"
-  />
+const TextFieldComponent = memo(({ label, value, onChange, onBlur, name, error }) => (
+  <div style={{ marginBottom: "16px" }}>
+    <TextField
+      label={label}
+      variant="outlined"
+      type="text"
+      value={value}
+      name={name}
+      onChange={onChange}
+      onBlur={onBlur}
+      fullWidth
+      required
+      margin="normal"
+      error={!!error}
+    />
+    {error && <ErrorMessage>{error}</ErrorMessage>}
+  </div>
 ));
 TextFieldComponent.displayName = "TextFieldComponent";
 
@@ -154,9 +178,19 @@ const Signup = () => {
   });
 
   const [errors, setErrors] = useState({
+    username: "",
+    name: "",
+    email: "",
     password: "",
     confirmPassword: "",
   });
+
+  const validateField = (name, value) => {
+    if (!value.trim()) {
+      return `${name.charAt(0).toUpperCase() + name.slice(1)} cannot be empty`;
+    }
+    return "";
+  };
 
   const handleChange = useCallback(
     (e) => {
@@ -166,19 +200,72 @@ const Signup = () => {
         [name]: value,
       }));
 
-      if (name === "password") {
-        validatePassword(value);
+      // Validate field on change
+      if (!value.trim()) {
+        setErrors((prev) => ({
+          ...prev,
+          [name]: `${name.charAt(0).toUpperCase() + name.slice(1)} cannot be empty`,
+        }));
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          [name]: "",
+        }));
       }
 
-      if (name === "confirmPassword") {
+      // Specific field validations
+      if (name === "password") {
+        validatePassword(value);
+      } else if (name === "confirmPassword") {
         setErrors((prev) => ({
           ...prev,
           confirmPassword: value !== state.password ? "Passwords do not match" : "",
         }));
+      } else if (name === "email") {
+        validateEmail(value);
       }
     },
     [state.password]
   );
+
+  const handleBlur = useCallback((e) => {
+    const { name, value } = e.target;
+
+    // Validate on blur
+    if (!value.trim()) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: `${name.charAt(0).toUpperCase() + name.slice(1)} cannot be empty`,
+      }));
+    } else if (name === "email") {
+      validateEmail(value);
+    } else if (name === "password") {
+      validatePassword(value);
+    } else if (name === "confirmPassword") {
+      setErrors((prev) => ({
+        ...prev,
+        confirmPassword: value !== state.password ? "Passwords do not match" : "",
+      }));
+    }
+  }, [state.password]);
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    let errorMsg = "";
+
+    if (!email.trim()) {
+      errorMsg = "Email cannot be empty";
+    } else if (!emailRegex.test(email)) {
+      errorMsg = "Please enter a valid email address";
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      email: errorMsg,
+    }));
+
+    return errorMsg === "";
+  };
 
   const validatePassword = (password) => {
     const sqlChars = /['";=()%<>&\/*+]/;
@@ -222,35 +309,71 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const isPasswordValid = validatePassword(state.password);
-    const isConfirmValid = state.password === state.confirmPassword;
-    if (!isConfirmValid) {
+    // Check for empty fields
+    let hasEmptyFields = false;
+    const updatedErrors = { ...errors };
+    
+    if (!state.username.trim()) {
+      updatedErrors.username = "Username cannot be empty";
+      hasEmptyFields = true;
+    }
+    if (!state.name.trim()) {
+      updatedErrors.name = "Name cannot be empty";
+      hasEmptyFields = true;
+    }
+    if (!state.email.trim()) {
+      updatedErrors.email = "Email cannot be empty";
+      hasEmptyFields = true;
+    }
+    if (!state.password.trim()) {
+      updatedErrors.password = "Password cannot be empty";
+      hasEmptyFields = true;
+    }
+    if (!state.confirmPassword.trim()) {
+      updatedErrors.confirmPassword = "Confirm password cannot be empty";
+      hasEmptyFields = true;
+    }
+
+    setErrors(updatedErrors);
+    
+    if (hasEmptyFields) {
+      return;
+    }
+
+    if (!validateEmail(state.email)) {
+      return;
+    }
+    
+    if (!validatePassword(state.password)) {
+      return;
+    }
+    
+    if (state.confirmPassword !== state.password) {
       setErrors((prev) => ({
         ...prev,
         confirmPassword: "Passwords do not match",
       }));
+      return;
     }
 
-    if (isPasswordValid && isConfirmValid) {
+    try {
       const payload = {
         username: state.username,
         password: state.password,
         name: state.name,
         email: state.email,
       };
-
-      try {
-        const result = await registerUser(payload);
-        notification.success({
-          message: "Sign Up Successful",
-          description: "You have successfully created an account.",
-        });
-      } catch (error) {
-        notification.error({
-          message: "Sign Up Failed",
-          description: "An error occurred during sign up.",
-        });
-      }
+      
+      const result = await registerUser(payload);
+      notification.success({
+        message: "Sign Up Successful",
+        description: "You have successfully created an account.",
+      });
+    } catch (error) {
+      notification.error({
+        message: "Sign Up Failed",
+        description: error.response?.data?.message || "An error occurred during sign up.",
+      });
     }
   };
 
@@ -278,34 +401,50 @@ const Signup = () => {
               label="Username"
               value={username}
               onChange={handleChange}
+              onBlur={handleBlur}
               name="username"
+              error={errors.username}
             />
 
             <TextFieldComponent
               label="Name"
               value={name}
               onChange={handleChange}
+              onBlur={handleBlur}
               name="name"
+              error={errors.name}
             />
-            <EmailField value={email} onChange={handleChange} name="email" />
+            
+            <EmailField 
+              value={email} 
+              onChange={handleChange} 
+              onBlur={handleBlur}
+              name="email" 
+              error={errors.email}
+            />
+            
             <PasswordField
               label="Password"
               value={password}
               onChange={handleChange}
+              onBlur={handleBlur}
               showPassword={showPassword}
               handleClickShowPassword={handleClickShowPassword}
               name="password"
               error={errors.password}
             />
+            
             <PasswordField
               label="Confirm Password"
               value={confirmPassword}
               onChange={handleChange}
+              onBlur={handleBlur}
               showPassword={showConfirmPassword}
               handleClickShowPassword={handleClickShowConfirmPassword}
               name="confirmPassword"
               error={errors.confirmPassword}
             />
+            
             <SignupButton type="submit">Sign Up</SignupButton>
           </form>
           <ButtonGroup>
