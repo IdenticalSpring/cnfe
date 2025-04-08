@@ -85,7 +85,7 @@ const ButtonGroup = styled.div`
   }
 `;
 const PasswordField = memo(
-  ({ label, value, onChange, showPassword, handleClickShowPassword, name }) => (
+  ({ label, value, onChange, showPassword, handleClickShowPassword, name, error }) => (
     <TextField
       label={label}
       variant="outlined"
@@ -96,6 +96,8 @@ const PasswordField = memo(
       fullWidth
       required
       margin="normal"
+      error={!!error}
+      helperText={error}
       InputProps={{
         endAdornment: (
           <InputAdornment position="end">
@@ -123,7 +125,7 @@ const EmailField = memo(({ value, onChange, name }) => (
     margin="normal"
   />
 ));
-EmailField.displayName = "EmailField"; // Thêm displayName
+EmailField.displayName = "EmailField";
 
 const TextFieldComponent = memo(({ label, value, onChange, name }) => (
   <TextField
@@ -138,7 +140,7 @@ const TextFieldComponent = memo(({ label, value, onChange, name }) => (
     margin="normal"
   />
 ));
-TextFieldComponent.displayName = "TextFieldComponent"; // Thêm displayName
+TextFieldComponent.displayName = "TextFieldComponent";
 
 const Signup = () => {
   const [state, setState] = useState({
@@ -151,13 +153,57 @@ const Signup = () => {
     showConfirmPassword: false,
   });
 
-  const handleChange = useCallback((e) => {
-    const { name, value } = e.target;
-    setState((prevState) => ({
-      ...prevState,
-      [name]: value,
+  const [errors, setErrors] = useState({
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = useCallback(
+    (e) => {
+      const { name, value } = e.target;
+      setState((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+
+      if (name === "password") {
+        validatePassword(value);
+      }
+
+      if (name === "confirmPassword") {
+        setErrors((prev) => ({
+          ...prev,
+          confirmPassword: value !== state.password ? "Passwords do not match" : "",
+        }));
+      }
+    },
+    [state.password]
+  );
+
+  const validatePassword = (password) => {
+    const sqlChars = /['";=()%<>&\/*+]/;
+
+    let errorMsg = "";
+
+    if (password.length < 8) {
+      errorMsg = "Password must be at least 8 characters";
+    } else if (sqlChars.test(password)) {
+      errorMsg = "Password cannot contain special SQL characters";
+    } else if (!/[A-Z]/.test(password)) {
+      errorMsg = "Password must contain at least one uppercase letter";
+    } else if (!/[a-z]/.test(password)) {
+      errorMsg = "Password must contain at least one lowercase letter";
+    } else if (!/[0-9]/.test(password)) {
+      errorMsg = "Password must contain at least one number";
+    }
+
+    setErrors((prev) => ({
+      ...prev,
+      password: errorMsg,
     }));
-  }, []);
+
+    return errorMsg === "";
+  };
 
   const handleClickShowPassword = useCallback(() => {
     setState((prevState) => ({
@@ -176,14 +222,36 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const payload = {
-      username: state.username,
-      password: state.password,
-      name: state.name,
-      email: state.email,
-    };
+    const isPasswordValid = validatePassword(state.password);
+    const isConfirmValid = state.password === state.confirmPassword;
+    if (!isConfirmValid) {
+      setErrors((prev) => ({
+        ...prev,
+        confirmPassword: "Passwords do not match",
+      }));
+    }
 
-    const result = await registerUser(payload);
+    if (isPasswordValid && isConfirmValid) {
+      const payload = {
+        username: state.username,
+        password: state.password,
+        name: state.name,
+        email: state.email,
+      };
+
+      try {
+        const result = await registerUser(payload);
+        notification.success({
+          message: "Sign Up Successful",
+          description: "You have successfully created an account.",
+        });
+      } catch (error) {
+        notification.error({
+          message: "Sign Up Failed",
+          description: "An error occurred during sign up.",
+        });
+      }
+    }
   };
 
   const {
@@ -227,6 +295,7 @@ const Signup = () => {
               showPassword={showPassword}
               handleClickShowPassword={handleClickShowPassword}
               name="password"
+              error={errors.password}
             />
             <PasswordField
               label="Confirm Password"
@@ -235,6 +304,7 @@ const Signup = () => {
               showPassword={showConfirmPassword}
               handleClickShowPassword={handleClickShowConfirmPassword}
               name="confirmPassword"
+              error={errors.confirmPassword}
             />
             <SignupButton type="submit">Sign Up</SignupButton>
           </form>
